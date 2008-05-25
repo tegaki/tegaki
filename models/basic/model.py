@@ -345,21 +345,24 @@ class Model(base.ModelBase):
             res = [x[0] for x in self.eval_sequence(sset, hmms)][:10]
 
             if char_code in res:
-                n_match10 += 1
-                matches = ", ".join([self.get_utf8_from_char_code(x) \
-                                        for x in res[:10]])
-            else:
-                matches = "X"
-
-            utf8 = self.get_utf8_from_char_code(char_code)
-
-            s += "%s: %s\n" % (utf8, matches)
+                n_match10 += 1 
 
             if char_code in res[:5]:
                 n_match5 += 1
 
+                position = str(res.index(char_code) + 1)
+                matches = ", ".join([self.get_utf8_from_char_code(x) \
+                                        for x in res[:5]])
+            else:
+                position = "X"
+                matches = ""
+
             if char_code == res[0]:
                 n_match1 += 1
+
+            utf8 = self.get_utf8_from_char_code(char_code)
+
+            s += "%s\t%s\t%s\n" % (utf8, position, matches)
 
             n_total += 1
 
