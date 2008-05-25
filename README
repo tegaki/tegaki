@@ -1,0 +1,22 @@
+This package
+============
+
+This package contains experiments on online handwriting recognition, more
+specifically for Chinese characters. Currently only Hidden Markov Models are
+used but other techniques may be tried in the future.
+
+Requirements
+------------
+
+Python       2.4    http://www.python.org
+GHMM *       SVN    http://ghmm.sourceforge.net
+Tomoe *      SVN    http://tomoe.sourceforge.jp
+Tomoe-GTK *  SVN    http://tomoe.sourceforge.jp
+
+[*] The Python bindings are also required.
+
+License
+-------
+
+This package is distributed under the terms of the GNU General Public
+License. See the COPYING file for more information.
