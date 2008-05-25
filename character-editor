@@ -1,0 +1,223 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2008 Mathieu Blondel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import gtk
+import tomoe
+import tomoegtk
+import os
+
+os.close(0) # fixes bug with python2.5 and pygtk in debian
+
+class CharacterEditor:
+
+    def save_characters(self):
+        ite = self.liststore.get_iter("0")
+
+        char = tomoe.Char()
+        
+        while ite:
+
+            char_utf8 = self.liststore.get_value(ite, 1)
+            char_code = self.liststore.get_value(ite, 2)
+            selected = self.liststore.get_value(ite, 0)
+            path = os.path.join(self.output_folder,
+                                "%d.xml" % char_code)
+                                
+            if selected:
+                writing = self.characters[char_code]
+                if writing.get_n_strokes() > 0:
+                    char.set_writing(writing)
+                    char.set_utf8(char_utf8)
+                    f = open(path, "w")
+                    f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")     
+                    f.write(char.to_xml())
+                    f.close()
+                    
+            elif os.path.exists(path):
+                os.unlink(path)
+                    
+            ite = self.liststore.iter_next(ite)
+
+    # signal callbacks
+
+    def canvas_clear(self, clear_button, data=None):
+        model, selected_iter = self.selection.get_selected()
+        self.liststore.set_value(selected_iter, 0, False)
+        char_code = self.liststore.get_value(selected_iter, 2)
+        self.characters[char_code].clear()
+        self.canvas.clear()
+
+    def canvas_undo(self, save_button, data=None):
+        writing = self.canvas.get_writing()
+        if writing.get_n_strokes() > 0:
+            self.canvas.revert_stroke()
+
+    def canvas_save(self, save_button, data=None):        
+        writing = self.canvas.get_writing()
+        if writing.get_n_strokes() > 0:
+            model, selected_iter = self.selection.get_selected()
+            self.liststore.set_value(selected_iter, 0, True)
+            char_code = self.liststore.get_value(selected_iter, 2)      
+            self.characters[char_code] = writing
+
+    def selection_changed(self, selection, data=None):
+        model, selected_iter = self.selection.get_selected()
+        b = selected_iter is not None
+
+        self.save_button.set_sensitive(b)
+        self.clear_button.set_sensitive(b)
+        self.undo_button.set_sensitive(b)
+        
+        if b:
+            char_code = self.liststore.get_value(selected_iter, 2)        
+            self.canvas.set_writing(self.characters[char_code])
+            
+    
+    def delete_event(self, widget, event, data=None):
+        return False
+
+    def destroy(self, widget, data=None):
+        self.save_characters()
+        gtk.main_quit()
+            
+    # init            
+
+    def __init__(self, output_folder, char_list):
+        if not os.path.exists(output_folder):
+            raise "%s doesn't exist" % output_folder
+
+        self.output_folder = output_folder
+        
+        # window
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.connect("delete_event", self.delete_event)
+        self.window.connect("destroy", self.destroy)
+        self.window.set_border_width(10)
+        self.window.set_resizable(False)
+
+        # liststore
+        self.characters = {}
+        self.liststore = gtk.ListStore(bool, str, int)
+
+        for char in char_list:
+            char = unicode(char)
+            char_utf8 = char.encode("utf8")
+            char_code = ord(char)
+            char_path = os.path.join(self.output_folder,
+                                     "%d.xml" % char_code)
+            
+            if os.path.exists(char_path):
+                f = open(char_path, "r")
+                xml = f.read()
+                f.close()
+                tomoe_char = tomoe.tomoe_char_new_from_xml_data(xml, len(xml))
+                self.characters[char_code] = tomoe_char.get_writing()
+                b = True
+            else:
+                self.characters[char_code] = tomoe.Writing()
+                b = False
+
+            ite = self.liststore.append()
+            self.liststore.set(ite, 0, b)
+            self.liststore.set(ite, 1, char_utf8)
+            self.liststore.set(ite, 2, char_code)
+
+        # treeview
+        self.treeview = gtk.TreeView(self.liststore)
+
+        # column 0
+        column0 = gtk.TreeViewColumn("Done")
+        self.treeview.append_column(column0)        
+        boolean_renderer = gtk.CellRendererToggle()
+        column0.pack_start(boolean_renderer, expand=False)
+        column0.add_attribute(boolean_renderer, "active", 0)
+
+        
+        # column 1
+        column1 = gtk.TreeViewColumn("Character")
+        self.treeview.append_column(column1)
+        text_renderer = gtk.CellRendererText()
+        column1.pack_start(text_renderer, expand=True)
+        column1.add_attribute(text_renderer, 'text', 1)
+        self.treeview.set_search_column(1)
+        column1.set_sort_column_id(1)
+
+        # save button
+        self.save_button = gtk.Button(stock=gtk.STOCK_SAVE)
+        self.save_button.connect("clicked", self.canvas_save)
+
+        # undo button
+        self.undo_button = gtk.Button(stock=gtk.STOCK_UNDO)
+        self.undo_button.connect("clicked", self.canvas_undo)
+
+        # clear button
+        self.clear_button = gtk.Button(stock=gtk.STOCK_CLEAR)
+        self.clear_button.connect("clicked", self.canvas_clear)
+
+        # hbox
+        self.hbox = gtk.HBox()
+        self.hbox.pack_start(self.save_button)
+        self.hbox.pack_start(self.undo_button)
+        self.hbox.pack_start(self.clear_button)        
+
+        # canvas
+        self.canvas = tomoegtk.Canvas()    
+        self.canvas.set_size_request(300, 300)
+
+        # treeview selection
+        self.selection = self.treeview.get_selection()
+        self.selection.connect("changed", self.selection_changed)
+        self.selection.select_path("0")           
+
+        # vbox
+        self.vbox = gtk.VBox(spacing=5)
+        self.vbox.pack_start(self.canvas, expand=False)
+        self.vbox.pack_start(self.hbox, expand=False)
+
+        # hpaned
+        self.hpaned = gtk.HPaned()
+        scrolled_window = gtk.ScrolledWindow()
+        scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        scrolled_window.add(self.treeview)
+        self.hpaned.add1(scrolled_window)
+        self.hpaned.add2(self.vbox)
+        
+        self.window.add(self.hpaned)
+
+        self.window.show_all()
+        
+
+def usage(pgm):
+    print "%s output_folder" % pgm
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) == 1:
+        usage(sys.argv[0])
+    else:
+        char_list = ["一", "二", "三", "泣", "漢", "温", "使", "便", "旅", "族",
+                     "水", "氷", "撃", "女", "安", "北", "化", "忘", "妄", "近",
+                     "集", "育", "坊", "訪", "防", "妨", "駅", "福", "副", "神",
+                     "版", "坂", "板", "金", "全", "錬", "練", "業", "習", "央",
+                     "決", "代", "反", "想", "歯", "象", "始", "初", "発", "感"]
+                     
+        editor = CharacterEditor(sys.argv[1], char_list)
+    
+        gtk.main()
