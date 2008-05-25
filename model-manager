@@ -1,0 +1,164 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2008 Mathieu Blondel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import sys
+import os
+from optparse import OptionParser
+
+import lib.base as base
+
+currdir = os.path.dirname(os.path.abspath(__file__))
+
+def die(msg, code=0):
+  base.stderr_print(msg)
+  sys.exit(code)
+  
+def usage():
+    die("""Usage:
+    
+-----  
+  
+model-manager model-name command
+
+Possible commands: fextract, init, train, eval, pad, all, clean
+
+all = fextract, init, train and eval
+
+-----
+
+model-manager command
+
+Possible commands: list, cleanall, pad, help
+
+-----
+
+Options:
+    -v  --verbose
+    -s  --stdin
+    
+""")
+
+parser = OptionParser()
+parser.add_option("-v", "--verbose",
+                  action="store_true", dest="verbose", default=False,
+                  help="print more status messages to stdout")
+parser.add_option("-s", "--stdin",
+                  action="store_true", dest="stdin", default=False,
+                  help="read tomoe character xml from stdin")
+
+(options, args) = parser.parse_args()
+
+if not len(args) in [1, 2]:
+    usage()
+    
+if len(args) == 1:
+    command = args[0]
+    
+    if command == "list":
+        print "Available models:"
+        for name in base.get_model_list():
+            print "- %s" % name
+            
+    elif command == "cleanall":
+        for name in base.get_model_list():
+            model_folder = os.path.join("models", name)
+            base.clean_model_folder(model_folder)
+
+        for pyc_file in base.get_pyc_files(currdir):
+            os.unlink(pyc_file)
+
+    elif command == "pad":
+        from lib.writing_pad import WritingPad
+
+        def print_xml(tomoe_writing):
+            print base.tomoe_writing_to_xml(tomoe_writing)
+            sys.stdout.flush()
+            
+        pad = WritingPad(print_xml)
+        pad.run()
+
+    else:
+        usage()
+        
+else:
+    command = args[1]
+    name = args[0]
+
+    model_folder = os.path.join("models", name)
+
+    if command in ("clean", "all"):
+        if os.path.exists(model_folder):
+            base.clean_model_folder(model_folder)
+
+        if command == "clean":
+            sys.exit()
+
+    module = base.load_model_module(model_folder)
+
+    if not module:
+        die("Model %s doesn't exist.\n" % name + \
+            "Use the list command for a list of models.")
+
+    try:
+        model = module.model.Model(options.verbose)
+        
+        if command in ("fextract", "all"):
+            base.stderr_print("Extracting features...")
+            model.fextract()
+
+        if command in ("init", "all"):
+            base.stderr_print("Initializing models...")
+            model.init()
+
+        if command in ("train", "all"):
+            base.stderr_print("Training models...")
+            model.train()
+
+        if command in ("eval", "all"):
+            if options.stdin:
+                lines = []
+
+                while True:
+                    line = sys.stdin.readline()
+                    lines.append(line)
+                    
+                    if line.strip() == "</character>":
+                        xml = "\n".join(lines)
+                        tomoe_writing = base.xml_to_tomoe_writing(xml)
+                        print " ".join(model.find_writing(tomoe_writing))
+                        lines = []
+
+                    if len(line) == 0:
+                        break
+                        
+            else:
+                base.stderr_print("Evaluating models...")
+                model.evaluation()
+
+        if command == "pad":
+            model.writing_pad()
+            
+        if command not in ("fextract", "init", "train", "eval",
+                           "pad", "clean", "cleanall", "all"):
+            die("Unknown command.")
+
+    except base.ModelException, e:
+        base.stderr_print("Error!")
+        base.stderr_print(e.message)
+  
