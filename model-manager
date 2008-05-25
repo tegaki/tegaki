@@ -38,7 +38,7 @@ model-manager model-name command
 
 Possible commands: fextract, init, train, eval, pad, all, clean
 
-all = fextract, init, train and eval
+all = clean, fextract, init, train and eval
 
 -----
 
