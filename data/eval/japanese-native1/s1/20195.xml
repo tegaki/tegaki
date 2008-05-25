@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <character>
+    <utf8>代</utf8>
+    <strokes>
+      <stroke>
+        <point x="315" y="220"/>
+        <point x="312" y="226"/>
+        <point x="309" y="233"/>
+        <point x="305" y="240"/>
+        <point x="305" y="243"/>
+        <point x="299" y="246"/>
+        <point x="299" y="250"/>
+        <point x="292" y="270"/>
+        <point x="289" y="273"/>
+        <point x="282" y="293"/>
+        <point x="276" y="313"/>
+        <point x="273" y="316"/>
+        <point x="253" y="336"/>
+        <point x="249" y="340"/>
+        <point x="236" y="360"/>
+        <point x="233" y="363"/>
+        <point x="220" y="383"/>
+        <point x="213" y="386"/>
+        <point x="210" y="390"/>
+        <point x="197" y="403"/>
+        <point x="194" y="403"/>
+        <point x="180" y="416"/>
+        <point x="177" y="416"/>
+        <point x="164" y="430"/>
+        <point x="161" y="430"/>
+        <point x="157" y="433"/>
+        <point x="154" y="433"/>
+      </stroke>
+      <stroke>
+        <point x="256" y="340"/>
+        <point x="256" y="346"/>
+        <point x="256" y="350"/>
+        <point x="256" y="376"/>
+        <point x="256" y="380"/>
+        <point x="256" y="406"/>
+        <point x="256" y="433"/>
+        <point x="256" y="440"/>
+        <point x="256" y="466"/>
+        <point x="256" y="473"/>
+        <point x="256" y="506"/>
+        <point x="256" y="516"/>
+        <point x="256" y="556"/>
+        <point x="256" y="563"/>
+        <point x="256" y="603"/>
+        <point x="256" y="636"/>
+        <point x="256" y="643"/>
+        <point x="256" y="676"/>
+        <point x="256" y="680"/>
+        <point x="256" y="713"/>
+        <point x="256" y="720"/>
+        <point x="256" y="746"/>
+        <point x="256" y="756"/>
+        <point x="256" y="763"/>
+        <point x="256" y="770"/>
+        <point x="253" y="773"/>
+        <point x="253" y="780"/>
+        <point x="253" y="783"/>
+        <point x="253" y="786"/>
+        <point x="249" y="786"/>
+        <point x="249" y="790"/>
+        <point x="253" y="786"/>
+        <point x="253" y="783"/>
+        <point x="256" y="780"/>
+        <point x="259" y="776"/>
+      </stroke>
+      <stroke>
+        <point x="394" y="396"/>
+        <point x="398" y="396"/>
+        <point x="404" y="396"/>
+        <point x="411" y="396"/>
+        <point x="437" y="396"/>
+        <point x="470" y="396"/>
+        <point x="480" y="396"/>
+        <point x="559" y="396"/>
+        <point x="624" y="390"/>
+        <point x="677" y="390"/>
+        <point x="720" y="390"/>
+        <point x="733" y="386"/>
+        <point x="733" y="386"/>
+        <point x="733" y="386"/>
+        <point x="733" y="386"/>
+      </stroke>
+      <stroke>
+        <point x="490" y="150"/>
+        <point x="493" y="153"/>
+        <point x="499" y="173"/>
+        <point x="506" y="200"/>
+        <point x="509" y="203"/>
+        <point x="516" y="230"/>
+        <point x="523" y="250"/>
+        <point x="536" y="276"/>
+        <point x="536" y="283"/>
+        <point x="549" y="310"/>
+        <point x="562" y="336"/>
+        <point x="562" y="343"/>
+        <point x="575" y="376"/>
+        <point x="575" y="383"/>
+        <point x="582" y="410"/>
+        <point x="582" y="420"/>
+        <point x="588" y="453"/>
+        <point x="595" y="473"/>
+        <point x="608" y="506"/>
+        <point x="621" y="540"/>
+        <point x="621" y="546"/>
+        <point x="634" y="573"/>
+        <point x="634" y="580"/>
+        <point x="648" y="606"/>
+        <point x="651" y="613"/>
+        <point x="657" y="633"/>
+        <point x="671" y="660"/>
+        <point x="671" y="663"/>
+        <point x="684" y="690"/>
+        <point x="684" y="693"/>
+        <point x="690" y="713"/>
+        <point x="694" y="716"/>
+        <point x="707" y="736"/>
+        <point x="710" y="743"/>
+        <point x="710" y="746"/>
+        <point x="717" y="766"/>
+        <point x="717" y="770"/>
+        <point x="720" y="773"/>
+        <point x="723" y="776"/>
+        <point x="726" y="783"/>
+        <point x="730" y="783"/>
+        <point x="733" y="783"/>
+        <point x="733" y="780"/>
+        <point x="746" y="766"/>
+        <point x="749" y="763"/>
+        <point x="763" y="743"/>
+        <point x="766" y="736"/>
+        <point x="773" y="710"/>
+        <point x="786" y="690"/>
+        <point x="789" y="683"/>
+        <point x="796" y="663"/>
+        <point x="796" y="660"/>
+        <point x="796" y="653"/>
+        <point x="799" y="653"/>
+        <point x="799" y="656"/>
+      </stroke>
+      <stroke>
+        <point x="694" y="213"/>
+        <point x="694" y="216"/>
+        <point x="694" y="220"/>
+        <point x="697" y="223"/>
+        <point x="700" y="226"/>
+        <point x="700" y="230"/>
+        <point x="707" y="233"/>
+        <point x="713" y="253"/>
+        <point x="717" y="256"/>
+        <point x="730" y="270"/>
+        <point x="730" y="273"/>
+        <point x="733" y="276"/>
+        <point x="736" y="280"/>
+        <point x="740" y="286"/>
+        <point x="743" y="286"/>
+        <point x="743" y="290"/>
+      </stroke>
+    </strokes>
+  </character>
