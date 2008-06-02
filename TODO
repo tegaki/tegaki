@@ -1,0 +1,43 @@
+Dependency on tomoe
+-------------------
+
+- Rewrite tomoe_canvas in pure pygtk.
+- Write a replacement for tomoe_char and tomoe_writing in pure python.
+
+Dependency on ghmm
+------------------
+
+- Write a HMM library in pure python, possibly using numpy.
+(at least the viterbi decoder)
+
+Model manager
+-------------
+
+- Add a evalall command that run and compare all models.
+- Add computation time benchmarking to evaluation results.
+
+- Add support for virtual models. "model1+model2+model3" creates a composite
+models which is a combination of the 3 models. "+" should be a reserved
+character.
+
+Models
+------
+
+- See the effects of computing non-diagonal values in the covariance matrix.
+- Rewrite get_emission_matrix to support feature vectors with n dimensions.
+
+- Try number of states proportional to number of feature vectors.
+- Try non uniform initial segmentation.
+- Try viterbi training.
+
+- Try velocity and speed as feature vectors.
+- Try feature vectors that are not sensitive to stroke order (OCR).
+
+- Try stroke and sub-stroke HMMs.
+
+Data
+----
+
+- Rename corpora with more details like input device (mouse, pda, tablet),
+stroke order correct/incorrect, carefully drawn or not.
+- Be able to choose the training and evaluation corpora from the models.
