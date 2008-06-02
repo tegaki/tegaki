@@ -379,6 +379,10 @@ class Model(base.ModelBase):
         seq = ghmm.EmissionSequence(self.DOMAIN,
                                     base.array_flatten(char_features))
         trained_hmm_files = self.get_trained_hmm_files()
+
+        if len(trained_hmm_files) == 0:
+            raise base.ModelException, "No trained HMM files found."
+        
         hmms = self.get_hmms_from_files(trained_hmm_files)
         res = [x[0] for x in self.eval_sequence(seq, hmms)][:10]
         return [self.get_utf8_from_char_code(x) for x in res]
