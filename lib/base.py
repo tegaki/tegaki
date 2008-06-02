@@ -204,7 +204,17 @@ def array_variance(arr):
 def euclidean_distance(v1, v2):
     assert(len(v1) == len(v2))
 
-    return math.sqrt(sum([(v2[i] - v1[i]) ** 2 for i in range(len(v1))]))  
+    return math.sqrt(sum([(v2[i] - v1[i]) ** 2 for i in range(len(v1))]))
+  
+def cartesian_to_polar(x, y):
+    """
+    Cartesian to polar coordinates conversion.
+    r is the distance to the point.
+    teta is the angle to the point between 0 and 2 pi.
+    """
+    r = math.hypot(x, y)
+    teta = math.atan2(y, x) + math.pi
+    return (r, teta)
 
 def stderr_print(*args):
     sys.stderr.write("".join([str(arg) for arg in args]) + "\n")
