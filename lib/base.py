@@ -147,6 +147,11 @@ def clean_model_folder(model_folder):
     for pyc_file in get_pyc_files(model_folder):
         os.unlink(pyc_file)
 
+def array_sample(arr, rate):
+    n = int(round(1 / rate))
+    
+    return [arr[i] for i in range(0, len(arr), n)]
+
 def array_flatten(l, ltypes=(list, tuple)):
     i = 0
     while i < len(l):
