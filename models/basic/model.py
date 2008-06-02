@@ -57,32 +57,22 @@ class Model(base.ModelBase):
 
     def get_feature_vectors(self, tomoe_writing):
         """
-        Get dx and dy as feature vectors.
+        Get deltax and deltay as feature vectors.
         """
-        arr = []
-        
         strokes = tomoe_writing.get_strokes()
+        vectors = [(x,y) for stroke in strokes for x,y in stroke]
+        vectors = base.array_sample(vectors, self.SAMPLING)
 
-        last_x, last_y = 0, 0
+        arr = []
 
-        i = 0
+        for i in range(1, len(vectors)):
+            ((x1, y1), (x2, y2)) = (vectors[i-1], vectors[i])
+            deltax = float(abs(x2 - x1))
+            deltay = float(abs(y2 - y1))
 
-        sampling = int(1 / self.SAMPLING)
+            arr.append((deltax, deltay))
 
-        for stroke in strokes:
-            for x,y in stroke:
-
-                if i % sampling == 0:
-                    if i != 0: # skip the very first value
-                        dx = abs(x - last_x)
-                        dy = abs(y - last_y)
-                        arr.append([float(dx), float(dy)])
-
-                    last_x, last_y = x, y
-
-                i += 1
-
-        return arr    
+        return arr
 
     def fextract(self):
         for dirname, xml_files_dict in (("eval", self.eval_xml_files_dict),
