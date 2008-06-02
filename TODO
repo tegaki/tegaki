@@ -20,6 +20,9 @@ Model manager
 models which is a combination of the 3 models. "+" should be a reserved
 character.
 
+- Support comma separator for a command. Ex: "fextract,init,train".
+- Support range separator for a command. Ex: "fextract-train".
+
 Models
 ------
 
