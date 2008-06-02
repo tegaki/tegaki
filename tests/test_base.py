@@ -58,7 +58,14 @@ class BaseTest(unittest.TestCase):
         expected = 1.25
 
         self.assertEquals(base.array_variance(arr), expected)
-        
+
+    def testEuclideanDistance(self):
+        for v1, v2, expected in ( ( (2, 10, 12), (3, 10, 7), 5.0 ),
+                                  ( (5, 5), (5, 5), 0.0)
+                                ):
+
+            res = round(base.euclidean_distance(v1, v2))
+            self.assertEquals(res, expected)
 
         
 

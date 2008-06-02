@@ -22,6 +22,7 @@ import glob
 import tomoe
 import shutil
 import ghmm
+import math
 
 class ModelBase(object):
 
@@ -199,6 +200,11 @@ def array_mean(arr):
 def array_variance(arr):
     mean = array_mean(arr)
     return array_mean([(val - mean) ** 2 for val in arr])
+
+def euclidean_distance(v1, v2):
+    assert(len(v1) == len(v2))
+
+    return math.sqrt(sum([(v2[i] - v1[i]) ** 2 for i in range(len(v1))]))  
 
 def stderr_print(*args):
     sys.stderr.write("".join([str(arg) for arg in args]) + "\n")
