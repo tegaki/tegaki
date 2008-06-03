@@ -201,6 +201,41 @@ def array_variance(arr):
     mean = array_mean(arr)
     return array_mean([(val - mean) ** 2 for val in arr])
 
+def array_mean_vector(vectors):
+    """
+    Calculate the means of vector components.
+    This assumes that all vectors have the same number of dimensions.
+    Ex: array_mean_vector([ [1,2], [3,4] ]) returns [2, 3]
+    """
+    assert(len(vectors) > 0)
+
+    n_dimensions = len(vectors[0])
+
+    mean_vector = []
+
+    for i in range(n_dimensions):
+        arr = [vector[i] for vector in vectors]
+        mean_vector.append(array_mean(arr))
+        
+    return mean_vector
+
+def array_variance_vector(vectors):
+    """
+    Calculate the variances of vector components.
+    This assumes that all vectors have the same number of dimensions.
+    """
+    assert(len(vectors) > 0)
+
+    n_dimensions = len(vectors[0])
+
+    variance_vector = []
+
+    for i in range(n_dimensions):
+        arr = [vector[i] for vector in vectors]
+        variance_vector.append(array_variance(arr))
+        
+    return variance_vector
+
 def array_add(arr1, arr2):
     """
     Add arr1 and arr2 element by element.

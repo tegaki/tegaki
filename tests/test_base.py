@@ -59,6 +59,18 @@ class BaseTest(unittest.TestCase):
 
         self.assertEquals(base.array_variance(arr), expected)
 
+    def testArrayMeanVector(self):
+        arr = [ [1,2], [3,4] ]
+        expected = [2, 3]
+
+        self.assertEquals(base.array_mean_vector(arr), expected)
+
+    def testArrayVarianceVector(self):
+        arr = [ [1,2], [3,4] ]
+        expected = [1.0, 1.0]
+
+        self.assertEquals(base.array_variance_vector(arr), expected)
+
     def testEuclideanDistance(self):
         for v1, v2, expected in ( ( (2, 10, 12), (3, 10, 7), 5.0 ),
                                   ( (5, 5), (5, 5), 0.0)
