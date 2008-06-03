@@ -68,4 +68,9 @@ class BaseTest(unittest.TestCase):
             self.assertEquals(res, expected)
 
         
-
+    def testArrayAdd(self):
+        arr1 = [1,2]
+        arr2 = [3,4]
+        expected = [4, 6]
+        
+        self.assertEquals(base.array_add(arr1, arr2), expected)

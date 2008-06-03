@@ -201,6 +201,20 @@ def array_variance(arr):
     mean = array_mean(arr)
     return array_mean([(val - mean) ** 2 for val in arr])
 
+def array_add(arr1, arr2):
+    """
+    Add arr1 and arr2 element by element.
+    Ex: array_add([1,2], [3,4)) returns [4, 6].
+    """
+    assert(len(arr1) == len(arr1))
+
+    newarr = []
+
+    for i in range(len(arr1)):
+        newarr.append(arr1[i] + arr2[i])
+
+    return newarr
+    
 def euclidean_distance(v1, v2):
     assert(len(v1) == len(v2))
 
