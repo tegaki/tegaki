@@ -236,6 +236,43 @@ def array_variance_vector(vectors):
         
     return variance_vector
 
+def array_covariance_matrix(vectors, non_diagonal=False):
+    """
+    Calculate the covariance matrix for vectors.
+    If non_diagonal is True, non-diagonal values are also calculated.
+    """
+    assert(len(vectors) > 0)
+
+    n_dimensions = len(vectors[0])
+
+    cov_matrix = []
+
+    for i in range(n_dimensions):
+        for j in range(n_dimensions):
+            if i == j:
+                # diagonal value: COV(X,X) = VAR(X)
+                arr = [vector[i] for vector in vectors]
+                cov_matrix.append(array_variance(arr))
+            else:
+                # non-diagonal value
+                if non_diagonal:
+                    # COV(X,Y) = E(XY) - E(X)E(Y)
+                    arr_x = [vector[i] for vector in vectors]
+                    arr_y = [vector[j] for vector in vectors]
+                    arr_xy = array_mul(arr_x, arr_y)
+                    
+                    mean_xy = array_mean(arr_xy)
+                    
+                    mean_x = array_mean(arr_x)
+                    mean_y = array_mean(arr_y)
+
+                    cov_matrix.append(mean_xy - mean_x * mean_y)
+                else:
+                    # X and Y indep => COV(X,Y) = 0
+                    cov_matrix.append(0.0)
+
+    return cov_matrix
+
 def array_add(arr1, arr2):
     """
     Add arr1 and arr2 element by element.

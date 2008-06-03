@@ -38,6 +38,9 @@ class Model(base.ModelBase):
         self.SAMPLING = 0.5
         self.N_STATES_PER_STROKE = 3
         self.N_DIMENSIONS = 2
+        # whether to calculate non-diagonal values in the covariance matrix
+        # or not
+        self.NON_DIAGONAL = False
 
         self.ROOT = os.path.join("models", "basic")
         self.update_folder_paths()
@@ -147,50 +150,31 @@ class Model(base.ModelBase):
 
     def get_emission_matrix(self, n_states, sset):
         
-        # contains observations for states
-        # one index = one state
-        dx_arr = []
-        dy_arr = []
+        all_segments = [[] for i in range(n_states)]
 
-        for i in range(n_states):
-            dx_arr.append([])
-            dy_arr.append([])
-
-        # go through the sequence set in order to populate dx_arr and dy_arr
         for seq in sset:
             # files contain data sequentially
-            # need to reconvert to vectors of two elements
-            vectors = base.array_reshape(list(seq), 2)
+            # need to reconvert to vectors of n dimensions
+            vectors = base.array_reshape(list(seq), self.N_DIMENSIONS)
 
-            # distribute vectors equally among states
-            distr_vectors = base.array_split(vectors, n_states)
+            # Segments vectors uniformly. One segment per state.
+            segments = base.array_split(vectors, n_states)
 
-            for state_num in range(n_states):
-                v = distr_vectors[state_num]
-                for dx, dy in v:
-                    dx_arr[state_num].append(dx)
-                    dy_arr[state_num].append(dy)
-
-        # calculate means and variances
-        dx_means = [base.array_mean(arr) for arr in dx_arr]
-        dy_means = [base.array_mean(arr) for arr in dy_arr]
-
-        dx_variances = [base.array_variance(arr) for arr in dx_arr]
-        dy_variances = [base.array_variance(arr) for arr in dy_arr]
+            # Concatenate each segments[i] with the segments[i] obtained
+            # at the previous iteration
+            all_segments = base.array_add(all_segments, segments)
 
         matrix = []
 
         for i in range(n_states):
             matrix.append([
+            
                 # the means of our multivariate gaussian
-                [dx_means[i], dy_means[i]],
+                base.array_mean_vector(all_segments[i]),
+                
                 # the covariance matrix of our multivariate gaussian
-                # 1) we consider dx and dy independent for now
-                # X and Y indep => COV(X,Y) = 0
-                # so non-diagonal values are 0
-                # 2) COV(X,X) = VAR(X)
-                # so diaogonal-values are simply variances
-                [dx_variances[i], 0.0, 0.0, dy_variances[i]]
+                base.array_covariance_matrix(all_segments[i],
+                                             non_diagonal=self.NON_DIAGONAL)
                 
             ])
 

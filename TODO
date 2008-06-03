@@ -31,8 +31,8 @@ Models
 
 - Normalize the handwriting before feature extraction.
 
-- See the effects of computing non-diagonal values in the covariance matrix.
-- Rewrite get_emission_matrix to support feature vectors with n dimensions.
+- Study the effects of computing non-diagonal values in the covariance matrix.
+- Study the effects of defining gaussian weights.
 
 - Try number of states proportional to number of feature vectors.
 - Try non uniform initial segmentation.
