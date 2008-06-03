@@ -118,7 +118,7 @@ class Model(base.ModelBase):
         tomoe_char = self.get_tomoe_char(file)
         return tomoe_char.get_writing().get_n_strokes()
 
-    def get_initial_state_probability(self, n_states):
+    def get_initial_state_probabilities(self, n_states):
         pi = [0.0] * n_states
         pi[0] = 1.0
         return pi
@@ -204,7 +204,7 @@ class Model(base.ModelBase):
 
         sset = self.get_sequence_set(sset_file)
 
-        pi = self.get_initial_state_probability(n_states)
+        pi = self.get_initial_state_probabilities(n_states)
         A = self.get_state_transition_matrix(n_states)
         B = self.get_emission_matrix(n_states, sset)
 
