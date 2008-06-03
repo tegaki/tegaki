@@ -23,8 +23,13 @@ character.
 - Support comma separator for a command. Ex: "fextract,init,train".
 - Support range separator for a command. Ex: "fextract-train".
 
+- Don't rebuild models that exist already and add a -f option to force rebuild
+them.
+
 Models
 ------
+
+- Normalize the handwriting before feature extraction.
 
 - See the effects of computing non-diagonal values in the covariance matrix.
 - Rewrite get_emission_matrix to support feature vectors with n dimensions.
