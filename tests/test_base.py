@@ -86,3 +86,10 @@ class BaseTest(unittest.TestCase):
         expected = [4, 6]
         
         self.assertEquals(base.array_add(arr1, arr2), expected)
+
+    def testArrayMul(self):
+        arr1 = [1,2]
+        arr2 = [3,4]
+        expected = [3, 8]
+        
+        self.assertEquals(base.array_mul(arr1, arr2), expected)

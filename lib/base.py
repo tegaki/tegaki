@@ -249,6 +249,20 @@ def array_add(arr1, arr2):
         newarr.append(arr1[i] + arr2[i])
 
     return newarr
+
+def array_mul(arr1, arr2):
+    """
+    Multiply arr1 and arr2 element by element.
+    Ex: array_mul([1,2], [3,4)) returns [3, 8].
+    """
+    assert(len(arr1) == len(arr1))
+
+    newarr = []
+
+    for i in range(len(arr1)):
+        newarr.append(arr1[i] * arr2[i])
+
+    return newarr
     
 def euclidean_distance(v1, v2):
     assert(len(v1) == len(v2))
