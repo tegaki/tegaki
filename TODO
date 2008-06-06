@@ -26,6 +26,13 @@ character.
 - Don't rebuild models that exist already and add a -f option to force rebuild
 them.
 
+- a la svn online help: model-manager help command.
+
+- View graphical representation of observation probability distributions for
+initial segmentation.
+
+- Generate kanji from models and display them when possible.
+
 Models
 ------
 
