@@ -100,6 +100,10 @@ class Model(object):
     def get_utf8_from_char_code(self, char_code):
         return unichr(int(char_code)).encode("utf8")
 
+    def print_verbose(self, *args):
+        if self.verbose:
+            base.stderr_print(*args)
+
     ########################################
     # Feature extraction...
     ########################################
@@ -302,8 +306,7 @@ class Model(object):
             output_file = os.path.join(self.TRAIN_HMM_ROOT,
                                        "%d.xml" % char_code)
 
-            if self.verbose:
-                base.stderr_print(output_file)
+            self.print_verbose(output_file)
 
             if os.path.exists(output_file):
                 os.unlink(output_file)
@@ -399,8 +402,7 @@ class Model(object):
                           float(n_match10)/float(n_total) * 100,
                           "%")
         
-        if self.verbose:
-            base.stderr_print(s)
+        self.print_verbose(s)
 
     ########################################
     # Writing pad...
