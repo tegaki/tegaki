@@ -148,8 +148,7 @@ class Model(base.ModelBase):
        
         return matrix
 
-    def get_emission_matrix(self, n_states, sset):
-        
+    def get_initial_state_alignment(self, n_states, sset):
         all_segments = [[] for i in range(n_states)]
 
         for seq in sset:
@@ -163,6 +162,11 @@ class Model(base.ModelBase):
             # Concatenate each segments[i] with the segments[i] obtained
             # at the previous iteration
             all_segments = base.array_add(all_segments, segments)
+
+        return all_segments
+
+    def get_emission_matrix(self, n_states, sset):
+        all_segments = self.get_initial_state_alignment(n_states, sset)
 
         matrix = []
 
