@@ -37,7 +37,7 @@ class Model(models.basic.model.Model):
         self.N_DIMENSIONS = 2
         self.NON_DIAGONAL = True
 
-        self.ROOT = os.path.join("models", "6dim")
+        self.ROOT = os.path.join("models", "prop-n-states")
         self.update_folder_paths()
 
 
