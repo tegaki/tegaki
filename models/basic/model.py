@@ -18,11 +18,12 @@
 
 import os
 import ghmm
+import tomoe
 import glob
 
 import lib.base as base
 
-class Model(base.ModelBase):
+class Model(object):
     """
     Title: basic
     HMM: whole character
@@ -32,9 +33,8 @@ class Model(base.ModelBase):
     State transitions: 0.5 itself, 0.5 next state
     """
 
-    def __init__(self, *args):
-        base.ModelBase.__init__(self, *args)
-
+    def __init__(self, verbose=False):
+        
         self.SAMPLING = 0.5
         self.N_STATES_PER_STROKE = 3
         self.N_DIMENSIONS = 2
@@ -45,7 +45,18 @@ class Model(base.ModelBase):
         self.ROOT = os.path.join("models", "basic")
         self.update_folder_paths()
 
+        self.DOMAIN = ghmm.Float()
+
+        self.verbose = verbose
+
+    ########################################
+    # General utils...
+    ########################################
+
     def update_folder_paths(self):
+        self.DATA_ROOT = "data"
+        self.EVAL_ROOT = os.path.join(self.DATA_ROOT, "eval")
+        self.TRAIN_ROOT = os.path.join(self.DATA_ROOT, "train")
         
         self.FEATURES_ROOT = os.path.join(self.ROOT, "features")
         self.TRAIN_FEATURES_ROOT = os.path.join(self.FEATURES_ROOT, "train")
@@ -53,6 +64,41 @@ class Model(base.ModelBase):
 
         self.INIT_HMM_ROOT = os.path.join(self.ROOT, "hmms", "init")
         self.TRAIN_HMM_ROOT = os.path.join(self.ROOT, "hmms", "train")
+
+        self.eval_xml_files_dict = self.get_eval_xml_files_dict()
+        self.train_xml_files_dict = self.get_train_xml_files_dict()
+
+    def get_xml_list_dict(self, directory):
+        """
+        Returns a dictionary with xml file list.
+            keys are character codes.
+            values are arrays of xml files.
+        """
+        dict = {}
+        for file in glob.glob(os.path.join(directory, "*", "*", "*.xml")):
+            char_code = int(os.path.basename(file)[:-4])
+            if not dict.has_key(char_code):
+                dict[char_code] = []
+            dict[char_code].append(file)
+        return dict
+                    
+    def get_eval_xml_files_dict(self):
+        return self.get_xml_list_dict(self.EVAL_ROOT)
+
+    def get_train_xml_files_dict(self):
+        return self.get_xml_list_dict(self.TRAIN_ROOT)
+
+    def get_tomoe_char(self, char_path):
+        f = open(char_path, "r")
+        xml = f.read()
+        f.close()
+        return tomoe.tomoe_char_new_from_xml_data(xml, len(xml))
+
+    def get_sequence_set(self, file_path):
+        return ghmm.SequenceSet(self.DOMAIN, file_path)
+
+    def get_utf8_from_char_code(self, char_code):
+        return unichr(int(char_code)).encode("utf8")
 
     ########################################
     # Feature extraction...
