@@ -116,7 +116,7 @@ else:
             "Use the list command for a list of models.")
 
     try:
-        model = module.model.Model(options.verbose)
+        model = module.model.Model(options)
         
         if command in ("fextract", "all"):
             base.stderr_print("Extracting features...")

@@ -33,7 +33,7 @@ class Model(object):
     State transitions: 0.5 itself, 0.5 next state
     """
 
-    def __init__(self, verbose=False):
+    def __init__(self, options):
         
         self.SAMPLING = 0.5
         self.N_STATES_PER_STROKE = 3
@@ -47,7 +47,7 @@ class Model(object):
 
         self.DOMAIN = ghmm.Float()
 
-        self.verbose = verbose
+        self.verbose = options.verbose
 
     ########################################
     # General utils...
