@@ -230,13 +230,9 @@ class Model(object):
 
         return matrix
 
-    def get_initial_hmm(self, sset_file):
-        char_code = int(os.path.basename(sset_file[:-5]))
-
-        n_states = self.get_n_strokes(char_code) * \
-                    self.N_STATES_PER_STROKE
-
-        sset = self.get_sequence_set(sset_file)
+    def get_initial_hmm(self, sset):
+        n_states = self.get_n_strokes(sset.char_code) * \
+                   self.N_STATES_PER_STROKE
 
         pi = self.get_initial_state_probabilities(n_states)
         A = self.get_state_transition_matrix(n_states)
@@ -264,7 +260,10 @@ class Model(object):
         for sset_file in feature_files:
             char_code = int(os.path.basename(sset_file[:-5]))
 
-            hmm = self.get_initial_hmm(sset_file)
+            sset = self.get_sequence_set(sset_file)
+            sset.char_code = char_code
+
+            hmm = self.get_initial_hmm(sset)
 
             output_file = os.path.join(self.INIT_HMM_ROOT,
                                        "%d.xml" % char_code)
