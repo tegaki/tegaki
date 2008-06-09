@@ -43,6 +43,7 @@ Models
 - Study the effects of computing non-diagonal values in the covariance matrix.
 - Study the effects of defining gaussian weights.
 
+
 - Try number of states proportional to number of feature vectors.
 - Try non uniform initial segmentation.
 - Try viterbi training.
@@ -51,6 +52,8 @@ Models
 - Try feature vectors that are not sensitive to stroke order (OCR).
 
 - Try stroke and sub-stroke HMMs.
+
+- Unbiased estimation of covariance matrix.
 
 Data
 ----
