@@ -405,7 +405,11 @@ class Canvas(gtk.Widget):
             dx, dy = last_x - x, last_y - y
 
         dl = math.sqrt(dx*dx + dy*dy)
-        sign = (dy - dx) / abs(dy -dx)
+
+        if dy <= dx:
+            sign = 1
+        else:
+            sign = -1
 
         num = str(index)
         layout = self.create_pango_layout(num)
