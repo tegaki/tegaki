@@ -328,7 +328,7 @@ class Canvas(gtk.Widget):
         else:
             sign = -1
 
-        num = str(index)
+        num = str(index + 1)
         layout = self.create_pango_layout(num)
         width, height = layout.get_pixel_size()
 
