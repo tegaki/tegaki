@@ -493,7 +493,7 @@ class Canvas(gtk.Widget):
             self.writing = writing
 
         if self.flags() & gtk.REALIZED:
-            self.refresh()
+            self.refresh(force_draw=True)
 
     def clear(self):
         self.writing.clear()
