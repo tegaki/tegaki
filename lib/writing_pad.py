@@ -503,6 +503,13 @@ class Canvas(gtk.Widget):
         self.writing.clear()
 
         self.refresh(force_draw=True)
+
+    def revert_stroke(self):
+        n = self.writing.get_n_strokes()
+
+        if n > 0:
+            self.writing.remove_last_stroke()
+            self.refresh(force_draw=True)
         
 gobject.type_register(Canvas)
         
