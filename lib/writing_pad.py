@@ -120,17 +120,19 @@ class Canvas(gtk.Widget):
     Also based on a tutorial by Mark Mruss.
     """
 
-    DEFAULT_SIZE = 300
+    # Default canvas size
+    DEFAULT_WIDTH = 400
+    DEFAULT_HEIGHT = 400
 
-    # should be put in the replacement class for tomoe writing
+    # Internal representation size
     WRITING_WIDTH = 1000
     WRITING_HEIGHT = 1000
     
     def __init__(self):
         gtk.Widget.__init__(self)
         
-        self.width = self.DEFAULT_SIZE
-        self.height = self.DEFAULT_SIZE
+        self.width = self.DEFAULT_WIDTH
+        self.height = self.DEFAULT_HEIGHT
 
         self.drawing = False
         self.pixmap = None
@@ -206,8 +208,8 @@ class Canvas(gtk.Widget):
        It's not guaranteed that gtk+ will actually give this size to the
        widget.
        """
-       requisition.height = self.DEFAULT_SIZE
-       requisition.width = self.DEFAULT_SIZE
+       requisition.height = self.DEFAULT_HEIGHT
+       requisition.width = self.DEFAULT_WIDTH
 
     def do_size_allocate(self, allocation):
         """
@@ -215,31 +217,16 @@ class Canvas(gtk.Widget):
         size is known and the widget is told how much space
         could actually be allocated."""
 
-        old_width, old_height = self.width, self.height
-        new_width, new_height =  self.allocation.width, self.allocation.height
-        
-        self.width = new_width
-        self.height = new_height
         self.allocation = allocation
+        self.width = self.allocation.width
+        self.height = self.allocation.height        
  
         if self.flags() & gtk.REALIZED:
             self.window.move_resize(*allocation)
             
             self.pixmap = gdk.Pixmap(self.window,
-                                     new_width,
-                                     new_height)
-
-            # Rescale writing when window size has changed                     
-  
-            if len(self.writing.get_strokes()) > 0 and \
-               old_width != new_width or old_height != new_height:
-
-                wratio = float(new_width) / old_width
-                hratio = float(new_height) / old_height
-
-                self.writing = self._scaled_writing(self.writing,
-                                                    wratio,
-                                                    hratio)
+                                     self.width,
+                                     self.height)
 
             self._init_gc()
 
@@ -272,7 +259,7 @@ class Canvas(gtk.Widget):
             y = event.y
             state = event.state
 
-        self._append_point(x, y)
+        self._append_point(*self._internal_coordinates(x, y))
 
         return retval
 
@@ -284,7 +271,7 @@ class Canvas(gtk.Widget):
 
         if event.button == 1:
             self.drawing = True
-            self.writing.move_to(int(event.x), int(event.y))
+            self.writing.move_to(*self._internal_coordinates(event.x, event.y))
 
         return retval
 
@@ -344,8 +331,28 @@ class Canvas(gtk.Widget):
                                          gdk.CAP_BUTT,
                                          gdk.JOIN_ROUND)
 
+    def _internal_coordinates(self, x, y):
+        """
+        Converts window coordinates to internal coordinates.
+        """
+        sx = float(Canvas.WRITING_WIDTH) / self.width
+        sy = float(Canvas.WRITING_HEIGHT) / self.height
+        
+        return (int(x * sx), int(y * sy))
+    
+    def _window_coordinates(self, x, y):
+        """
+        Converts internal coordinates to window coordinates.
+        """
+        sx = float(self.width) / Canvas.WRITING_WIDTH
+        sy = float(self.height) / Canvas.WRITING_WIDTH
+        
+        return (int(x * sx), int(y * sy))
+
     def _append_point(self, x, y):
-        p2 = [x, y]
+        # x and y are internal coordinates
+        
+        p2 = (x, y)
         
         strokes = self.writing.get_strokes()
 
@@ -353,7 +360,7 @@ class Canvas(gtk.Widget):
 
         p1 = last_stroke[-1]
 
-        self._draw_line(p1, p2, self.handwriting_line_gc, draw=True)
+        self._draw_line(p1, p2, self.handwriting_line_gc, force_draw=True)
 
         self.writing.line_to(x, y)
         
@@ -371,10 +378,15 @@ class Canvas(gtk.Widget):
 
         self._draw_annotation(stroke, index)
 
-    def _draw_line(self, p1, p2, line_gc, draw=False):
+    def _draw_line(self, p1, p2, line_gc, force_draw=False):
+        # p1 and p2 are two points in internal coordinates
+        
+        p1 = self._window_coordinates(*p1)
+        p2 = self._window_coordinates(*p2)
+        
         self.pixmap.draw_line(line_gc, p1[0], p1[1], p2[0], p2[1])
 
-        if draw:
+        if force_draw:
             x = min(p1[0], p2[0]) - 2
             y = min(p1[1], p2[1]) - 2
             width = abs(p1[0] - p2[0]) + 2 * 2
@@ -383,14 +395,14 @@ class Canvas(gtk.Widget):
             self.queue_draw_area(x, y, width, height)
 
     def _draw_annotation(self, stroke, index):
-        x = stroke[0][0]
-        y = stroke[0][1]
+        x, y = self._window_coordinates(stroke[0][0], stroke[0][1])
 
         if len(stroke) == 1:
             dx, dy = x, y
         else:
-            dx = stroke[-1][0] - x
-            dy = stroke[-1][1] - y
+            last_x, last_y = self._window_coordinates(stroke[-1][0],
+                                                      stroke[-1][1])
+            dx, dy = last_x - x, last_y - y
 
         dl = math.sqrt(dx*dx + dy*dy)
         sign = (dy - dx) / abs(dy -dx)
@@ -458,17 +470,27 @@ class Canvas(gtk.Widget):
                                       self.allocation.width,
                                       self.allocation.height);
 
-    def get_writing(self):
-        wratio = float(self.WRITING_WIDTH) / self.width
-        hratio = float(self.WRITING_HEIGHT) / self.height
-        
-        return self._scaled_writing(self.writing, wratio, hratio)
+    def get_writing(self, writing_width=None, writing_height=None):
 
-    def set_writing(self, writing):
-        wratio = float(self.width) / self.WRITING_WIDTH
-        hratio = float(self.height) / self.WRITING_HEIGHT
-        
-        self.writing = self._scaled_writing(writing, wratio, hratio)
+        if writing_width and writing_height:
+            # Convert to requested size
+            wratio = float(writing_width) / Canvas.WRITING_WIDTH
+            hratio = float(writing_height) / Canvas.WRITING_HEIGHT
+
+            return self._scaled_writing(self.writing, wratio, hratio)
+        else:
+            return self.writing
+
+    def set_writing(self, writing, writing_width=None, writing_height=None):
+
+        if writing_width and writing_height:
+            # Convert to internal size
+            wratio = float(Canvas.WRITING_WIDTH) / writing_width
+            hratio = float(Canvas.WRITING_HEIGHT) / writing_height
+           
+            self.writing = self._scaled_writing(writing, wratio, hratio)
+        else:
+            self.writing = writing
 
         if self.flags() & gtk.REALIZED:
             self.refresh()
