@@ -498,7 +498,7 @@ class Canvas(gtk.Widget):
     def clear(self):
         self.writing.clear()
 
-        self.refresh()
+        self.refresh(force_draw=True)
         
 gobject.type_register(Canvas)
         
