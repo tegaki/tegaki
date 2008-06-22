@@ -231,15 +231,15 @@ class Canvas(gtk.Widget):
 
             # Rescale writing when window size has changed                     
   
-            #if len(self.writing.get_strokes()) > 0 and \
-               #old_width != new_width or old_height != new_height:
+            if len(self.writing.get_strokes()) > 0 and \
+               old_width != new_width or old_height != new_height:
 
-                #wratio = float(new_width) / old_width
-                #hratio = float(new_height) / old_height
+                wratio = float(new_width) / old_width
+                hratio = float(new_height) / old_height
 
-                #self.writing = self._scaled_writing(self.writing,
-                                                    #wratio,
-                                                    #hratio)
+                self.writing = self._scaled_writing(self.writing,
+                                                    wratio,
+                                                    hratio)
 
             self._init_gc()
 
@@ -432,10 +432,10 @@ class Canvas(gtk.Widget):
 
         for stroke in writing.get_strokes():
             x, y = stroke[0]
-            new_writing.move_to(x * sx, y * sy)
+            new_writing.move_to(int(x * sx), int(y * sy))
 
             for x, y in stroke[1:]:
-                new_writing.line_to(x * sx, y * sy)
+                new_writing.line_to(int(x * sx), int(y * sy))
 
         return new_writing
 
