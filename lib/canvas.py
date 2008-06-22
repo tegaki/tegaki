@@ -38,6 +38,10 @@ class Canvas(gtk.Widget):
     # Internal representation size
     WRITING_WIDTH = 1000
     WRITING_HEIGHT = 1000
+
+    __gsignals__ = dict(stroke_added=(gobject.SIGNAL_RUN_LAST,
+                                      gobject.TYPE_NONE,
+                                      ()))
     
     def __init__(self):
         gtk.Widget.__init__(self)
@@ -195,6 +199,8 @@ class Canvas(gtk.Widget):
         self.drawing = False
 
         self.refresh(force_draw=True)
+
+        self.emit("stroke_added")
 
         return retval
 
@@ -425,9 +431,16 @@ class Canvas(gtk.Widget):
 gobject.type_register(Canvas)
         
 if __name__ == "__main__":
+    def on_stroke_added(widget):
+        print "stroke added!"
+        
     window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    
     canvas = Canvas()
+    canvas.connect("stroke_added", on_stroke_added)
     window.add(canvas)
+    
     window.show_all()
     window.connect('delete-event', gtk.main_quit)
+    
     gtk.main()
