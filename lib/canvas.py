@@ -20,8 +20,10 @@ import gtk
 from gtk import gdk
 import gobject
 import pango
-import tomoe
 import math
+
+from character import *
+import tomoe
 
 class Canvas(gtk.Widget):
     """
@@ -34,10 +36,6 @@ class Canvas(gtk.Widget):
     # Default canvas size
     DEFAULT_WIDTH = 400
     DEFAULT_HEIGHT = 400
-
-    # Internal representation size
-    WRITING_WIDTH = 1000
-    WRITING_HEIGHT = 1000
 
     __gsignals__ = dict(stroke_added=(gobject.SIGNAL_RUN_LAST,
                                       gobject.TYPE_NONE,
@@ -52,7 +50,7 @@ class Canvas(gtk.Widget):
         self.drawing = False
         self.pixmap = None
 
-        self.writing = tomoe.Writing()
+        self.writing = Writing()
 
         self.locked = False
 
@@ -250,8 +248,8 @@ class Canvas(gtk.Widget):
         """
         Converts window coordinates to internal coordinates.
         """
-        sx = float(Canvas.WRITING_WIDTH) / self.width
-        sy = float(Canvas.WRITING_HEIGHT) / self.height
+        sx = float(Writing.WIDTH) / self.width
+        sy = float(Writing.HEIGHT) / self.height
         
         return (int(x * sx), int(y * sy))
     
@@ -259,8 +257,8 @@ class Canvas(gtk.Widget):
         """
         Converts internal coordinates to window coordinates.
         """
-        sx = float(self.width) / Canvas.WRITING_WIDTH
-        sy = float(self.height) / Canvas.WRITING_WIDTH
+        sx = float(self.width) / Writing.WIDTH
+        sy = float(self.height) / Writing.WIDTH
         
         return (int(x * sx), int(y * sy))
 
@@ -359,7 +357,7 @@ class Canvas(gtk.Widget):
         self._draw_axis()
 
     def _scaled_writing(self, writing, sx, sy):
-        new_writing = tomoe.Writing()
+        new_writing = Writing()
 
         for stroke in writing.get_strokes():
             x, y = stroke[0]
@@ -393,8 +391,8 @@ class Canvas(gtk.Widget):
 
         if writing_width and writing_height:
             # Convert to requested size
-            wratio = float(writing_width) / Canvas.WRITING_WIDTH
-            hratio = float(writing_height) / Canvas.WRITING_HEIGHT
+            wratio = float(writing_width) / Writing.WIDTH
+            hratio = float(writing_height) / Writing.HEIGHT
 
             return self._scaled_writing(self.writing, wratio, hratio)
         else:
@@ -404,8 +402,8 @@ class Canvas(gtk.Widget):
 
         if writing_width and writing_height:
             # Convert to internal size
-            wratio = float(Canvas.WRITING_WIDTH) / writing_width
-            hratio = float(Canvas.WRITING_HEIGHT) / writing_height
+            wratio = float(Writing.WIDTH) / writing_width
+            hratio = float(Writing.HEIGHT) / writing_height
            
             self.writing = self._scaled_writing(writing, wratio, hratio)
         else:
