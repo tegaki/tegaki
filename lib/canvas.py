@@ -219,14 +219,6 @@ class Canvas(gtk.Widget):
             gc.set_foreground(default_color)
 
     def _init_gc(self):
-        
-        color = gdk.Color(0, 0x8000, 0x0000, 0x0000)
-        self.adjusted_line_gc = gdk.GC(self.window)
-        self._gc_set_foreground(self.adjusted_line_gc, color)
-        self.adjusted_line_gc.set_line_attributes(1,
-                                                  gdk.LINE_SOLID,
-                                                  gdk.CAP_BUTT,
-                                                  gdk.JOIN_BEVEL)
                                                   
         color = gdk.Color(0, 0x0000, 0x0000, 0x0000)
         self.handwriting_line_gc = gdk.GC(self.window)
