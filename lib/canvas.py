@@ -177,16 +177,10 @@ class Canvas(gtk.Widget):
         self._append_point(*self._internal_coordinates(x, y))
 
         # In addition to x and y, the following features may be
-        # interesting to add
+        # interesting to add:
         #
-        #for key in ("time", "x", "y", "pressure", "xtilt", "ytilt", "state",
-        #    "is_hint", "source", "deviceid", "x_root", "y_root"):
-        #
-        #    try:
-        #        val = getattr(event, key)
-        #        print key, val
-        #    except AttributeError:
-        #        print "%s is not defined" % key
+        # time, pressure, xtilt and ytilt
+
 
         return retval
 
