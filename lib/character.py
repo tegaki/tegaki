@@ -17,6 +17,9 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import xml.parsers.expat
+import cStringIO
+import gzip as gzipm
+import bz2 as bz2m
 
 class Point(dict):
 
@@ -174,23 +177,42 @@ class Character(object):
     def set_writing(self, writing):
         self.writing = writing
 
-    def read(self, file):
+    def read(self, file, gzip=False, bz2=False, compresslevel=9):
         parser = self._get_parser()
 
         if type(file) == str:
-            file = open(file)
+            if gzip:
+                file = gzipm.GzipFile(file, compresslevel=compresslevel)
+            elif bz2:
+                file = bz2m.BZ2File(file, compresslevel=compresslevel)
+            else:
+                file = open(file)
+                
             parser.ParseFile(file)
             file.close()
-        else:
+        else:                
             parser.ParseFile(file)
 
-    def read_string(self, string):
+    def read_string(self, string, gzip=False, bz2=False, compresslevel=9):
+        if gzip:
+            io = cStringIO.StringIO(string)
+            io = gzipm.GzipFile(fileobj=io, compresslevel=compresslevel)
+            string = io.read()
+        elif bz2:
+            string = bz2m.decompress(string)
+            
         parser = self._get_parser()
         parser.Parse(string)
 
-    def write(self, file):
+    def write(self, file, gzip=False, bz2=False, compresslevel=9):
         if type(file) == str:
-            file = open(file, "w")
+            if gzip:
+                file = GzipFile(file, "w", compresslevel=compresslevel)
+            elif bz2:
+                file = BZ2File(file, "w", compresslevel=compresslevel)
+            else:            
+                file = open(file, "w")
+                
             file.write(self.to_xml())
             file.close()
         else:

@@ -121,6 +121,20 @@ class CharacterTest(unittest.TestCase):
 
         self._testReadXML(char)
 
+    def testReadXMLGzipFile(self):
+        file = os.path.join(self.currdir, "data", "character.xml.gzip")
+        char = Character()
+        char.read(file, gzip=True)
+
+        self._testReadXML(char)
+
+    def testReadXMLBZ2File(self):
+        file = os.path.join(self.currdir, "data", "character.xml.bz2")
+        char = Character()
+        char.read(file, bz2=True)
+
+        self._testReadXML(char)
+
     def testReadXMLString(self):
         file = os.path.join(self.currdir, "data", "character.xml")
         
@@ -130,6 +144,28 @@ class CharacterTest(unittest.TestCase):
         
         char = Character()
         char.read_string(buf)
+
+        self._testReadXML(char)
+
+    def testReadXMLGzipString(self):
+        file = os.path.join(self.currdir, "data", "character.xml.gzip")
+        file = open(file)
+        string = file.read()
+        file.close()
+        
+        char = Character()
+        char.read_string(string, gzip=True)
+
+        self._testReadXML(char)
+
+    def testReadXMLBZ2String(self):
+        file = os.path.join(self.currdir, "data", "character.xml.bz2")
+        file = open(file)
+        string = file.read()
+        file.close()
+        
+        char = Character()
+        char.read_string(string, bz2=True)
 
         self._testReadXML(char)
 
