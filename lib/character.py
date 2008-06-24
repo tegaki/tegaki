@@ -47,6 +47,15 @@ class Point(dict):
         except KeyError:
             raise AttributeError
 
+    def to_xml(self):
+        attrs = []
+
+        for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
+            if self[key]:
+                attrs.append("%s=\"%s\"" % (key, str(self[key])))
+
+        return "<point %s />" % " ".join(attrs)
+
 class Stroke(list):
 
     def __init__(self):
@@ -62,6 +71,23 @@ class Stroke(list):
 
     def append_point(self, point):
         self.append(point)
+
+    def to_xml(self):
+        if self.duration:
+            s = "<stroke duration=\"%d\">\n" % self.duration
+        else:
+            s = "<stroke>\n"
+
+        for point in self:
+            s += "  %s\n" % point.to_xml()
+
+        s += "</stroke>"
+
+        return s
+
+    def __eq__(self, stroke):
+        return self.duration == stroke.get_duration() and \
+               list.__eq__(self, stroke)
 
 class Writing(object):
 
@@ -106,9 +132,6 @@ class Writing(object):
         else:
             return self.strokes
 
-    def get_stroke_objects(self):
-        return 
-
     def append_stroke(self, stroke):
         self.strokes.append(stroke)
 
@@ -116,8 +139,22 @@ class Writing(object):
         if self.get_n_strokes() > 0:
             del self.strokes[-1]
 
+    def to_xml(self):
+        s = "<strokes>\n"
+
+        for stroke in self.strokes:
+            for line in stroke.to_xml().split("\n"):
+                s += "  %s\n" % line
+
+        s += "</strokes>"
+
+        return s
+
     def __str__(self):
         return str(self.get_strokes(full=True))
+
+    def __eq__(self, writing):
+        return self.strokes == writing.get_strokes(full=True)
 
 class Character(object):
 
@@ -150,6 +187,31 @@ class Character(object):
     def read_string(self, string):
         parser = self._get_parser()
         parser.Parse(string)
+
+    def write(self, file):
+        if type(file) == str:
+            file = open(file, "w")
+            file.write(self.to_xml())
+            file.close()
+        else:
+            file.write(self.to_xml())       
+
+    def to_xml(self):
+        s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        
+        s += "<character>\n"
+        s += "  <utf8>%s</utf8>\n" % self.utf8
+
+        for line in self.writing.to_xml().split("\n"):
+            s += "  %s\n" % line
+        
+        s += "</character>"
+
+        return s
+
+    def __eq__(self, char):
+        return self.utf8 == char.get_utf8() and \
+               self.writing == char.get_writing()
         
     # Private...    
 
@@ -160,14 +222,18 @@ class Character(object):
             self._stroke = Stroke()
 
             if attrs.has_key("duration"):
-                self._stroke.set_duration(attrs["duration"])
+                self._stroke.set_duration(int(attrs["duration"]))
             
         elif self._tag == "point":
             point = Point()
 
             for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
                 if attrs.has_key(key):
-                    value = attrs[key]
+                    value = attrs[key].encode("UTF-8")
+                    if key in ("pressure", "xtilt", "ytilt"):
+                        value = float(value)
+                    else:
+                        value = int(value)
                 else:
                     value = None
                     

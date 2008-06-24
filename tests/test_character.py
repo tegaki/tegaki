@@ -18,6 +18,7 @@
 
 import unittest
 import os
+import StringIO
 
 from lib.character import *
 
@@ -131,6 +132,94 @@ class CharacterTest(unittest.TestCase):
         char.read_string(buf)
 
         self._testReadXML(char)
+
+    def testWritePoint(self):
+        point = Point()
+        point.x = 1
+        point.y = 2
+        point.timestamp = 3
+
+        self.assertEquals(point.to_xml(), '<point x="1" y="2" timestamp="3" />')
+
+    def testWriteStroke(self):
+        point = Point()
+        point.x = 1
+        point.y = 2
+        point.timestamp = 3
+                
+        point2 = Point()
+        point2.x = 4
+        point2.y = 5
+        point2.pressure = 0.1
+
+        stroke = Stroke()
+        stroke.append_point(point)
+        stroke.append_point(point2)
+
+        expected = """<stroke>
+  <point x="1" y="2" timestamp="3" />
+  <point x="4" y="5" pressure="0.1" />
+</stroke>"""
+
+        self.assertEquals(expected, stroke.to_xml())
+
+    def testWriteWriting(self):
+        point = Point()
+        point.x = 1
+        point.y = 2
+        point.timestamp = 3
+                
+        point2 = Point()
+        point2.x = 4
+        point2.y = 5
+        point2.pressure = 0.1
+
+        stroke = Stroke()
+        stroke.append_point(point)
+        stroke.append_point(point2)
+                
+        writing = Writing()
+        writing.append_stroke(stroke)
+
+        expected = """<strokes>
+  <stroke>
+    <point x="1" y="2" timestamp="3" />
+    <point x="4" y="5" pressure="0.1" />
+  </stroke>
+</strokes>"""
+
+        self.assertEquals(expected, writing.to_xml())
+
+    def testWriteXMLFile(self):
+        point = Point()
+        point.x = 1
+        point.y = 2
+        point.timestamp = 3
+                
+        point2 = Point()
+        point2.x = 4
+        point2.y = 5
+        point2.pressure = 0.1
+
+        stroke = Stroke()
+        stroke.duration = 1000
+        stroke.append_point(point)
+        stroke.append_point(point2)
+                
+        writing = Writing()
+        writing.append_stroke(stroke)
+
+        char = Character()
+        char.set_writing(writing)
+        char.set_utf8("A")
+
+        io = StringIO.StringIO()
+        char.write(io)
+
+        new_char = Character()
+        new_char.read_string(io.getvalue())
+
+        self.assertEquals(char, new_char)
 
     def testNewWriting(self):
         writing = Writing()
