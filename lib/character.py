@@ -75,23 +75,18 @@ class Stroke(list):
 
     def __init__(self):
         list.__init__(self)
-        
-        self.duration = None
 
     def get_duration(self):
-        return self.duration
-
-    def set_duration(self, duration):
-        self.duration = duration
+        if len(self) > 0:
+            return self[-1].timestamp
+        else:
+            return None
 
     def append_point(self, point):
         self.append(point)
 
     def to_xml(self):
-        if self.duration:
-            s = "<stroke duration=\"%d\">\n" % self.duration
-        else:
-            s = "<stroke>\n"
+        s = "<stroke>\n"
 
         for point in self:
             s += "  %s\n" % point.to_xml()
@@ -99,10 +94,6 @@ class Stroke(list):
         s += "</stroke>"
 
         return s
-
-    def __eq__(self, stroke):
-        return self.duration == stroke.get_duration() and \
-               list.__eq__(self, stroke)
 
 class Writing(object):
 

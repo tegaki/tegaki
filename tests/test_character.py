@@ -238,7 +238,6 @@ class CharacterTest(unittest.TestCase):
         point2.pressure = 0.1
 
         stroke = Stroke()
-        stroke.duration = 1000
         stroke.append_point(point)
         stroke.append_point(point2)
                 
@@ -278,3 +277,20 @@ class CharacterTest(unittest.TestCase):
                      [(6,6), (7,7), (8,8)] ]
 
         self.assertEquals(strokes, expected)
+
+    def testDuration(self):
+        point = Point()
+        point.x = 1
+        point.y = 2
+        point.timestamp = 0
+                
+        point2 = Point()
+        point2.x = 4
+        point2.y = 5
+        point2.timestamp = 5
+
+        stroke = Stroke()
+        stroke.append_point(point)
+        stroke.append_point(point2)
+              
+        self.assertEquals(stroke.get_duration(), 5)
