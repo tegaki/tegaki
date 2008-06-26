@@ -104,7 +104,7 @@ class Writing(object):
     HEIGHT = 1000
 
     def __init__(self):
-        self.strokes = []
+        self.clear()
 
     def move_to(self, x, y):
         # For compatibility
@@ -160,6 +160,9 @@ class Writing(object):
                 new_writing.line_to_point(point)
 
         return new_writing
+
+    def clear(self):
+        self.strokes = []
 
     def to_xml(self):
         s = "<strokes>\n"
