@@ -50,6 +50,12 @@ class Point(dict):
         except KeyError:
             raise AttributeError
 
+    def resize(self, xrate, yrate):
+        new_point = Point(**self)
+        point.x = int(self.x * xrate)
+        point.y = int(self.y * yrate)
+        return point
+
     def to_xml(self):
         attrs = []
 
@@ -141,6 +147,19 @@ class Writing(object):
     def remove_last_stroke(self):
         if self.get_n_strokes() > 0:
             del self.strokes[-1]
+
+    def resize(self, xrate, yrate):
+        new_writing = Writing()
+
+        for stroke in self.strokes:
+            point = stroke[0].resize(xrate, yrate)
+            new_writing.move_to_point(point)
+            
+            for point in stroke[1:]:
+                point = point.resize(xrate, yrate)
+                new_writing.line_to_point(point)
+
+        return new_writing
 
     def to_xml(self):
         s = "<strokes>\n"

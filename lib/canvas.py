@@ -356,18 +356,6 @@ class Canvas(gtk.Widget):
 
         self._draw_axis()
 
-    def _scaled_writing(self, writing, sx, sy):
-        new_writing = Writing()
-
-        for stroke in writing.get_strokes():
-            x, y = stroke[0]
-            new_writing.move_to(int(x * sx), int(y * sy))
-
-            for x, y in stroke[1:]:
-                new_writing.line_to(int(x * sx), int(y * sy))
-
-        return new_writing
-
     # Public...
 
     def refresh(self, force_draw=False):
@@ -391,10 +379,10 @@ class Canvas(gtk.Widget):
 
         if writing_width and writing_height:
             # Convert to requested size
-            wratio = float(writing_width) / Writing.WIDTH
-            hratio = float(writing_height) / Writing.HEIGHT
+            xratio = float(writing_width) / Writing.WIDTH
+            yratio = float(writing_height) / Writing.HEIGHT
 
-            return self._scaled_writing(self.writing, wratio, hratio)
+            return self.writing.resize(xratio, yratio)
         else:
             return self.writing
 
@@ -402,10 +390,10 @@ class Canvas(gtk.Widget):
 
         if writing_width and writing_height:
             # Convert to internal size
-            wratio = float(Writing.WIDTH) / writing_width
-            hratio = float(Writing.HEIGHT) / writing_height
+            xratio = float(Writing.WIDTH) / writing_width
+            yratio = float(Writing.HEIGHT) / writing_height
            
-            self.writing = self._scaled_writing(writing, wratio, hratio)
+            self.writing = self.writing.resize(xratio, yratio)
         else:
             self.writing = writing
 
