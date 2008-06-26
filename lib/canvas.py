@@ -23,7 +23,6 @@ import pango
 import math
 
 from character import *
-import tomoe
 
 class Canvas(gtk.Widget):
     """
@@ -59,6 +58,10 @@ class Canvas(gtk.Widget):
 
         self._drawing_stopped_time = 0
         self._drawing_stopped_id = 0
+
+        self.handwriting_line_gc = None
+        self.annotation_gc = None
+        self.axis_gc = None        
 
         self.connect("motion_notify_event", self.motion_notify_event)
         
@@ -231,7 +234,7 @@ class Canvas(gtk.Widget):
     # Private...
 
     def _gc_set_foreground (self, gc, color):
-        default_color = gdk.Color(0, 0x0000, 0x0000, 0x0000)
+        default_color = gdk.Color(0x0000, 0x0000, 0x0000, 0)
 
         colormap = gdk.colormap_get_system ()
 
@@ -244,25 +247,29 @@ class Canvas(gtk.Widget):
 
     def _init_gc(self):
                                                   
-        color = gdk.Color(0, 0x0000, 0x0000, 0x0000)
-        self.handwriting_line_gc = gdk.GC(self.window)
-        self._gc_set_foreground(self.handwriting_line_gc, color)
-        self.handwriting_line_gc.set_line_attributes(4,
-                                                     gdk.LINE_SOLID,
-                                                     gdk.CAP_ROUND,
-                                                     gdk.JOIN_ROUND)
+        if not self.handwriting_line_gc:
+            color = gdk.Color(0x0000, 0x0000, 0x0000, 0)
+            self.handwriting_line_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.handwriting_line_gc, color)
+            self.handwriting_line_gc.set_line_attributes(4,
+                                                        gdk.LINE_SOLID,
+                                                        gdk.CAP_ROUND,
+                                                        gdk.JOIN_ROUND)
 
-        color = gdk.Color(0, 0x8000, 0x0000, 0x0000)
-        self.annotation_gc = gdk.GC(self.window)
-        self._gc_set_foreground(self.annotation_gc, color)
 
-        color = gdk.Color(0, 0x8000, 0x8000, 0x8000)
-        self.axis_gc = gdk.GC(self.window)
-        self._gc_set_foreground(self.axis_gc, color)
-        self.axis_gc.set_line_attributes(1,
-                                         gdk.LINE_ON_OFF_DASH,
-                                         gdk.CAP_BUTT,
-                                         gdk.JOIN_ROUND)
+        if not self.annotation_gc:
+            color = gdk.Color(0x8000, 0x0000, 0x0000, 0)
+            self.annotation_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.annotation_gc, color)
+
+        if not self.axis_gc:
+            color = gdk.Color(0x8000, 0x8000, 0x8000, 0)
+            self.axis_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.axis_gc, color)
+            self.axis_gc.set_line_attributes(1,
+                                            gdk.LINE_ON_OFF_DASH,
+                                            gdk.CAP_BUTT,
+                                            gdk.JOIN_ROUND)
 
     def _internal_coordinates(self, x, y):
         """
