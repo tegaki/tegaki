@@ -67,6 +67,8 @@ class Canvas(gtk.Widget):
         self.axis_gc = None
         self.stroke_gc = None
 
+        self._background_character = None
+
         self.connect("motion_notify_event", self.motion_notify_event)
         
     # Events...
@@ -422,6 +424,11 @@ class Canvas(gtk.Widget):
 
         self._draw_axis()
 
+
+    def _draw_background_character(self):
+        if self._background_character:
+            raise NotImplementedError
+
     def _redraw(self):
         self.window.draw_drawable(self.style.fg_gc[self.state],
                                     self.pixmap,
@@ -480,6 +487,8 @@ class Canvas(gtk.Widget):
 
     def _refresh(self, writing, n_strokes=None, force_draw=False):
         self._draw_background()
+
+        self._draw_background_character()
 
         strokes = writing.get_strokes(full=True)
 
@@ -576,6 +585,9 @@ class Canvas(gtk.Widget):
         self.writing = self.writing.normalize()
 
         self.refresh(force_draw=True)
+
+    def set_background_character(self, character):
+        self._background_character = character
         
 gobject.type_register(Canvas)
         
@@ -604,6 +616,13 @@ if __name__ == "__main__":
         elif sys.argv[1] == "replay-speed":
             def on_drawing_stopped(widget):
                 widget.replay(speed=25)
+
+        else:
+            def on_drawing_stopped(widget):
+                print "drawing stopped!"
+
+        if sys.argv[1] == "background-char":
+            canvas.set_background_character("愛")
 
     else:
         def on_drawing_stopped(widget):
