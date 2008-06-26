@@ -52,9 +52,9 @@ class Point(dict):
 
     def resize(self, xrate, yrate):
         new_point = Point(**self)
-        point.x = int(self.x * xrate)
-        point.y = int(self.y * yrate)
-        return point
+        new_point.x = int(self.x * xrate)
+        new_point.y = int(self.y * yrate)
+        return new_point
 
     def to_xml(self):
         attrs = []
