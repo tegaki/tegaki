@@ -437,6 +437,11 @@ class Canvas(gtk.Widget):
         if n > 0:
             self.writing.remove_last_stroke()
             self.refresh(force_draw=True)
+
+    def normalize(self):
+        self.writing = self.writing.normalize()
+
+        self.refresh(force_draw=True)
         
 gobject.type_register(Canvas)
         
@@ -445,12 +450,13 @@ if __name__ == "__main__":
         print "stroke added!"
 
     def on_drawing_stopped(widget):
+        widget.normalize()
         print "drawing stopped!"
         
     window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     
     canvas = Canvas()
-    canvas.set_drawing_stopped_time(2000)
+    canvas.set_drawing_stopped_time(1000)
     canvas.connect("stroke_added", on_stroke_added)
     canvas.connect("drawing_stopped", on_drawing_stopped)
     window.add(canvas)

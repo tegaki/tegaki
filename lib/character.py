@@ -56,6 +56,12 @@ class Point(dict):
         new_point.y = int(self.y * yrate)
         return new_point
 
+    def move_rel(self, dx, dy):
+        new_point = Point(**self)
+        new_point.x = self.x + dx
+        new_point.y = self.y + dy
+        return new_point        
+
     def to_xml(self):
         attrs = []
 
@@ -102,6 +108,9 @@ class Writing(object):
 
     WIDTH = 1000
     HEIGHT = 1000
+
+    PROPORTION = 0.7
+    PROPORTION_MAX = 5.0
 
     def __init__(self):
         self.clear()
@@ -160,6 +169,60 @@ class Writing(object):
                 new_writing.line_to_point(point)
 
         return new_writing
+
+    def move_rel(self, dx, dy):
+        new_writing = Writing()
+
+        for stroke in self.strokes:
+            point = stroke[0].move_rel(dx, dy)
+            new_writing.move_to_point(point)
+            
+            for point in stroke[1:]:
+                point = point.move_rel(dx, dy)
+                new_writing.line_to_point(point)
+
+        return new_writing
+
+    def size(self):
+        xmin, ymin = 4294967296, 4294967296 # 2^32
+        xmax, ymax = 0, 0
+        
+        for stroke in self.strokes:
+            for point in stroke:
+                xmin = min(xmin, point.x)
+                ymin = min(ymin, point.y)
+                xmax = max(xmax, point.x)
+                ymax = max(ymax, point.y)
+
+        return (xmin, ymin, xmax-xmin, ymax-ymin)
+
+    def normalize(self):
+        x, y, width, height = self.size()
+
+        if width == 0:
+            width = 1
+
+        if height == 0:
+            height = 1
+
+        xrate = Writing.WIDTH * Writing.PROPORTION / width
+        yrate = Writing.HEIGHT * Writing.PROPORTION / height
+
+        # This is to account for very thin strokes like "ichi"
+        if xrate > Writing.PROPORTION_MAX:
+            xrate = Writing.PROPORTION_MAX
+
+        if yrate > Writing.PROPORTION_MAX:
+            yrate = Writing.PROPORTION_MAX
+        
+        writing = self.resize(xrate, yrate)
+
+        x, y, width, height = writing.size()
+
+        dx = (Writing.WIDTH - width) / 2 - x
+        dy = (Writing.HEIGHT - height) / 2 - y
+
+        return writing.move_rel(dx, dy)
 
     def clear(self):
         self.strokes = []
