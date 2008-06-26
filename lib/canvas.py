@@ -39,7 +39,10 @@ class Canvas(gtk.Widget):
 
     __gsignals__ = dict(stroke_added=(gobject.SIGNAL_RUN_LAST,
                                       gobject.TYPE_NONE,
-                                      ()))
+                                      ()),
+                        drawing_stopped=(gobject.SIGNAL_RUN_LAST,
+                                         gobject.TYPE_NONE,
+                                         ()))
     
     def __init__(self):
         gtk.Widget.__init__(self)
@@ -53,6 +56,9 @@ class Canvas(gtk.Widget):
         self.writing = Writing()
 
         self.locked = False
+
+        self._drawing_stopped_time = 0
+        self._drawing_stopped_id = 0
 
         self.connect("motion_notify_event", self.motion_notify_event)
         
@@ -188,6 +194,10 @@ class Canvas(gtk.Widget):
         if self.locked:
             return retval
 
+        if self._drawing_stopped_id > 0:
+            gobject.source_remove(self._drawing_stopped_id)
+            self._drawing_stopped_id = 0
+
         if event.button == 1:
             self.drawing = True
             self.writing.move_to(*self._internal_coordinates(event.x, event.y))
@@ -205,6 +215,16 @@ class Canvas(gtk.Widget):
         self.refresh(force_draw=True)
 
         self.emit("stroke_added")
+
+        if self._drawing_stopped_time > 0:
+
+            def _on_drawing_stopped():
+                self.emit("drawing_stopped")
+                return False
+             
+            self._drawing_stopped_id = \
+                            gobject.timeout_add(self._drawing_stopped_time,
+                            _on_drawing_stopped)
 
         return retval
 
@@ -358,6 +378,12 @@ class Canvas(gtk.Widget):
 
     # Public...
 
+    def get_drawing_stopped_time(self):
+        return self._drawing_stopped_time
+
+    def set_drawing_stopped_time(self, time_msec):
+        self._drawing_stopped_time = time_msec
+
     def refresh(self, force_draw=False):
         self._draw_background()
 
@@ -417,11 +443,16 @@ gobject.type_register(Canvas)
 if __name__ == "__main__":
     def on_stroke_added(widget):
         print "stroke added!"
+
+    def on_drawing_stopped(widget):
+        print "drawing stopped!"
         
     window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     
     canvas = Canvas()
+    canvas.set_drawing_stopped_time(2000)
     canvas.connect("stroke_added", on_stroke_added)
+    canvas.connect("drawing_stopped", on_drawing_stopped)
     window.add(canvas)
     
     window.show_all()
