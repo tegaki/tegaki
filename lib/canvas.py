@@ -354,15 +354,15 @@ class Canvas(gtk.Widget):
         layout = self.create_pango_layout(num)
         width, height = layout.get_pixel_size()
 
-        r = math.sqrt (width*width + height*height);
+        r = math.sqrt (width*width + height*height)
 
         x += (0.5 + (0.5 * r * dx / dl) + (sign * 0.5 * r * dy / dl) - \
-              (width / 2));
+              (width / 2))
               
         y += (0.5 + (0.5 * r * dy / dl) - (sign * 0.5 * r * dx / dl) - \
-              (height / 2));
+              (height / 2))
 
-        self.pixmap.draw_layout(self.annotation_gc, int(x), int(y), layout);
+        self.pixmap.draw_layout(self.annotation_gc, int(x), int(y), layout)
 
     def _draw_axis(self):
         self.pixmap.draw_line(self.axis_gc,
@@ -405,7 +405,7 @@ class Canvas(gtk.Widget):
                                       0, 0,
                                       0, 0,
                                       self.allocation.width,
-                                      self.allocation.height);
+                                      self.allocation.height)
 
     def get_writing(self, writing_width=None, writing_height=None):
 
