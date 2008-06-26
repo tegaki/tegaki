@@ -292,5 +292,25 @@ class CharacterTest(unittest.TestCase):
         stroke = Stroke()
         stroke.append_point(point)
         stroke.append_point(point2)
+
+        point3 = Point()
+        point3.x = 1
+        point3.y = 2
+        point3.timestamp = 7
+                
+        point4 = Point()
+        point4.x = 4
+        point4.y = 5
+        point4.timestamp = 10
+
+        stroke2 = Stroke()
+        stroke2.append_point(point3)
+        stroke2.append_point(point4)
               
-        self.assertEquals(stroke.get_duration(), 5)
+        self.assertEquals(stroke2.get_duration(), 3)
+
+        writing = Writing()
+        writing.append_stroke(stroke)
+        writing.append_stroke(stroke2)
+        
+        self.assertEquals(writing.get_duration(), 10)

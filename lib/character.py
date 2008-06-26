@@ -78,9 +78,9 @@ class Stroke(list):
 
     def get_duration(self):
         if len(self) > 0:
-            return self[-1].timestamp
-        else:
-            return None
+            if self[-1].timestamp is not None and self[0].timestamp is not None:
+                return self[-1].timestamp - self[0].timestamp
+        return None
 
     def append_point(self, point):
         self.append(point)
@@ -105,6 +105,14 @@ class Writing(object):
 
     def __init__(self):
         self.clear()
+
+    def get_duration(self):
+        if self.get_n_strokes() > 0:
+            if self.strokes[0][0].timestamp is not None and \
+               self.strokes[-1][-1].timestamp is not None:
+                return self.strokes[-1][-1].timestamp - \
+                       self.strokes[0][0].timestamp
+        return None
 
     def move_to(self, x, y):
         # For compatibility
@@ -318,9 +326,6 @@ class Character(object):
 
         if self._tag == "stroke":
             self._stroke = Stroke()
-
-            if attrs.has_key("duration"):
-                self._stroke.set_duration(int(attrs["duration"]))
             
         elif self._tag == "point":
             point = Point()
