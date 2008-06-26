@@ -116,6 +116,8 @@ class Canvas(gtk.Widget):
         font_desc = pango.FontDescription("Sans 12")
         self.modify_font(font_desc)
 
+        self._init_gc()
+
     def do_unrealize(self):
         """
         The do_unrealized method is responsible for freeing the GDK resources
@@ -149,8 +151,6 @@ class Canvas(gtk.Widget):
             self.pixmap = gdk.Pixmap(self.window,
                                      self.width,
                                      self.height)
-
-            self._init_gc()
 
             self.refresh()
 
@@ -234,21 +234,20 @@ class Canvas(gtk.Widget):
     # Private...
 
     def _gc_set_foreground (self, gc, color):
-        default_color = gdk.Color(0x0000, 0x0000, 0x0000, 0)
-
         colormap = gdk.colormap_get_system ()
 
         if color:
-            colormap.alloc_color(color, True, True)
+            color = colormap.alloc_color(color, True, True)
             gc.set_foreground(color)
         else:
-            colormap.alloc_color(default_color, True, True)
+            default_color = gdk.Color(0x0000, 0x0000, 0x0000, 0)
+            default_color = colormap.alloc_color(default_color, True, True)
             gc.set_foreground(default_color)
 
     def _init_gc(self):
                                                   
         if not self.handwriting_line_gc:
-            color = gdk.Color(0x0000, 0x0000, 0x0000, 0)
+            color = gdk.Color(red=0x0000, blue=0x0000, green=0x0000)
             self.handwriting_line_gc = gdk.GC(self.window)
             self._gc_set_foreground(self.handwriting_line_gc, color)
             self.handwriting_line_gc.set_line_attributes(4,
@@ -258,12 +257,12 @@ class Canvas(gtk.Widget):
 
 
         if not self.annotation_gc:
-            color = gdk.Color(0x8000, 0x0000, 0x0000, 0)
+            color = gdk.Color(red=0x8000, blue=0x0000, green=0x0000)
             self.annotation_gc = gdk.GC(self.window)
             self._gc_set_foreground(self.annotation_gc, color)
 
         if not self.axis_gc:
-            color = gdk.Color(0x8000, 0x8000, 0x8000, 0)
+            color = gdk.Color(red=0x8000, blue=0x8000, green=0x8000)
             self.axis_gc = gdk.GC(self.window)
             self._gc_set_foreground(self.axis_gc, color)
             self.axis_gc.set_line_attributes(1,
