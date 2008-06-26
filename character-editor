@@ -18,9 +18,10 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import gtk
-import tomoe
-import tomoegtk
 import os
+
+from lib.character import *
+from lib.canvas import Canvas
 
 os.close(0) # fixes bug with python2.5 and pygtk in debian
 
@@ -29,7 +30,7 @@ class CharacterEditor:
     def save_characters(self):
         ite = self.liststore.get_iter("0")
 
-        char = tomoe.Char()
+        char = Character()
         
         while ite:
 
@@ -44,10 +45,7 @@ class CharacterEditor:
                 if writing.get_n_strokes() > 0:
                     char.set_writing(writing)
                     char.set_utf8(char_utf8)
-                    f = open(path, "w")
-                    f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")     
-                    f.write(char.to_xml())
-                    f.close()
+                    char.write(path)
                     
             elif os.path.exists(path):
                 os.unlink(path)
@@ -123,14 +121,12 @@ class CharacterEditor:
                                      "%d.xml" % char_code)
             
             if os.path.exists(char_path):
-                f = open(char_path, "r")
-                xml = f.read()
-                f.close()
-                tomoe_char = tomoe.tomoe_char_new_from_xml_data(xml, len(xml))
-                self.characters[char_code] = tomoe_char.get_writing()
+                character = Character()
+                character.read(char_path)
+                self.characters[char_code] = character.get_writing()
                 b = True
             else:
-                self.characters[char_code] = tomoe.Writing()
+                self.characters[char_code] = Writing()
                 b = False
 
             ite = self.liststore.append()
@@ -177,7 +173,7 @@ class CharacterEditor:
         self.hbox.pack_start(self.clear_button)        
 
         # canvas
-        self.canvas = tomoegtk.Canvas()    
+        self.canvas = Canvas()    
         self.canvas.set_size_request(300, 300)
 
         # treeview selection
