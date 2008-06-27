@@ -66,8 +66,10 @@ class Canvas(gtk.Widget):
         self.annotation_gc = None
         self.axis_gc = None
         self.stroke_gc = None
+        self.background_writing_gc = None
 
         self._background_character = None
+        self._background_writing = None
 
         self.connect("motion_notify_event", self.motion_notify_event)
         
@@ -256,6 +258,8 @@ class Canvas(gtk.Widget):
                             gobject.timeout_add(self._drawing_stopped_time,
                             _on_drawing_stopped)
 
+        self._draw_background_writing_stroke()
+
         return retval
 
     # Private...
@@ -283,7 +287,7 @@ class Canvas(gtk.Widget):
                                                         gdk.JOIN_ROUND)
 
         if not self.stroke_gc:
-            color = gdk.Color(red=0xffff, blue=0x0000, green=0x0000)
+            color = gdk.Color(red=0xff00, blue=0x0000, green=0x0000)
             self.stroke_gc = gdk.GC(self.window)
             self._gc_set_foreground(self.stroke_gc, color)
             self.stroke_gc.set_line_attributes(4,
@@ -291,6 +295,14 @@ class Canvas(gtk.Widget):
                                                gdk.CAP_ROUND,
                                                gdk.JOIN_ROUND)
 
+        if not self.background_writing_gc:
+            color = gdk.Color(red=0xcccc, blue=0xcccc, green=0xcccc)
+            self.background_writing_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.background_writing_gc, color)
+            self.background_writing_gc.set_line_attributes(4,
+                                                           gdk.LINE_SOLID,
+                                                           gdk.CAP_ROUND,
+                                                           gdk.JOIN_ROUND)
         if not self.annotation_gc:
             color = gdk.Color(red=0x8000, blue=0x0000, green=0x0000)
             self.annotation_gc = gdk.GC(self.window)
@@ -338,7 +350,7 @@ class Canvas(gtk.Widget):
 
         self.writing.line_to_point(point)
         
-    def _draw_stroke(self, stroke, index):
+    def _draw_stroke(self, stroke, index, gc, draw_annotation=True):
         l = len(stroke)
         
         for i in range(l):
@@ -350,9 +362,10 @@ class Canvas(gtk.Widget):
             p2 = stroke[i+1]
             p2 = (p2.x, p2.y)
 
-            self._draw_line(p1, p2, self.handwriting_line_gc)
+            self._draw_line(p1, p2, gc)
 
-        self._draw_annotation(stroke, index)
+        if draw_annotation:
+            self._draw_annotation(stroke, index)
 
     def _draw_line(self, p1, p2, line_gc, force_draw=False):
         # p1 and p2 are two points in internal coordinates
@@ -429,6 +442,39 @@ class Canvas(gtk.Widget):
         if self._background_character:
             raise NotImplementedError
 
+    def _draw_background_writing(self):
+        if self._background_writing:
+            strokes = self._background_writing.get_strokes(full=True)
+
+            start = self.writing.get_n_strokes() + 1
+            
+            for i in range(start, len(strokes)):
+                self._draw_stroke(strokes[i],
+                                  i,
+                                  self.background_writing_gc,
+                                  draw_annotation=False)
+
+    def _draw_background_writing_stroke(self):
+        if self._background_writing and self.writing.get_n_strokes() < \
+           self._background_writing.get_n_strokes():
+
+            time.sleep(0.5)
+
+            l = self.writing.get_n_strokes()
+
+            self._strokes = self._background_writing.get_strokes(full=True)
+            self._strokes = self._strokes[l:l+1]
+        
+            self._curr_stroke = 0
+            self._curr_point = 1
+            self._refresh_writing = False
+
+            speed = self._get_speed(self._curr_stroke)
+
+            gobject.timeout_add(speed, self._on_animate)
+
+                
+
     def _redraw(self):
         self.window.draw_drawable(self.style.fg_gc[self.state],
                                     self.pixmap,
@@ -437,7 +483,20 @@ class Canvas(gtk.Widget):
                                     self.allocation.width,
                                     self.allocation.height)
 
-    def _on_replay(self):
+    def _get_speed(self, index):
+        if self._speed:
+            speed = self._speed
+        else:
+            duration = self._strokes[index].get_duration()
+            if duration:
+                speed = duration / len(self._strokes[index])
+            else:
+                speed = self.DEFAULT_REPLAY_SPEED
+        return speed       
+
+    def _on_animate(self):
+        self.locked = True
+        
         if self._curr_stroke > 0 and self._curr_point == 1 and \
            not self._speed:            
             # inter stroke duration
@@ -464,20 +523,15 @@ class Canvas(gtk.Widget):
             if len(self._strokes) != self._curr_stroke:
                 # if there are remaining strokes to process
 
-                if self._speed:
-                    speed = self._speed
-                else:
-                    duration = self._strokes[self._curr_stroke].get_duration()
-                    if duration:
-                        speed = duration / len(self._strokes[self._curr_stroke])
-                    else:
-                        speed = self.DEFAULT_REPLAY_SPEED
+                speed = self._get_speed(self._curr_stroke)
 
-                gobject.timeout_add(speed, self._on_replay)
+                gobject.timeout_add(speed, self._on_animate)
+            else:
+                # last stroke and last point was reached
+                self.locked = False
                 
-            # redraw completely to update stroke color
-            self.refresh(n_strokes=self._curr_stroke, force_draw=True)          
-     
+            if self._refresh_writing:
+                self.refresh(n_strokes=self._curr_stroke, force_draw=True)
                 
             return False
         else:
@@ -489,6 +543,7 @@ class Canvas(gtk.Widget):
         self._draw_background()
 
         self._draw_background_character()
+        self._draw_background_writing()
 
         strokes = writing.get_strokes(full=True)
 
@@ -496,7 +551,7 @@ class Canvas(gtk.Widget):
             n_strokes = len(strokes)
 
         for i in range(n_strokes):
-            self._draw_stroke(strokes[i], i)
+            self._draw_stroke(strokes[i], i, self.handwriting_line_gc)
 
         if force_draw:
             self._redraw()
@@ -534,15 +589,11 @@ class Canvas(gtk.Widget):
         self._curr_stroke = 0
         self._curr_point = 1
         self._speed = speed
+        self._refresh_writing = True
 
-        if not speed:
-            duration = self._strokes[0].get_duration()
-            if duration:
-                speed = duration / len(self._strokes[0])
-            else:
-                speed = self.DEFAULT_REPLAY_SPEED
+        speed = self._get_speed(self._curr_stroke)
 
-        gobject.timeout_add(speed, self._on_replay)
+        gobject.timeout_add(speed, self._on_animate)
 
     def get_writing(self, writing_width=None, writing_height=None):
 
@@ -588,11 +639,23 @@ class Canvas(gtk.Widget):
 
     def set_background_character(self, character):
         self._background_character = character
+
+    def get_background_writing(self):
+        return self._background_writing
+    
+    def set_background_writing(self, writing, speed=25):
+        self.clear()
+        self._background_writing = writing
+        self._speed = speed
+        time.sleep(0.5)
+        self._draw_background_writing_stroke()
+        self.refresh(force_draw=True)
         
 gobject.type_register(Canvas)
         
 if __name__ == "__main__":
     import sys
+    import copy
     
     def on_stroke_added(widget):
         print "stroke added!"
@@ -617,6 +680,13 @@ if __name__ == "__main__":
             def on_drawing_stopped(widget):
                 widget.replay(speed=25)
 
+        elif sys.argv[1] == "background-writing":
+            def on_drawing_stopped(widget):
+                background_writing = widget.get_background_writing()
+                if not background_writing:
+                    writing = copy.copy(widget.get_writing())
+                    widget.set_background_writing(writing)
+ 
         else:
             def on_drawing_stopped(widget):
                 print "drawing stopped!"
@@ -627,6 +697,7 @@ if __name__ == "__main__":
     else:
         def on_drawing_stopped(widget):
             print "drawing stopped!"
+            print widget.get_writing()
                              
     canvas.set_drawing_stopped_time(1000)
     canvas.connect("drawing_stopped", on_drawing_stopped)
