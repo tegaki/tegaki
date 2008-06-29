@@ -44,7 +44,7 @@ class Model(models.basic.model.Model):
     # Feature extraction...
     ########################################
 
-    def get_feature_vectors(self, tomoe_writing):
+    def get_feature_vectors(self, writing):
         """
         Get (x, y, delta x, delta y, delta2 x, delta2 y)
 
@@ -52,7 +52,7 @@ class Model(models.basic.model.Model):
 
         delta2 x and delta2 y are the acceleration up to a factor
         """
-        strokes = tomoe_writing.get_strokes()
+        strokes = writing.get_strokes()
         vectors = [[x,y] for stroke in strokes for x,y in stroke]
         vectors = base.array_sample(vectors, self.SAMPLING)
 

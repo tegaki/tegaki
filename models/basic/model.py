@@ -18,10 +18,10 @@
 
 import os
 import ghmm
-import tomoe
 import glob
 
 import lib.base as base
+from lib.character import *
 
 class Model(object):
     """
@@ -88,11 +88,10 @@ class Model(object):
     def get_train_xml_files_dict(self):
         return self.get_xml_list_dict(self.TRAIN_ROOT)
 
-    def get_tomoe_char(self, char_path):
-        f = open(char_path, "r")
-        xml = f.read()
-        f.close()
-        return tomoe.tomoe_char_new_from_xml_data(xml, len(xml))
+    def get_character(self, char_path):
+        char = Character()
+        char.read(char_path)
+        return char
 
     def get_sequence_set(self, file_path):
         return ghmm.SequenceSet(self.DOMAIN, file_path)
@@ -108,11 +107,11 @@ class Model(object):
     # Feature extraction...
     ########################################
 
-    def get_feature_vectors(self, tomoe_writing):
+    def get_feature_vectors(self, writing):
         """
         Get deltax and deltay as feature vectors.
         """
-        strokes = tomoe_writing.get_strokes()
+        strokes = writing.get_strokes()
         vectors = [(x,y) for stroke in strokes for x,y in stroke]
         vectors = base.array_sample(vectors, self.SAMPLING)
 
@@ -140,11 +139,11 @@ class Model(object):
                 sequence_set = []
 
                 for xml_file in xml_list:
-                    tomoe_char = self.get_tomoe_char(xml_file)
+                    character = self.get_character(xml_file)
 
-                    tomoe_writing = tomoe_char.get_writing()
+                    writing = character.get_writing()
 
-                    char_features = self.get_feature_vectors(tomoe_writing)
+                    char_features = self.get_feature_vectors(writing)
 
                     sequence_set.append(base.array_flatten(char_features))
 
@@ -168,8 +167,8 @@ class Model(object):
 
     def get_n_strokes(self, char_code):
         file = self.train_xml_files_dict[char_code][0]
-        tomoe_char = self.get_tomoe_char(file)
-        return tomoe_char.get_writing().get_n_strokes()
+        character = self.get_character(file)
+        return character.get_writing().get_n_strokes()
 
     def get_initial_state_probabilities(self, n_states):
         pi = [0.0] * n_states
@@ -408,8 +407,8 @@ class Model(object):
     # Writing pad...
     ########################################
 
-    def find_writing(self, tomoe_writing):
-        char_features = self.get_feature_vectors(tomoe_writing)
+    def find_writing(self, writing):
+        char_features = self.get_feature_vectors(writing)
         
         seq = ghmm.EmissionSequence(self.DOMAIN,
                                     base.array_flatten(char_features))

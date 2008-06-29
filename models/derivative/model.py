@@ -43,7 +43,7 @@ class Model(models.basic.model.Model):
     # Feature extraction...
     ########################################
 
-    def get_feature_vectors(self, tomoe_writing):
+    def get_feature_vectors(self, writing):
         """
         Get derivative as feature vectors.
         Formula obtained from
@@ -53,7 +53,7 @@ class Model(models.basic.model.Model):
         """
         arr = []
         
-        strokes = tomoe_writing.get_strokes()
+        strokes = writing.get_strokes()
 
         sampling = int(1 / self.SAMPLING)
 

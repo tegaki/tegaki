@@ -43,11 +43,11 @@ class Model(models.basic.model.Model):
     # Feature extraction...
     ########################################
 
-    def get_feature_vectors(self, tomoe_writing):
+    def get_feature_vectors(self, writing):
         """
         Get cartesian coordinates.
         """
-        strokes = tomoe_writing.get_strokes()
+        strokes = writing.get_strokes()
         vectors = [(x,y) for stroke in strokes for x,y in stroke]
         vectors = base.array_sample(vectors, self.SAMPLING)
         return vectors

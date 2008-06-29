@@ -22,6 +22,7 @@ import os
 from optparse import OptionParser
 
 import lib.base as base
+from lib.character import *
 
 currdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -54,13 +55,24 @@ Options:
     
 """)
 
+def writing_to_xml(writing):
+    character = Character()
+    character.set_utf8("?")
+    character.set_writing(writing)
+    return character.to_xml()
+
+def xml_to_writing(xml):
+    character = Character()
+    character.read_string(xml)
+    return character.get_writing()
+
 parser = OptionParser()
 parser.add_option("-v", "--verbose",
                   action="store_true", dest="verbose", default=False,
                   help="print more status messages to stdout")
 parser.add_option("-s", "--stdin",
                   action="store_true", dest="stdin", default=False,
-                  help="read tomoe character xml from stdin")
+                  help="read character xml from stdin")
 
 (options, args) = parser.parse_args()
 
@@ -86,8 +98,8 @@ if len(args) == 1:
     elif command == "pad":
         from lib.writing_pad import WritingPad
 
-        def print_xml(tomoe_writing):
-            print base.tomoe_writing_to_xml(tomoe_writing)
+        def print_xml(writing):
+            print writing_to_xml(writing)
             sys.stdout.flush()
             
         pad = WritingPad(print_xml)
@@ -146,8 +158,8 @@ else:
                     
                     if line.strip() == "</character>":
                         xml = "\n".join(lines)
-                        tomoe_writing = base.xml_to_tomoe_writing(xml)
-                        print " ".join(model.find_writing(tomoe_writing))
+                        writing = xml_to_writing(xml)
+                        print " ".join(model.find_writing(writing))
                         lines = []
 
                     if len(line) == 0:

@@ -1,9 +1,3 @@
-Dependency on tomoe
--------------------
-
-- Rewrite tomoe_canvas in pure pygtk.
-- Write a replacement for tomoe_char and tomoe_writing in pure python.
-
 Dependency on ghmm
 ------------------
 

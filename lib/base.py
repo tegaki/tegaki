@@ -19,7 +19,6 @@
 import os
 import sys
 import glob
-import tomoe
 import shutil
 import ghmm
 import math
@@ -258,13 +257,3 @@ def cartesian_to_polar(x, y):
 
 def stderr_print(*args):
     sys.stderr.write("".join([str(arg) for arg in args]) + "\n")
-
-def tomoe_writing_to_xml(tomoe_writing):
-    tomoe_char = tomoe.Char()
-    tomoe_char.set_utf8("?")
-    tomoe_char.set_writing(tomoe_writing)
-    return tomoe_char.to_xml()
-
-def xml_to_tomoe_writing(xml):
-    tomoe_char = tomoe.tomoe_char_new_from_xml_data(xml, len(xml))
-    return tomoe_char.get_writing()

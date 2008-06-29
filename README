@@ -10,8 +10,6 @@ Requirements
 
 Python       2.4    http://www.python.org
 GHMM *       SVN    http://ghmm.sourceforge.net
-Tomoe *      SVN    http://tomoe.sourceforge.jp
-Tomoe-GTK *  SVN    http://tomoe.sourceforge.jp
 GTK *        2.6    http://www.gtk.org
 
 [*] The Python bindings are also required.
