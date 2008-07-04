@@ -66,7 +66,7 @@ class Point(dict):
         attrs = []
 
         for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
-            if self[key]:
+            if self[key] is not None:
                 attrs.append("%s=\"%s\"" % (key, str(self[key])))
 
         return "<point %s />" % " ".join(attrs)
