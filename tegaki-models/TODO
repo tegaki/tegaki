@@ -1,0 +1,51 @@
+Model manager
+-------------
+
+- Add a evalall command that run and compare all models.
+- Add computation time benchmarking to evaluation results.
+
+- Add support for virtual models. "model1+model2+model3" creates a composite
+models which is a combination of the 3 models. "+" should be a reserved
+character.
+
+- Support comma separator for a command. Ex: "fextract,init,train".
+- Support range separator for a command. Ex: "fextract-train".
+
+- Don't rebuild models that exist already and add a -f option to force rebuild
+them.
+
+- A la svn online help: model-manager help command.
+
+- View graphical representation of observation probability distributions for
+initial segmentation.
+
+- Generate kanji from models and display them when possible.
+
+- Bash completion module.
+
+Models
+------
+
+- Normalize the handwriting before feature extraction.
+
+- Study the effects of computing non-diagonal values in the covariance matrix.
+- Study the effects of defining gaussian weights.
+
+
+- Try number of states proportional to number of feature vectors.
+- Try non uniform initial segmentation.
+- Try viterbi training.
+
+- Try velocity and speed as feature vectors.
+- Try feature vectors that are not sensitive to stroke order (OCR).
+
+- Try stroke and sub-stroke HMMs.
+
+- Unbiased estimation of covariance matrix.
+
+Data
+----
+
+- Rename corpora with more details like input device (mouse, pda, tablet),
+stroke order correct/incorrect, carefully drawn or not.
+- Be able to choose the training and evaluation corpora from the models.

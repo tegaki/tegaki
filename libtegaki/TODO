@@ -1,0 +1,5 @@
+Dependency on ghmm
+------------------
+
+- Write a HMM library in pure python, possibly using numpy.
+(at least the viterbi decoder)

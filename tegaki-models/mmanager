@@ -1,0 +1,247 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2008 Mathieu Blondel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import sys
+import os
+import shutil
+from optparse import OptionParser
+
+from tegaki.character import *
+from lib.exceptions import *
+
+currdir = os.path.dirname(os.path.abspath(__file__))
+
+def my_import(name):
+    """
+    Similar to __import__() except that x.y.z returns z instead of x.
+    """
+    mod = __import__(name)
+    components = name.split('.')
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    return mod
+
+def load_model_module(model):
+    if os.path.isdir(model):
+        model_init = os.path.join(model, "__init__.py")
+      
+        if os.path.exists(model_init):
+            module = model.replace("/", ".")
+
+            return my_import(module)
+
+    return None
+
+def load_model_modules(path="models"):
+    dic = {}
+  
+    for name in os.listdir(path):
+        model = os.path.join(path, name)
+
+        module = load_model_module(model)
+
+        if module:
+            dic[name] = module
+        
+    return dic
+
+def get_model_list(path="models"):
+    return [name for name in os.listdir(path) \
+            if os.path.isdir(os.path.join(path, name))]
+
+def get_pyc_files(folder):
+    pyc_files = []
+    
+    for name in os.listdir(folder):
+        full_path = os.path.join(folder, name)
+        if os.path.isdir(full_path):
+            pyc_files += get_pyc_files(full_path)
+        elif full_path.endswith(".pyc"):
+            pyc_files.append(full_path)
+            
+    return pyc_files
+
+def clean_model_folder(model_folder):
+    feature_folder = os.path.join(model_folder, "features")
+    hmm_folder = os.path.join(model_folder, "hmms")
+
+    for folder in (feature_folder, hmm_folder, ):
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+
+    for pyc_file in get_pyc_files(model_folder):
+        os.unlink(pyc_file)
+
+def writing_to_xml(writing):
+    character = Character()
+    character.set_utf8("?")
+    character.set_writing(writing)
+    return character.to_xml()
+
+def xml_to_writing(xml):
+    character = Character()
+    character.read_string(xml)
+    return character.get_writing()
+
+def stderr_print(*args):
+    sys.stderr.write("".join([str(arg) for arg in args]) + "\n")
+
+def die(msg, code=0):
+  stderr_print(msg)
+  sys.exit(code)
+  
+def usage():
+    die("""Usage:
+    
+-----  
+  
+model-manager model-name command
+
+Possible commands: fextract, init, train, eval, pad, all, clean
+
+all = clean, fextract, init, train and eval
+
+-----
+
+model-manager command
+
+Possible commands: list, cleanall, pad, help
+
+-----
+
+Options:
+    -v  --verbose
+    -s  --stdin
+    
+""")
+
+parser = OptionParser()
+parser.add_option("-v", "--verbose",
+                  action="store_true", dest="verbose", default=False,
+                  help="print more status messages to stdout")
+parser.add_option("-s", "--stdin",
+                  action="store_true", dest="stdin", default=False,
+                  help="read character xml from stdin")
+
+(options, args) = parser.parse_args()
+
+if not len(args) in [1, 2]:
+    usage()
+    
+if len(args) == 1:
+    command = args[0]
+    
+    if command == "list":
+        print "Available models:"
+        for name in get_model_list():
+            print "- %s" % name
+            
+    elif command == "cleanall":
+        for name in get_model_list():
+            model_folder = os.path.join("models", name)
+            clean_model_folder(model_folder)
+
+        for pyc_file in get_pyc_files(currdir):
+            os.unlink(pyc_file)
+
+    elif command == "pad":
+        from lib.writing_pad import WritingPad
+
+        def print_xml(writing):
+            print writing_to_xml(writing)
+            sys.stdout.flush()
+            
+        pad = WritingPad(print_xml)
+        pad.run()
+
+    else:
+        usage()
+        
+else:
+    command = args[1]
+    name = args[0]
+
+    # support for naming a model by its folder path
+    if name.startswith("models/"):
+        if name.endswith("/"):
+            name = name[:-1]
+        name = name.split("/")[1]
+
+    model_folder = os.path.join("models", name)
+
+    if command in ("clean", "all"):
+        if os.path.exists(model_folder):
+            clean_model_folder(model_folder)
+
+        if command == "clean":
+            sys.exit()
+
+    module = load_model_module(model_folder)
+
+    if not module:
+        die("Model %s doesn't exist.\n" % name + \
+            "Use the list command for a list of models.")
+
+    try:
+        model = module.model.Model(options)
+        
+        if command in ("fextract", "all"):
+            stderr_print("Extracting features...")
+            model.fextract()
+
+        if command in ("init", "all"):
+            stderr_print("Initializing models...")
+            model.init()
+
+        if command in ("train", "all"):
+            stderr_print("Training models...")
+            model.train()
+
+        if command in ("eval", "all"):
+            if options.stdin:
+                lines = []
+
+                while True:
+                    line = sys.stdin.readline()
+                    lines.append(line)
+                    
+                    if line.strip() == "</character>":
+                        xml = "\n".join(lines)
+                        writing = xml_to_writing(xml)
+                        print " ".join(model.find_writing(writing))
+                        lines = []
+
+                    if len(line) == 0:
+                        break
+                        
+            else:
+                stderr_print("Evaluating models...")
+                model.evaluation()
+
+        if command == "pad":
+            model.writing_pad()
+            
+        if command not in ("fextract", "init", "train", "eval",
+                           "pad", "clean", "cleanall", "all"):
+            die("Unknown command.")
+
+    except ModelException, e:
+        stderr_print("Error!")
+        stderr_print(e.message)
+  

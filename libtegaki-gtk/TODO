@@ -1,0 +1,2 @@
+- Rewrite the Canvas with cairo.
+(the widget should not redraw itself completely on expose events!)

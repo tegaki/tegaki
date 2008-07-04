@@ -1,0 +1,710 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2008 Mathieu Blondel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import gtk
+from gtk import gdk
+import gobject
+import pango
+import math
+import time
+
+from tegaki.character import *
+
+class Canvas(gtk.Widget):
+    """
+    A character drawing canvas.
+
+    A port of Takuro Ashie's TomoeCanvas to pygtk.
+    Also based on a tutorial by Mark Mruss.
+    """
+
+    # Default canvas size
+    DEFAULT_WIDTH = 400
+    DEFAULT_HEIGHT = 400
+
+    DEFAULT_REPLAY_SPEED = 25 # msec
+
+    __gsignals__ = dict(stroke_added=(gobject.SIGNAL_RUN_LAST,
+                                      gobject.TYPE_NONE,
+                                      ()),
+                        drawing_stopped=(gobject.SIGNAL_RUN_LAST,
+                                         gobject.TYPE_NONE,
+                                         ()))
+    
+    def __init__(self):
+        gtk.Widget.__init__(self)
+        
+        self.width = self.DEFAULT_WIDTH
+        self.height = self.DEFAULT_HEIGHT
+
+        self.drawing = False
+        self.pixmap = None
+
+        self.writing = Writing()
+
+        self.locked = False
+
+        self._drawing_stopped_time = 0
+        self._drawing_stopped_id = 0
+
+        self.handwriting_line_gc = None
+        self.annotation_gc = None
+        self.axis_gc = None
+        self.stroke_gc = None
+        self.background_writing_gc = None
+
+        self._background_character = None
+        self._background_writing = None
+
+        self.connect("motion_notify_event", self.motion_notify_event)
+        
+    # Events...
+
+    def do_realize(self):
+        """
+        Called when the widget should create all of its
+        windowing resources.  We will create our gtk.gdk.Window.
+        """
+        # Set an internal flag telling that we're realized
+        self.set_flags(self.flags() | gtk.REALIZED)
+
+        # Create a new gdk.Window which we can draw on.
+        # Also say that we want to receive exposure events
+        # and button click and button press events
+        self.window = gdk.Window(self.get_parent_window(),
+
+                                 x=self.allocation.x,
+                                 y=self.allocation.y,
+                                 width=self.allocation.width,
+                                 height=self.allocation.height,
+
+                                 window_type=gdk.WINDOW_CHILD,
+                                 wclass=gdk.INPUT_OUTPUT,
+                                 visual=self.get_visual(),
+                                 colormap=self.get_colormap(),
+
+                                 event_mask=gdk.EXPOSURE_MASK |
+                                            gdk.BUTTON_PRESS_MASK |
+                                            gdk.BUTTON_RELEASE_MASK |
+                                            gdk.POINTER_MOTION_MASK |
+                                            gdk.POINTER_MOTION_HINT_MASK |
+                                            gdk.ENTER_NOTIFY_MASK |
+                                            gdk.LEAVE_NOTIFY_MASK)
+
+
+        # Associate the gdk.Window with ourselves, Gtk+ needs a reference
+        # between the widget and the gdk window
+        self.window.set_user_data(self)
+
+        # Attach the style to the gdk.Window, a style contains colors and
+        # GC contextes used for drawing
+        self.style.attach(self.window)
+
+        # The default color of the background should be what
+        # the style (theme engine) tells us.
+        self.style.set_background(self.window, gtk.STATE_NORMAL)
+        self.window.move_resize(*self.allocation)
+
+        # Font
+        font_desc = pango.FontDescription("Sans 12")
+        self.modify_font(font_desc)
+
+        self._init_gc()
+
+    def do_unrealize(self):
+        """
+        The do_unrealized method is responsible for freeing the GDK resources
+        De-associate the window we created in do_realize with ourselves
+        """
+        self.window.destroy()
+    
+    def do_size_request(self, requisition):
+       """
+       The do_size_request method Gtk+ is called on a widget to ask it the
+       widget how large it wishes to be.
+       It's not guaranteed that gtk+ will actually give this size to the
+       widget.
+       """
+       requisition.height = self.DEFAULT_HEIGHT
+       requisition.width = self.DEFAULT_WIDTH
+
+    def do_size_allocate(self, allocation):
+        """
+        The do_size_allocate is called when the actual
+        size is known and the widget is told how much space
+        could actually be allocated."""
+
+        self.allocation = allocation
+        self.width = self.allocation.width
+        self.height = self.allocation.height        
+ 
+        if self.flags() & gtk.REALIZED:
+            self.window.move_resize(*allocation)
+            
+            self.pixmap = gdk.Pixmap(self.window,
+                                     self.width,
+                                     self.height)
+
+            self.refresh()
+
+    def do_expose_event(self, event):
+        """
+        This is where the widget must draw itself.
+        """
+        retval = False
+        
+        self.window.draw_drawable(self.style.fg_gc[self.state],
+                                  self.pixmap,
+                                  event.area.x, event.area.y,
+                                  event.area.x, event.area.y,
+                                  event.area.width, event.area.height)
+
+        return retval
+    
+    def motion_notify_event(self, widget, event):
+        retval = False
+
+        if self.locked or not self.drawing:
+            return retval
+
+        if event.is_hint:
+            x, y, state = event.window.get_pointer()
+        else:
+            x = event.x
+            y = event.y
+            state = event.state
+
+        x, y = self._internal_coordinates(x, y)
+
+        point = Point()
+        point.x = x
+        point.y = y
+        point.timestamp = event.time - self._first_point_time
+        #point.pressure = pressure
+        #point.xtilt = xtilt
+        #point.ytilt = ytilt
+
+        self._append_point(point)
+
+        return retval
+
+    def do_button_press_event(self, event):
+        retval = False
+
+        if self.locked:
+            return retval
+
+        if self._drawing_stopped_id > 0:
+            gobject.source_remove(self._drawing_stopped_id)
+            self._drawing_stopped_id = 0
+
+        if event.button == 1:
+            self.drawing = True
+
+            x, y = self._internal_coordinates(event.x, event.y)
+
+            point = Point()
+            point.x = x
+            point.y = y
+
+            if self.writing.get_n_strokes() == 0:
+                self._first_point_time = event.time
+                point.timestamp = 0
+            else:
+                point.timestamp = event.time - self._first_point_time
+                
+            #point.pressure = pressure
+            #point.xtilt = xtilt
+            #point.ytilt = ytilt
+            
+            self.writing.move_to_point(point)
+
+        return retval
+
+    def do_button_release_event(self, event):
+        retval = False
+
+        if self.locked or not self.drawing:
+            return retval
+
+        self.drawing = False
+
+        self.refresh(force_draw=True)
+
+        self.emit("stroke_added")
+
+        if self._drawing_stopped_time > 0:
+
+            def _on_drawing_stopped():
+                self.emit("drawing_stopped")
+                return False
+             
+            self._drawing_stopped_id = \
+                            gobject.timeout_add(self._drawing_stopped_time,
+                            _on_drawing_stopped)
+
+        self._draw_background_writing_stroke()
+
+        return retval
+
+    # Private...
+
+    def _gc_set_foreground (self, gc, color):
+        colormap = gdk.colormap_get_system ()
+
+        if color:
+            color = colormap.alloc_color(color, True, True)
+            gc.set_foreground(color)
+        else:
+            default_color = gdk.Color(0x0000, 0x0000, 0x0000, 0)
+            default_color = colormap.alloc_color(default_color, True, True)
+            gc.set_foreground(default_color)
+
+    def _init_gc(self):
+                                                  
+        if not self.handwriting_line_gc:
+            color = gdk.Color(red=0x0000, blue=0x0000, green=0x0000)
+            self.handwriting_line_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.handwriting_line_gc, color)
+            self.handwriting_line_gc.set_line_attributes(4,
+                                                        gdk.LINE_SOLID,
+                                                        gdk.CAP_ROUND,
+                                                        gdk.JOIN_ROUND)
+
+        if not self.stroke_gc:
+            color = gdk.Color(red=0xff00, blue=0x0000, green=0x0000)
+            self.stroke_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.stroke_gc, color)
+            self.stroke_gc.set_line_attributes(4,
+                                               gdk.LINE_SOLID,
+                                               gdk.CAP_ROUND,
+                                               gdk.JOIN_ROUND)
+
+        if not self.background_writing_gc:
+            color = gdk.Color(red=0xcccc, blue=0xcccc, green=0xcccc)
+            self.background_writing_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.background_writing_gc, color)
+            self.background_writing_gc.set_line_attributes(4,
+                                                           gdk.LINE_SOLID,
+                                                           gdk.CAP_ROUND,
+                                                           gdk.JOIN_ROUND)
+        if not self.annotation_gc:
+            color = gdk.Color(red=0x8000, blue=0x0000, green=0x0000)
+            self.annotation_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.annotation_gc, color)
+
+        if not self.axis_gc:
+            color = gdk.Color(red=0x8000, blue=0x8000, green=0x8000)
+            self.axis_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self.axis_gc, color)
+            self.axis_gc.set_line_attributes(1,
+                                            gdk.LINE_ON_OFF_DASH,
+                                            gdk.CAP_BUTT,
+                                            gdk.JOIN_ROUND)
+
+    def _internal_coordinates(self, x, y):
+        """
+        Converts window coordinates to internal coordinates.
+        """
+        sx = float(Writing.WIDTH) / self.width
+        sy = float(Writing.HEIGHT) / self.height
+        
+        return (int(x * sx), int(y * sy))
+    
+    def _window_coordinates(self, x, y):
+        """
+        Converts internal coordinates to window coordinates.
+        """
+        sx = float(self.width) / Writing.WIDTH
+        sy = float(self.height) / Writing.WIDTH
+        
+        return (int(x * sx), int(y * sy))
+
+    def _append_point(self, point):
+        # x and y are internal coordinates
+        
+        p2 = (point.x, point.y)
+        
+        strokes = self.writing.get_strokes()
+
+        last_stroke = strokes[-1]
+
+        p1 = last_stroke[-1]
+
+        self._draw_line(p1, p2, self.handwriting_line_gc, force_draw=True)
+
+        self.writing.line_to_point(point)
+        
+    def _draw_stroke(self, stroke, index, gc, draw_annotation=True):
+        l = len(stroke)
+        
+        for i in range(l):
+            if i == l - 1:
+                break
+
+            p1 = stroke[i]
+            p1 = (p1.x, p1.y)
+            p2 = stroke[i+1]
+            p2 = (p2.x, p2.y)
+
+            self._draw_line(p1, p2, gc)
+
+        if draw_annotation:
+            self._draw_annotation(stroke, index)
+
+    def _draw_line(self, p1, p2, line_gc, force_draw=False):
+        # p1 and p2 are two points in internal coordinates
+        
+        p1 = self._window_coordinates(*p1)
+        p2 = self._window_coordinates(*p2)
+        
+        self.pixmap.draw_line(line_gc, p1[0], p1[1], p2[0], p2[1])
+
+        if force_draw:
+            x = min(p1[0], p2[0]) - 2
+            y = min(p1[1], p2[1]) - 2
+            width = abs(p1[0] - p2[0]) + 2 * 2
+            height = abs(p1[1] - p2[1]) + 2 * 2
+
+            self.queue_draw_area(x, y, width, height)
+
+    def _draw_annotation(self, stroke, index, force_draw=False):
+        x, y = self._window_coordinates(stroke[0].x, stroke[0].y)
+
+        if len(stroke) == 1:
+            dx, dy = x, y
+        else:
+            last_x, last_y = self._window_coordinates(stroke[-1].x,
+                                                      stroke[-1].y)
+            dx, dy = last_x - x, last_y - y
+
+        dl = math.sqrt(dx*dx + dy*dy)
+
+        if dy <= dx:
+            sign = 1
+        else:
+            sign = -1
+
+        num = str(index + 1)
+        layout = self.create_pango_layout(num)
+        width, height = layout.get_pixel_size()
+
+        r = math.sqrt (width*width + height*height)
+
+        x += (0.5 + (0.5 * r * dx / dl) + (sign * 0.5 * r * dy / dl) - \
+              (width / 2))
+              
+        y += (0.5 + (0.5 * r * dy / dl) - (sign * 0.5 * r * dx / dl) - \
+              (height / 2))
+
+        x, y = int(x), int(y)
+
+        self.pixmap.draw_layout(self.annotation_gc, x, y, layout)
+
+        if force_draw:
+            self.queue_draw_area(x-2, y-2, width+4, height+4)
+
+    def _draw_axis(self):
+        self.pixmap.draw_line(self.axis_gc,
+                              self.width / 2, 0,
+                              self.width / 2, self.height)
+
+        self.pixmap.draw_line(self.axis_gc,
+                              0, self.height / 2,
+                              self.width, self.height / 2)
+
+    def _draw_background(self):
+        self.pixmap.draw_rectangle(self.style.white_gc,
+                                   True,
+                                   0, 0,
+                                   self.allocation.width,
+                                   self.allocation.height)
+
+        self._draw_axis()
+
+
+    def _draw_background_character(self):
+        if self._background_character:
+            raise NotImplementedError
+
+    def _draw_background_writing(self):
+        if self._background_writing:
+            strokes = self._background_writing.get_strokes(full=True)
+
+            start = self.writing.get_n_strokes() + 1
+            
+            for i in range(start, len(strokes)):
+                self._draw_stroke(strokes[i],
+                                  i,
+                                  self.background_writing_gc,
+                                  draw_annotation=False)
+
+    def _draw_background_writing_stroke(self):
+        if self._background_writing and self.writing.get_n_strokes() < \
+           self._background_writing.get_n_strokes():
+
+            time.sleep(0.5)
+
+            l = self.writing.get_n_strokes()
+
+            self._strokes = self._background_writing.get_strokes(full=True)
+            self._strokes = self._strokes[l:l+1]
+        
+            self._curr_stroke = 0
+            self._curr_point = 1
+            self._refresh_writing = False
+
+            speed = self._get_speed(self._curr_stroke)
+
+            gobject.timeout_add(speed, self._on_animate)
+
+                
+
+    def _redraw(self):
+        self.window.draw_drawable(self.style.fg_gc[self.state],
+                                    self.pixmap,
+                                    0, 0,
+                                    0, 0,
+                                    self.allocation.width,
+                                    self.allocation.height)
+
+    def _get_speed(self, index):
+        if self._speed:
+            speed = self._speed
+        else:
+            duration = self._strokes[index].get_duration()
+            if duration:
+                speed = duration / len(self._strokes[index])
+            else:
+                speed = self.DEFAULT_REPLAY_SPEED
+        return speed       
+
+    def _on_animate(self):
+        self.locked = True
+        
+        if self._curr_stroke > 0 and self._curr_point == 1 and \
+           not self._speed:            
+            # inter stroke duration
+            t2 = self._strokes[self._curr_stroke][0].timestamp
+            t1 = self._strokes[self._curr_stroke - 1][-1].timestamp
+            time.sleep(float(t2 - t1) / 1000)
+        
+        p1 = self._strokes[self._curr_stroke][self._curr_point - 1]
+        p1 = (p1.x, p1.y)
+        p2 = self._strokes[self._curr_stroke][self._curr_point]
+        p2 = (p2.x, p2.y)
+
+        self._draw_line(p1, p2, self.stroke_gc, force_draw=True)
+
+        if len(self._strokes[self._curr_stroke]) == self._curr_point + 1:
+            # if we reach the stroke last point
+                           
+            self._draw_annotation(self._strokes[self._curr_stroke],
+                                                self._curr_stroke)
+                                                
+            self._curr_point = 1
+            self._curr_stroke += 1
+                
+            if len(self._strokes) != self._curr_stroke:
+                # if there are remaining strokes to process
+
+                speed = self._get_speed(self._curr_stroke)
+
+                gobject.timeout_add(speed, self._on_animate)
+            else:
+                # last stroke and last point was reached
+                self.locked = False
+                
+            if self._refresh_writing:
+                self.refresh(n_strokes=self._curr_stroke, force_draw=True)
+                
+            return False
+        else:
+            self._curr_point += 1
+
+        return True
+
+    def _refresh(self, writing, n_strokes=None, force_draw=False):
+        self._draw_background()
+
+        self._draw_background_character()
+        self._draw_background_writing()
+
+        strokes = writing.get_strokes(full=True)
+
+        if not n_strokes:
+            n_strokes = len(strokes)
+
+        for i in range(n_strokes):
+            self._draw_stroke(strokes[i], i, self.handwriting_line_gc)
+
+        if force_draw:
+            self._redraw()
+
+    # Public...
+
+    def get_drawing_stopped_time(self):
+        return self._drawing_stopped_time
+
+    def set_drawing_stopped_time(self, time_msec):
+        self._drawing_stopped_time = time_msec
+
+    def refresh(self, n_strokes=None, force_draw=False):
+        if self.writing:
+            self._refresh(self.writing,
+                         n_strokes=n_strokes,
+                         force_draw=force_draw)
+
+    def replay(self, speed=None):
+        """
+        Display an animation of the current writing.
+        One point is drawn every "speed" msec.
+
+        If speed is None, uses the writing original speed when available or
+        DEFAULT_REPLAY_SPEED when not available.
+        """
+        self._draw_background()
+        self._redraw()
+
+        self._strokes = self.writing.get_strokes(full=True)
+
+        if len(self._strokes) == 0:
+            return
+        
+        self._curr_stroke = 0
+        self._curr_point = 1
+        self._speed = speed
+        self._refresh_writing = True
+
+        speed = self._get_speed(self._curr_stroke)
+
+        gobject.timeout_add(speed, self._on_animate)
+
+    def get_writing(self, writing_width=None, writing_height=None):
+
+        if writing_width and writing_height:
+            # Convert to requested size
+            xratio = float(writing_width) / Writing.WIDTH
+            yratio = float(writing_height) / Writing.HEIGHT
+
+            return self.writing.resize(xratio, yratio)
+        else:
+            return self.writing
+
+    def set_writing(self, writing, writing_width=None, writing_height=None):
+
+        if writing_width and writing_height:
+            # Convert to internal size
+            xratio = float(Writing.WIDTH) / writing_width
+            yratio = float(Writing.HEIGHT) / writing_height
+           
+            self.writing = self.writing.resize(xratio, yratio)
+        else:
+            self.writing = writing
+
+        if self.flags() & gtk.REALIZED:
+            self.refresh(force_draw=True)
+
+    def clear(self):
+        self.writing.clear()
+
+        self.refresh(force_draw=True)
+
+    def revert_stroke(self):
+        n = self.writing.get_n_strokes()
+
+        if n > 0:
+            self.writing.remove_last_stroke()
+            self.refresh(force_draw=True)
+
+    def normalize(self):
+        self.writing = self.writing.normalize()
+
+        self.refresh(force_draw=True)
+
+    def set_background_character(self, character):
+        self._background_character = character
+
+    def get_background_writing(self):
+        return self._background_writing
+    
+    def set_background_writing(self, writing, speed=25):
+        self.clear()
+        self._background_writing = writing
+        self._speed = speed
+        time.sleep(0.5)
+        self._draw_background_writing_stroke()
+        self.refresh(force_draw=True)
+        
+gobject.type_register(Canvas)
+        
+if __name__ == "__main__":
+    import sys
+    import copy
+    
+    def on_stroke_added(widget):
+        print "stroke added!"
+        
+    window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    
+    canvas = Canvas()
+    
+    canvas.connect("stroke_added", on_stroke_added)
+    
+    if len(sys.argv) >= 2:
+
+        if sys.argv[1] == "normalize":
+            def on_drawing_stopped(widget):
+                widget.normalize()
+                
+        elif sys.argv[1] == "replay":
+            def on_drawing_stopped(widget):
+                widget.replay()
+
+        elif sys.argv[1] == "replay-speed":
+            def on_drawing_stopped(widget):
+                widget.replay(speed=25)
+
+        elif sys.argv[1] == "background-writing":
+            def on_drawing_stopped(widget):
+                background_writing = widget.get_background_writing()
+                if not background_writing:
+                    writing = copy.copy(widget.get_writing())
+                    widget.set_background_writing(writing)
+ 
+        else:
+            def on_drawing_stopped(widget):
+                print "drawing stopped!"
+
+        if sys.argv[1] == "background-char":
+            canvas.set_background_character("愛")
+
+    else:
+        def on_drawing_stopped(widget):
+            print "drawing stopped!"
+            print widget.get_writing()
+                             
+    canvas.set_drawing_stopped_time(1000)
+    canvas.connect("drawing_stopped", on_drawing_stopped)
+    
+    window.add(canvas)
+    
+    window.show_all()
+    window.connect('delete-event', gtk.main_quit)
+    
+    gtk.main()
