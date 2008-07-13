@@ -134,6 +134,14 @@ class _CairoRendererBase(object):
         self.cr.stroke()
         self.cr.restore()
 
+class _ImageRendererBase(object):
+    
+    def write_to_png(self, filename):
+        self.surface.write_to_png(filename)
+
+    def get_data(self):
+        return self.surface.get_data()
+    
 class WritingCairoRenderer(_CairoRendererBase):
 
     def __init__(self, *a, **kw):
@@ -260,7 +268,7 @@ class WritingStepsCairoRenderer(_CairoRendererBase):
 
         self.cr.restore()
 
-class WritingImageRenderer(WritingCairoRenderer):
+class WritingImageRenderer(WritingCairoRenderer, _ImageRendererBase):
 
     def __init__(self, writing, width, height):
         """
@@ -270,9 +278,6 @@ class WritingImageRenderer(WritingCairoRenderer):
         cr = cairo.Context(self.surface)
         cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
         WritingCairoRenderer.__init__(self, cr, writing)
-        
-    def write_to_png(self, filename):
-        self.surface.write_to_png(filename)
 
 class WritingSVGRenderer(WritingCairoRenderer):
     
@@ -296,7 +301,7 @@ class WritingPDFRenderer(WritingCairoRenderer):
         cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
         WritingCairoRenderer.__init__(self, cr, writing)
 
-class WritingStepsImageRenderer(WritingStepsCairoRenderer):
+class WritingStepsImageRenderer(WritingStepsCairoRenderer, _ImageRendererBase):
 
     def __init__(self, writing,
                        width=None, height=None,
