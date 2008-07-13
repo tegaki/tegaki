@@ -22,8 +22,8 @@ import ghmm
 import glob
 
 from tegaki.character import *
-from tegaki.array import *
-from tegaki.maths import *
+from tegaki.arrayutils import *
+from tegaki.mathutils import *
 
 from lib.exceptions import *
 

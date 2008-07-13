@@ -20,7 +20,7 @@ import os
 import ghmm
 import glob
 
-from tegaki.array import *
+from tegaki.arrayutils import *
 
 import models.basic.model
 

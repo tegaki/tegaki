@@ -21,8 +21,8 @@ import ghmm
 import glob
 import math
 
-from tegaki.array import *
-from tegaki.maths import *
+from tegaki.arrayutils import *
+from tegaki.mathutils import *
 import models.basic.model
 
 class Model(models.basic.model.Model):
