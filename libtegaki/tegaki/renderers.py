@@ -134,7 +134,18 @@ class _CairoRendererBase(object):
         self.cr.stroke()
         self.cr.restore()
 
-class _ImageRendererBase(object):
+class _SurfaceRendererBase(object):
+
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
+
+    def get_size(self):
+        return (self.width, self.height)
+
+class _ImageRendererBase(_SurfaceRendererBase):
     
     def write_to_png(self, filename):
         self.surface.write_to_png(filename)
@@ -274,28 +285,37 @@ class WritingImageRenderer(WritingCairoRenderer, _ImageRendererBase):
         """
         width and height are in pixels.
         """
+        self.width = width
+        self.height = height
+        
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         cr = cairo.Context(self.surface)
         cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
         WritingCairoRenderer.__init__(self, cr, writing)
 
-class WritingSVGRenderer(WritingCairoRenderer):
+class WritingSVGRenderer(WritingCairoRenderer, _SurfaceRendererBase):
     
     def __init__(self, writing, filename, width, height):
         """
         width and height are in points (1 point == 1/72.0 inch).
         """
+        self.width = width
+        self.height = height
+        
         self.surface = cairo.SVGSurface(filename, width, height)
         cr = cairo.Context(self.surface)
         cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
         WritingCairoRenderer.__init__(self, cr, writing)
 
-class WritingPDFRenderer(WritingCairoRenderer):
+class WritingPDFRenderer(WritingCairoRenderer, _SurfaceRendererBase):
     
     def __init__(self, writing, filename, width, height):
         """
         width and height are in points (1 point == 1/72.0 inch).
         """
+        self.width = width
+        self.height = height
+        
         self.surface = cairo.PDFSurface(filename, width, height)
         cr = cairo.Context(self.surface)
         cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
@@ -332,7 +352,7 @@ class WritingStepsImageRenderer(WritingStepsCairoRenderer, _ImageRendererBase):
     def write_to_png(self, filename):
         self.surface.write_to_png(filename)
     
-class WritingStepsSVGRenderer(WritingStepsCairoRenderer):
+class WritingStepsSVGRenderer(WritingStepsCairoRenderer, _SurfaceRendererBase):
     
     def __init__(self, writing,
                        filename,
@@ -360,7 +380,7 @@ class WritingStepsSVGRenderer(WritingStepsCairoRenderer):
                  float(self.height) / Writing.HEIGHT)
         WritingStepsCairoRenderer.__init__(self, cr, writing)
 
-class WritingStepsPDFRenderer(WritingStepsCairoRenderer):
+class WritingStepsPDFRenderer(WritingStepsCairoRenderer, _SurfaceRendererBase):
     
     def __init__(self, writing,
                        filename,
