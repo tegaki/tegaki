@@ -28,6 +28,7 @@ class _CairoRendererBase(object):
         self._init_colors()
         self.writing = writing
         self.draw_annotations = False
+        self.stroke_width = 8
 
     def _init_colors(self):
         self.handwriting_line_color = (0x0000, 0x0000, 0x0000, 1.0)
@@ -36,7 +37,7 @@ class _CairoRendererBase(object):
         self.stroke_line_color = (255, 0, 0, 0.5)
 
     def _with_handwriting_line(self):
-        self.cr.set_line_width(8)
+        self.cr.set_line_width(self.stroke_width)
         self.cr.set_line_cap(cairo.LINE_CAP_ROUND)
         self.cr.set_line_join(cairo.LINE_JOIN_ROUND)
 
@@ -54,6 +55,9 @@ class _CairoRendererBase(object):
 
     def set_draw_annotations(self, draw_annotations):
         self.draw_annotations = draw_annotations
+
+    def set_stroke_width(self, stroke_width):
+        self.stroke_width = stroke_width
 
     def draw_stroke(self, stroke, index, color, draw_annotation=False):
         l = len(stroke)
@@ -486,6 +490,7 @@ if __name__ == "__main__":
 
     for renderer in (png_renderer, svg_renderer, pdf_renderer):
         renderer.draw_background()
+        renderer.set_stroke_width(16)
         renderer.draw_writing_steps()
         
     png_renderer.write_to_png("test_steps.png")
