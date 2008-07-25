@@ -36,7 +36,7 @@ def log2n(n):
   
     return ret
 
-def rgb(color):
+def to_rgb(color):
     """
     Returns the RGB triplet for color.
     """
@@ -45,7 +45,7 @@ def rgb(color):
     b = color & 0xFF
     return (r,g,b)
 
-def color(r, g, b):
+def to_color(r, g, b):
     """
     Returns the 24bits color from the RGB triplet. 
     """
@@ -65,11 +65,34 @@ class ColorTable(object):
     def get_index(self, color):
         raise NotImplementedError
     
-    def quantize(self, data):
+    def quantize(self, data, alpha):
         """
         Returns the data quantized with the color table.
         """
-        return [self.get_index(color) for color in data]
+        quantized = []
+
+        if alpha:
+            bpp = 4
+            n = 1
+        else:
+            bpp = 3
+            n = 0
+        
+        for i in range(0, len(data), bpp):
+            r, g, b = data[i+n:i+3+n]
+            color = to_color(r, g, b)
+            quantized.append(self.get_index(color))
+            
+        return quantized
+
+    def get_rgb(self, index):
+        """
+        Returns the color at index as RGB triplet...
+        """
+        return to_rgb(self.get_color(index))
+
+    def get_alpha(self):
+        return self.alpha
     
 class SimpleColorTable(ColorTable):
     
@@ -83,7 +106,7 @@ class SimpleColorTable(ColorTable):
         for r in (0x00, 0x33, 0x66, 0x99, 0xcc, 0xff):
             for g in (0x00, 0x33, 0x66, 0x99, 0xcc, 0xff):
                 for b in (0x00, 0x33, 0x66, 0x99, 0xcc, 0xff):
-                    table.append(color(r, g, b))
+                    table.append(to_color(r, g, b))
         return table
     
     def get_color(self, index):
@@ -93,8 +116,9 @@ class SimpleColorTable(ColorTable):
         return len(self._table)
     
     def get_index(self, color):
-        r, g, b = rgb(color)
-        return (((r / 47) % 6) * 6 * 6 + ((g / 47) % 6) * 6 + ((b / 47) % 6)) # use 25 instead of 47?
+        r, g, b = to_rgb(color)
+        # use 25 = 0x33 / 2 instead of 47?
+        return (((r / 47) % 6) * 6 * 6 + ((g / 47) % 6) * 6 + ((b / 47) % 6)) 
 
 class GIFEncoder(object):
 
@@ -107,7 +131,6 @@ class GIFEncoder(object):
             self.height = None
             self.data = None
             self.color_table = None
-            self.rowstride = None
 
     def __init__(self, width, height, file):
         self.width = width
@@ -125,24 +148,27 @@ class GIFEncoder(object):
         self.color_table = color_table
 
         self._write_lsd()
+        
         self._write_color_table(color_table)
 
     def add_image(self, x, y, width, height,
-                  display_millis, data, rowstride,
+                  display_millis, data,
                   color_table=None):
 
         if x + width > self.width or width <= 0 or \
            y + height > self.height or height <= 0:
             raise TypeError
 
-        image = Image()
+        if width * height != len(data):
+            raise TypeError
+        
+        image = GIFEncoder.Image()
         image.x = x
         image.y = y
         image.width = width
         image.height = height
         image.data = data
         image.color_table = color_table
-        image.rowstride = rowstride
 
         if not color_table:
             color_table = self.color_table
@@ -153,6 +179,7 @@ class GIFEncoder(object):
         
         self._write_image_descriptor(image)
         self._write_image_data(image)
+        
 
     def set_looping(self):
         self._write_loop()
@@ -169,10 +196,10 @@ class GIFEncoder(object):
     # write routines
 
     def _write_le16(self, n):
-        self.fp.write(to_le16(n))
+        self._write(to_le16(n))
 
     def _write_byte(self, n):
-        self.fp.write(to_byte(n))
+        self._write(to_byte(n))
 
     def _write_bits(self, bits, nbits):
         if bits > 24:
@@ -196,6 +223,12 @@ class GIFEncoder(object):
         
     def _write(self, buf):
         self.fp.write(buf)
+
+    def _debug(self, buf):
+        return " ".join(["%02X" % from_byte(c) for c in buf])
+
+    def _offset(self):
+        return "%08X" % self.fp.tell()
 
     # blocks    
 
@@ -254,6 +287,7 @@ class GIFEncoder(object):
         # size = 2 ^ (value of the field + 1)
         if self.color_table:
             size = log2n(self.color_table.get_n_colors() - 1) - 1
+            print "table size", size
         else:
             size = 0
 
@@ -321,7 +355,7 @@ class GIFEncoder(object):
         #
         #    Values :    0 -   Transparent Index is not given.
         #                1 -   Transparent Index is given.
-        if color_table.aplha:
+        if color_table.get_alpha():
             self._write_bits(1, 1)
         else:
             self._write_bits(0, 1)
@@ -331,13 +365,13 @@ class GIFEncoder(object):
         # processing of the Data Stream. The clock starts ticking immediately
         # after the graphic is rendered. This field may be used in
         # conjunction with the User Input Flag field.            
-        self._write_le16(milliseconds / 10)
+        self._write_le16(display_millis / 10)
 
         # Transparency Index - The Transparency Index is such that when
         # encountered, the corresponding pixel of the display device is not
         # modified and processing goes on to the next pixel. The index is
         # present if and only if the Transparency Flag is set to 1.
-        if color_table.alpha:
+        if color_table.get_alpha():
             self._write_byte(color_table.num_colors)
         else:
             self._write_byte(0)
@@ -393,107 +427,135 @@ class GIFEncoder(object):
 
     def _write_color_table(self, color_table):
         i = color_table.get_n_colors()
-        
+        print "ncolors", i
         table_size = 1 << log2n (i - 1)
+        print "table size",table_size
 
         for i in range(self.color_table.get_n_colors()):
             for color in self.color_table.get_rgb(i):
                 self._write_byte(color)
 
-        if color_table.alpha:
+        if color_table.get_alpha():
             self._write("\272\219\001")
-
+        print table_size - i
         while i < table_size:
             self._write("\0\0\0")
             i += 1
 
+
+    class Buffer(object):
+        
+        def __init__(self, enc):
+            self.enc = enc
+            self.clear()
+            
+        def clear(self):
+            self.data = [0] * 255
+            self.n_bytes = 0
+            self.current_data = 0
+            self.n_bits = 0
+    
+        def append(self, data, n_bits):
+            assert(self.n_bits + n_bits < 24)
+    
+            self.current_data |= (data << n_bits)
+            
+            self.n_bits += n_bits
+      
+            while self.n_bits >= 8:
+                if self.n_bytes == 255:
+                    self.write()
+                
+                self.data[self.n_bytes] = self.current_data
+                
+                self.n_bits -= 8
+                self.current_data >>= 8
+                self.n_bytes += 1
+    
+        def write(self):
+            if self.n_bytes == 0:
+                return
+            
+            self.enc._write_byte(self.n_bytes)            
+            self.enc._write("".join([to_byte(d) for d in data]))
+            self.n_bytes = 0
+            
+        def flush(self):
+            if self.n_bits:
+                self.append(0, 8 - self.n_bits)
+            
+            self.write()
+            self.enc._write_byte(0) 
+
+    def _get_initial_translation_table(self, n_colors):
+        dictionary = {}
+        for i in range(n_colors):
+            dictionary[i] = i
+        return dictionary
+        
     def _write_image_data(self, image):
-        pass
-    #guint codesize, wordsize, x, y;
-    #guint next = 0, count = 0, clear, eof, hashcode, hashvalue, cur, codeword;
-    #guint8 *data;
-    ##define HASH_SIZE (5003)
-    #struct {
-        #guint value;
-        #guint code;
-    #} hash[HASH_SIZE];
-    #EncodeBuffer buffer = { { 0, }, 0, 0, 0 };
+        n_colors = self.color_table.get_n_colors()
 
-    #codesize = log2n (gifenc_color_table_get_num_colors (image->color_table ?
-        #image->color_table : enc->color_table) - 1);
-    #codesize = MAX (codesize, 2);
-    #gifenc_write_byte (enc, codesize);
-    #//g_print ("codesize with %u color_table is %u\n", enc->n_color_table,
-#codesize);
-    #clear = 1 << codesize;
-    #eof = clear + 1;
-    #codeword = cur = *image->data;
-    #//g_print ("read byte %u\n", cur);
-    #wordsize = codesize + 1;
-    #gifenc_buffer_append (enc, &buffer, clear, wordsize);
-    #if (1 == image->width) {
-        #y = 1;
-        #x = 0;
-        #data = image->data + image->rowstride;
-    #} else {
-        #y = 0;
-        #x = 1;
-        #data = image->data;
-    #}
+        codesize = log2n(n_colors)
 
-    #while (y < image->height) {
-        #count = eof + 1;
-        #next = (1 << wordsize);
-        #/* clear hash */
-        #memset (hash, 0xFF, sizeof (hash));
-        #while (y < image->height) {
-        #cur = data[x];
-        #//g_print ("read byte %u\n", cur);
-        #x++;
-        #if (x >= image->width) {
-        #y++;
-        #x = 0;
-        #data += image->rowstride;
-        #}
-        #hashcode = codeword ^ (cur << 4);
-        #hashvalue = (codeword << 8) | cur;
-    #loop:
-        #if (hash[hashcode].value == hashvalue) {
-        #codeword = hash[hashcode].code;
-        #continue;
-        #}
-        #if (hash[hashcode].value != (guint) -1) { /* not empty */
-        #hashcode = (hashcode + 0xF) % HASH_SIZE;
-        #goto loop;
-        #}
-        #/* found empty slot, put code there */
-        #hash[hashcode].value = hashvalue;
-        #hash[hashcode].code = count;
-        #//g_print ("saving as %u (%X):", count, count);
-        #gifenc_buffer_append (enc, &buffer, codeword, wordsize);
-        #count++;
-        #codeword = cur;
-        #if (count > next) {
-        #if (wordsize == 12) {
-        #gifenc_buffer_append (enc, &buffer, clear, wordsize);
-        #wordsize = codesize + 1;
-        #break;
-        #}
-        #next = MIN (next << 1, 0xFFF);
-        #wordsize++;
-        #}
-        #}
-    #}
-    #gifenc_buffer_append (enc, &buffer, codeword, wordsize);
-    #if (count == next) {
-        #wordsize++;
-        #if (wordsize > 12) {
-        #wordsize = codesize + 1;
-        #gifenc_buffer_append (enc, &buffer, clear, wordsize);
-        #}
-    #}
-    #gifenc_buffer_append (enc, &buffer, eof, wordsize);
-    #gifenc_buffer_flush (enc, &buffer);
+        # codesize should be at least 2 even if there's only one color
+        codesize = max(2, codesize)
+
+        self._write_byte(codesize)
+
+        # clear is a number that is used to tell the decoder
+        # to clear the compression table
+        # should be 256 for a 256-color palette
+        clear = n_colors 
+
+        # eof is a number to tell the decoder to stop decompression
+        eof = clear + 1
+
+        wordsize = codesize + 1 # should be 9 for a 256-color palette
+
+        buff = GIFEncoder.Buffer(self)
+
+        buff.append(clear, wordsize)
+
+        # when next is reached, we need to increment
+        # the number of necessary bits
+        next = 1 << wordsize  
+
+        # initialize dictionary
+        dictionary = self._get_initial_translation_table(n_colors)
+        dict_size = n_colors   
+
+        codeword = 0    
+        for cur in image.data:
+            key = (codeword << 8) | cur
+                
+            if key in dictionary:
+                codeword = key
+            else:                                           
+                buff.append(dictionary[codeword], wordsize)
+
+                dictionary[key] = dict_size
+                dict_size += 1
+        
+                codeword = cur
+            
+                if dict_size > next:            
+                    if wordsize == 12:
+                        buff.append(clear, wordsize)
+                        wordsize = codesize + 1
+                        next = 1 << wordsize
+                        dict_size = n_colors
+                        dictionary = \
+                            self._get_initial_translation_table(n_colors)
+                        buff.clear()
+                    else:
+                        next = max(next << 1, 0xFFF)
+                        wordsize += 1
+                
+        buff.append(codeword, wordsize)
+
+        buff.append(eof, wordsize)
+        buff.flush()
 
     def _write_loop(self):
         # Identifies the block as an extension
@@ -534,11 +596,28 @@ class GIFEncoder(object):
                         
 
 if __name__ == "__main__":
-    #enc = GIFEncoder(1280, 800, "test.gif")
-    #color_table = ColorTable()
-    #enc.set_color_table(color_table)
-    #enc.close()
+    import sys
+    from gtk import gdk
+    import numpy
+
+    if len(sys.argv) < 2:
+        print "Need an image as first argument"
+        sys.exit(1)
+
+    image_file = sys.argv[1]
+
+    pixbuf = gdk.pixbuf_new_from_file(image_file)
+    width = pixbuf.get_width()
+    height = pixbuf.get_height()
+    alpha = pixbuf.get_has_alpha()
+
     color_table = SimpleColorTable()
-    i = color_table.get_index(color(29, 100, 120))
-    print rgb(color_table.get_color(i))
+
+    data = numpy.frombuffer(pixbuf.get_pixels(), numpy.uint8)
+    data = color_table.quantize(data, alpha)
+
+    enc = GIFEncoder(width, height, "test.gif")
+    enc.set_color_table(color_table)
+    enc.add_image(0, 0, width, height, 5000, data)
+    enc.close()
     
