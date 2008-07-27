@@ -78,8 +78,59 @@
                 assertEquals(stroke.toXML(), expected);
             }
 
+            function testWritingToXML() {
+                var writing = new Writing();
+
+                var point = new Point();
+                point.x = 2;
+                point.y = 4;
+                point.timestamp = 0;
+
+                var point2 = new Point();
+                point2.x = 4;
+                point2.y = 5;
+                point2.timestamp = 10;
+
+                var point3 = new Point();
+                point3.x = 20;
+                point3.y = 30;
+                point3.timestamp = 15;
+
+                var point4 = new Point();
+                point4.x = 22;
+                point4.y = 40;
+                point4.timestamp = 22;
+
+                var point5 = new Point();
+                point5.x = 100;
+                point5.y = 1000;
+                point5.timestamp = 38;
+
+                writing.moveToPoint(point);            
+                writing.lineToPoint(point2);
+                writing.lineToPoint(point3);
+
+                writing.moveToPoint(point4);
+                writing.lineToPoint(point5);
+
+                s = "<strokes>\n"
+                s += "  <stroke>\n"
+                s += "    <point x=\"2\" y=\"4\" timestamp=\"0\" />\n"
+                s += "    <point x=\"4\" y=\"5\" timestamp=\"10\" />\n"
+                s += "    <point x=\"20\" y=\"30\" timestamp=\"15\" />\n"
+                s += "  </stroke>\n"
+                s += "  <stroke>\n"
+                s += "    <point x=\"22\" y=\"40\" timestamp=\"22\" />\n"
+                s += "    <point x=\"100\" y=\"1000\" timestamp=\"38\" />\n"
+                s += "  </stroke>\n"
+                s += "</strokes>"
+
+                assertEquals(writing.toXML(), s);
+            }
+
             try {
-                tests = ["testPointToXML", "testStrokeToXML"];
+                tests = ["testPointToXML", "testStrokeToXML",
+                         "testWritingToXML"];
 
                 for (var i = 0; i < tests.length; i++) {
                     document.write("<br /><br />" + tests[i] + " ");

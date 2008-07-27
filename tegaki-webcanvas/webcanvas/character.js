@@ -48,10 +48,12 @@ var Stroke = function() {
 Stroke.prototype = new Array;
 
 Stroke.prototype.getDuration = function() {
-    len = this.length;
-    if (len > 0)
-        if (this[len] != null && this[0] != null)
-            return (this[len] - this[0]);
+    if (this.length > 0) {
+        last = this.length - 1;
+
+        if (this[last] != null && this[0] != null)
+            return (this[last] - this[0]);
+    }
     return null;
 }
 
@@ -77,12 +79,12 @@ var Writing = function() {
 }
 
 Writing.prototype.getDuration = function() {
-    var len = this.strokes.length;
-    var lenp = this.strokes[len].length;
-    if (len > 0)
+    var last = this.strokes.length - 1;
+    var lastp = this.strokes[last].length - 1;
+    if (this.strokes.length > 0)
         if (this.strokes[0][0].timestamp != null &&
-            this.strokes[len][lenp].timestamp != null)
-            return (this.strokes[len][lenp].timestamp -
+            this.strokes[last][lastp].timestamp != null)
+            return (this.strokes[last][lastp].timestamp -
                     this.strokes[0][0].timestamp);
     return null;
 }
@@ -96,13 +98,13 @@ Writing.prototype.getStrokes = function() {
 }
 
 Writing.prototype.moveToPoint = function(point) {
-    var stroke = new Stroke();
+    var stroke = new Stroke();     
     stroke.appendPoint(point);
     this.appendStroke(stroke);
 }
 
 Writing.prototype.lineToPoint = function(point) {
-    this.strokes[this.strokes.length].appendPoint(point);
+    this.strokes[this.strokes.length - 1].appendPoint(point);
 }
         
 Writing.prototype.appendStroke = function(stroke) {
@@ -123,9 +125,9 @@ Writing.prototype.toXML = function() {
 
     for (var i = 0; i < this.strokes.length; i++) {
         var lines = this.strokes[i].toXML().split("\n");
-
+        
         for (var j = 0; j < lines.length; j++)
-            s += "  " + this.lines[j] + "\n";
+            s += "  " + lines[j] + "\n";
     }
 
     s += "</strokes>";
