@@ -163,9 +163,21 @@
                 assertEquals(character.toXML(), CHAR);
             }
 
+            function testDuration() {
+                var writing = _getWriting();
+                var stroke1 = writing.getStrokes()[0];
+                var stroke2 = writing.getStrokes()[1];
+
+                assertEquals(stroke1.getDuration(), 15);
+                assertEquals(stroke2.getDuration(), 16);
+
+                assertEquals(writing.getDuration(), 38);
+            }
+
             try {
                 tests = ["testPointToXML", "testStrokeToXML",
-                         "testWritingToXML", "testCharacterToXML"];
+                         "testWritingToXML", "testCharacterToXML",
+                         "testDuration"];
 
                 for (var i = 0; i < tests.length; i++) {
                     document.write("<br /><br />" + tests[i] + " ");

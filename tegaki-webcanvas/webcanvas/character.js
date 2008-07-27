@@ -51,8 +51,8 @@ Stroke.prototype.getDuration = function() {
     if (this.length > 0) {
         last = this.length - 1;
 
-        if (this[last] != null && this[0] != null)
-            return (this[last] - this[0]);
+        if (this[last].timestamp != null && this[0].timestamp != null)
+            return (this[last].timestamp - this[0].timestamp);
     }
     return null;
 }
