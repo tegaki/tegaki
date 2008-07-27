@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <title>Character.js test</title>
+        <script type="text/javascript"
+                src="webcanvas/character.js"></script>
+
+        <script type="text/javascript">
+
+            function AssertException(message) { this.message = message; }
+
+            AssertException.prototype.toString = function () {
+                return 'AssertException: ' + this.message;
+            }
+
+            function assert(exp, msg) {
+                if (!exp) {
+                    document.write("F");
+                    throw new AssertException(msg);
+                }
+                else
+                    document.write(".");
+            }
+
+            function assertEquals(leftop, rightop) {
+                msg = leftop.toString().quote() + " != " +
+                      rightop.toString().quote();
+
+                assert(leftop == rightop, msg);
+            }
+
+            function printEscapeTags(xml) {
+                xml = xml.replace("<", "&lt;");
+                xml = xml.replace(">", "&gt;");
+                document.write(xml);
+            }
+
+            String.prototype.quote = function() {
+                return "\"" + this.replace('"', '\\"') + "\"";
+            }
+
+        </script>
+
+    </head>
+
+    <body>
+        <script type="text/javascript">
+
+            function testPointToXML() {
+                var point = new Point();
+                point.x = 2;
+                point.y = 4;
+
+                var expected = "<point x=\"2\" y=\"4\" />";
+                assertEquals(point.toXML(), expected);
+
+                point = new Point();
+                point.x = 4;
+                point.y = 5;
+                point.timestamp = 6
+
+                expected = "<point x=\"4\" y=\"5\" timestamp=\"6\" />";
+                assertEquals(point.toXML(), expected);
+            }
+
+            function testStrokeToXML() {
+                var point = new Point();
+                point.x = 2;
+                point.y = 4;
+                point.timestamp = 0;
+
+                var point2 = new Point();
+                point2.x = 4;
+                point2.y = 5;
+                point2.timestamp = 10;
+
+                var stroke = Stroke();
+                //stroke.appendPoint(point);
+                //stroke.appendPoint(point2);
+
+                assertEquals(stroke.toXML(), "");
+            }
+
+            try {
+                tests = ["testPointToXML", "testStrokeToXML"];
+
+                for (var i = 0; i < tests.length; i++) {
+                    document.write("<br /><br />" + tests[i] + " ");
+                    eval(tests[i]).call();
+                }
+
+            }
+            catch (e) {
+                if (e instanceof AssertException) {
+                    document.write("<br /><br />AssertException: ");
+                    printEscapeTags(e.message);
+                }
+            }
+
+        </script>
+    </body>
+</html>
