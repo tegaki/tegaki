@@ -60,7 +60,7 @@ Stroke.prototype.appendPoint = function(point) {
 }
 
 Stroke.prototype.toXML = function() {
-    var s = "<stroke>";
+    var s = "<stroke>\n";
 
     for (var i=0; i < this.length; i++)
         s += "  " + this[i].toXML() + "\n";

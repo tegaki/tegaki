@@ -28,12 +28,6 @@
                 assert(leftop == rightop, msg);
             }
 
-            function printEscapeTags(xml) {
-                xml = xml.replace("<", "&lt;");
-                xml = xml.replace(">", "&gt;");
-                document.write(xml);
-            }
-
             String.prototype.quote = function() {
                 return "\"" + this.replace('"', '\\"') + "\"";
             }
@@ -73,11 +67,15 @@
                 point2.y = 5;
                 point2.timestamp = 10;
 
-                var stroke = Stroke();
-                //stroke.appendPoint(point);
-                //stroke.appendPoint(point2);
+                var stroke = new Stroke();
+                stroke.appendPoint(point);
+                stroke.appendPoint(point2);
 
-                assertEquals(stroke.toXML(), "");
+                var expected = "<stroke>\n";
+                expected += "  <point x=\"2\" y=\"4\" timestamp=\"0\" />\n";
+                expected += "  <point x=\"4\" y=\"5\" timestamp=\"10\" />\n";
+                expected += "</stroke>"
+                assertEquals(stroke.toXML(), expected);
             }
 
             try {
@@ -91,8 +89,7 @@
             }
             catch (e) {
                 if (e instanceof AssertException) {
-                    document.write("<br /><br />AssertException: ");
-                    printEscapeTags(e.message);
+                    alert("AssertException\n" + e.message);
                 }
             }
 
