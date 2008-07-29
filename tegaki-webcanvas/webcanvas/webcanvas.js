@@ -16,83 +16,138 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-buttonPressed = false
+/* Internal canvas size */
+CANVAS_WIDTH = 1000;
+CANVAS_HEIGHT = 1000;
 
-function _withHandwritingLine(ctx) {
-    ctx.strokeStyle = "rgb(0, 0, 0)";
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+WebCanvas = function(canvas) {
+	this.canvas = canvas;
+	this.ctx = canvas.getContext("2d");
+	
+	this.internal2real_scalex = canvas.width * 1.0 / CANVAS_WIDTH;
+	this.internal2real_scaley = canvas.height * 1.0 / CANVAS_HEIGHT;
+	
+	this.real2internal_scalex = 1.0 / this.internal2real_scalex;
+	this.real2internal_scaley = 1.0 / this.internal2real_scaley;	
+	
+	this.writing = new Writing();
+	this.buttonPressed = false;
+	this.first_point_time = null;
+	
+	this._initListeners();
 }
 
-function _withAxisLine(ctx) {
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-    ctx.lineWidth = 4;
-    //ctx.set_dash ([8, 8], 2);
-    ctx.lineCap = "butt";
-    ctx.lineJoin = "round";
+WebCanvas.prototype._withHandwritingLine = function() {
+    this.ctx.strokeStyle = "rgb(0, 0, 0)";
+    this.ctx.lineWidth = 4;
+    this.ctx.lineCap = "round";
+    this.ctx.lineJoin = "round";
 }
 
-function _drawAxis(ctx) {
-    ctx.save();
-
-    _withAxisLine(ctx);
-
-    ctx.moveTo(500, 0);
-    ctx.lineTo(500, 1000);
-    ctx.moveTo(0, 500);
-    ctx.lineTo(1000, 500);
-
-    ctx.stroke();
-    ctx.restore();
+WebCanvas.prototype._withAxisLine = function() {
+    this.ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+    this.ctx.lineWidth = 4;
+    //this.ctx.set_dash ([8, 8], 2);
+    this.ctx.lineCap = "butt";
+    this.ctx.lineJoin = "round";
 }
 
-function _initListeners(canvas) {
-    if (canvas.attachEvent) {
-        canvas.attachEvent("onmousemove", onMove);
-        canvas.attachEvent("onmousedown", onButtonPressed);
-        canvas.attachEvent("onmouseup", onButtonReleased);
+WebCanvas.prototype._drawBackground = function() {
+	this.ctx.save();
+	this.ctx.fillStyle = "rgb(255,255,255)";
+	this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+	this.ctx.restore();
+}
+
+WebCanvas.prototype._drawAxis = function() {
+    this.ctx.save();
+
+    this._withAxisLine();
+
+    this.ctx.moveTo(CANVAS_WIDTH / 2, 0);
+    this.ctx.lineTo(CANVAS_WIDTH / 2, CANVAS_HEIGHT);
+    this.ctx.moveTo(0, CANVAS_HEIGHT / 2);
+    this.ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT / 2);
+
+    this.ctx.stroke();
+    this.ctx.restore();
+}
+
+WebCanvas.prototype._initListeners = function() {
+	
+	function callback(webcanvas, func) {
+		/* Without this trick, "this" in the callback refers to the canvas HTML object.
+		     With this trick, "this" refers to the WebCanvas object! */
+		return function(event) {
+			func.apply(webcanvas, [event]);
+		}
+	}
+	
+    if (this.canvas.attachEvent) {
+        this.canvas.attachEvent("onmousemove", callback(this, this.onMove));
+        this.canvas.attachEvent("onmousedown", callback(this, this.onButtonPressed));
+        this.canvas.attachEvent("onmouseup", callback(this, this.onButtonReleased));
     }
-    else if (canvas.addEventListener) {
-        canvas.addEventListener("mousemove", onMove, false);
-        canvas.addEventListener("mousedown", onButtonPressed, false);
-        canvas.addEventListener("mouseup", onButtonReleased, false);
+    else if (this.canvas.addEventListener) {
+        this.canvas.addEventListener("mousemove", callback(this, this.onMove), false);
+        this.canvas.addEventListener("mousedown", callback(this, this.onButtonPressed), false);
+        this.canvas.addEventListener("mouseup", callback(this, this.onButtonReleased), false);
     }
     else
         alert("Your browser does not support interaction.");
 }
 
-function onButtonPressed(event) {
-    buttonPressed = true
+WebCanvas.prototype.onButtonPressed = function(event) {
+    this.buttonPressed = true;
 
-    var position = _getRelativePosition(event);
+    var position = this._getRelativePosition(event);
 
-    canvas = document.getElementById("webcanvas");
-    ctx = canvas.getContext("2d");
-
-    ctx.moveTo(position.x, position.y);
+    this.ctx.moveTo(position.x, position.y);
+		
+	var point = new Point();
+		point.x = Math.round(position.x * this.real2internal_scalex);
+		point.y = Math.round(position.y * this.real2internal_scalex);
+	
+	var now = new Date();
+	
+	if (this.writing.getNStrokes() == 0) {		
+		this.first_point_time = now.getTime();
+        point.timestamp = 0;
+	}
+	else {
+		point.timestamp = now.getTime() - this.first_point_time;
+	}
+	
+	this.writing.moveToPoint(point);
 }
 
-function onButtonReleased(event) {
-    buttonPressed = false
+WebCanvas.prototype.onButtonReleased = function(event) {
+    this.buttonPressed = false;
 }
 
-function onMove(event) {
-    if (buttonPressed) {
-        canvas = document.getElementById("webcanvas");
-        ctx = canvas.getContext("2d");
+WebCanvas.prototype.onMove = function(event) {
+    if (this.buttonPressed) {
+        var position = this._getRelativePosition(event);
 
-        var position = _getRelativePosition(event);
+        this.ctx.save();
+        this._withHandwritingLine();
+        this.ctx.lineTo(position.x, position.y);
+        this.ctx.stroke();
+		
+		var point = new Point();
+		point.x = Math.round(position.x * this.real2internal_scalex);
+		point.y = Math.round(position.y * this.real2internal_scalex);
+		
+		var now = new Date();
+		
+		point.timestamp = now.getTime() - this.first_point_time;
 
-        ctx.save();
-        _withHandwritingLine(ctx);
-        ctx.lineTo(position.x, position.y);
-        ctx.stroke();
+        this.writing.lineToPoint(point);
     }
 }
 
-function _getRelativePosition(event) {
-    var t = document.getElementById("webcanvas");
+WebCanvas.prototype._getRelativePosition = function(event) {
+    var t = this.canvas;
     var x = event.clientX + (window.pageXOffset || 0);
     var y = event.clientY + (window.pageYOffset || 0);
 
@@ -104,23 +159,23 @@ function _getRelativePosition(event) {
     return {"x":x,"y":y};
 }
 
-function draw() {
-    canvas = document.getElementById("webcanvas");
+WebCanvas.prototype.getWriting = function() {
+	return this.writing;
+}
 
-    if (canvas.getContext) {
-        ctx = canvas.getContext("2d");
+WebCanvas.prototype.setWriting = function(w) {
+	this.writing = w;
+}
 
-        _initListeners(canvas);
+WebCanvas.prototype.clear = function() {
+	this.writing = new Writing();
+	this.draw();
+}
 
-        scalex = canvas.width / 1000;
-        scaley = canvas.height / 1000;
-
-        ctx.save();
-
-        ctx.scale(scalex, scaley);
-
-        _drawAxis(ctx);
-
-        ctx.restore();
-    }
+WebCanvas.prototype.draw = function() {
+	this.ctx.save();
+	this.ctx.scale(this.internal2real_scalex, this.internal2real_scaley);
+	this._drawBackground();	
+	this._drawAxis();		
+	this.ctx.restore();
 }

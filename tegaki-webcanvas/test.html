@@ -4,15 +4,68 @@
         <style type="text/css">
             canvas { border: 1px solid black; }
         </style>
+		<script type="text/javascript" 
+		        src="webcanvas/excanvas.js"></script>
+        <script type="text/javascript"
+                src="webcanvas/character.js"></script>		
         <script type="text/javascript"
                 src="webcanvas/webcanvas.js"></script>
+				
+        <script type="text/javascript">
+		    var webcanvas = null;
+						
+			function canvasLoad() {			
+				var canvas = document.getElementById("webcanvas");
+				
+				if (canvas.getContext) {
+					webcanvas = new WebCanvas(canvas);
+					webcanvas.draw();
+				}
+			}
+			
+			function canvasToXML() {
+				if (webcanvas) {
+					var writing = webcanvas.getWriting();
+					
+					var output_textarea = document.getElementById("output_textarea");
+					
+					output_textarea.value = writing.toXML();
+				}
+			}
+			
+			function canvasClear() {
+				if (webcanvas) {
+					webcanvas.clear();
+					document.getElementById("output_textarea").value = "";
+				}				
+			}
+		</script>				
     </head>
 
-    <body onload="draw();">
+    <body onload="canvasLoad();">
 
-        <canvas id="webcanvas" width="400" height="400">
-        Fallback content (can be an img tag)
-        </canvas>
-
+		<table width="60%" border="1">
+			<tr>
+				<th>Canvas</th>
+				<th>Commands</th>
+			</tr>
+			<tr>
+				<td>
+			        <canvas id="webcanvas" width="400" height="400">
+			        Fallback content (can be an img tag)
+			        </canvas>
+				</td>
+				<td>
+					<ul>
+						<li><a href="#" onClick="canvasToXML();">to XML</a></li>
+						<li><a href="#" onClick="canvasClear();">clear</a></li>
+					</ul>
+				</td>
+			</tr>
+		</table>
+		
+		<p><strong>Output</strong></p>
+		
+		<textarea rows="20" cols="60" id="output_textarea"></textarea>
     </body>
 </html>
