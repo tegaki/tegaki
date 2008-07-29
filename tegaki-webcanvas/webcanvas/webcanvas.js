@@ -76,22 +76,31 @@ WebCanvas.prototype._drawAxis = function() {
 WebCanvas.prototype._initListeners = function() {
 	
 	function callback(webcanvas, func) {
-		/* Without this trick, "this" in the callback refers to the canvas HTML object.
-		     With this trick, "this" refers to the WebCanvas object! */
+		/* Without this trick, "this" in the callback refers to
+           the canvas HTML object.
+		   With this trick, "this" refers to the WebCanvas object! */
 		return function(event) {
 			func.apply(webcanvas, [event]);
 		}
 	}
 	
     if (this.canvas.attachEvent) {
-        this.canvas.attachEvent("onmousemove", callback(this, this.onMove));
-        this.canvas.attachEvent("onmousedown", callback(this, this.onButtonPressed));
-        this.canvas.attachEvent("onmouseup", callback(this, this.onButtonReleased));
+        this.canvas.attachEvent("onmousemove",
+                                callback(this, this.onMove));
+        this.canvas.attachEvent("onmousedown",
+                                callback(this, this.onButtonPressed));
+        this.canvas.attachEvent("onmouseup",
+                                callback(this, this.onButtonReleased));
     }
     else if (this.canvas.addEventListener) {
-        this.canvas.addEventListener("mousemove", callback(this, this.onMove), false);
-        this.canvas.addEventListener("mousedown", callback(this, this.onButtonPressed), false);
-        this.canvas.addEventListener("mouseup", callback(this, this.onButtonReleased), false);
+        this.canvas.addEventListener("mousemove",
+                                     callback(this, this.onMove), false);
+        this.canvas.addEventListener("mousedown",
+                                     callback(this, this.onButtonPressed),
+                                              false);
+        this.canvas.addEventListener("mouseup",
+                                     callback(this, this.onButtonReleased),
+                                     false);
     }
     else
         alert("Your browser does not support interaction.");
