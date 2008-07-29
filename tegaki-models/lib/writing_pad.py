@@ -43,6 +43,9 @@ class WritingPad(object):
                 text = " ".join(res)
                 self.label.set_text(text)
 
+    def canvas_set_writing(self, writing):
+        self.canvas.set_writing(writing)
+
     def clear_label(self):
         self.label.set_text("")
 
@@ -54,8 +57,6 @@ class WritingPad(object):
 
     def __init__(self, find_method=None):
         self.find_method = find_method
-        
-        os.close(0) # fixes bug with python2.5 and pygtk in debian
         
         # window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)

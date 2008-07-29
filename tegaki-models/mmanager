@@ -94,6 +94,12 @@ def writing_to_xml(writing):
     character.set_writing(writing)
     return character.to_xml()
 
+def writing_to_json(writing):
+    character = Character()
+    character.set_utf8("?")
+    character.set_writing(writing)
+    return character.to_json() 
+
 def xml_to_writing(xml):
     character = Character()
     character.read_string(xml)
@@ -138,6 +144,9 @@ parser.add_option("-v", "--verbose",
 parser.add_option("-s", "--stdin",
                   action="store_true", dest="stdin", default=False,
                   help="read character xml from stdin")
+parser.add_option("-j", "--json",
+                  action="store_true", dest="json", default=False,
+                  help="output to json instead of xml")
 
 (options, args) = parser.parse_args()
 
@@ -163,11 +172,20 @@ if len(args) == 1:
     elif command == "pad":
         from lib.writing_pad import WritingPad
 
-        def print_xml(writing):
-            print writing_to_xml(writing)
+        def output_writing(writing):
+            if options.json:
+                print writing_to_json(writing)
+            else:
+                print writing_to_xml(writing)
             sys.stdout.flush()
-            
-        pad = WritingPad(print_xml)
+
+        pad = WritingPad(output_writing)
+
+        if options.stdin and not options.json:
+            xml = sys.stdin.read()
+            initial_writing = xml_to_writing(xml)
+            pad.canvas_set_writing(initial_writing)
+
         pad.run()
 
     else:
