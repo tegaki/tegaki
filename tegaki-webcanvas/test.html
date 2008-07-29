@@ -4,69 +4,332 @@
         <style type="text/css">
             canvas { border: 1px solid black; }
         </style>
-		<script type="text/javascript" 
-		        src="webcanvas/excanvas.js"></script>
         <script type="text/javascript"
-                src="webcanvas/character.js"></script>		
+                src="webcanvas/excanvas.js"></script>
+        <script type="text/javascript"
+                src="webcanvas/json2.js"></script>
+        <script type="text/javascript"
+                src="webcanvas/character.js"></script>    
         <script type="text/javascript"
                 src="webcanvas/webcanvas.js"></script>
-				
+    
         <script type="text/javascript">
-		    var webcanvas = null;
-						
-			function canvasLoad() {			
-				var canvas = document.getElementById("webcanvas");
-				
-				if (canvas.getContext) {
-					webcanvas = new WebCanvas(canvas);
-					webcanvas.draw();
-				}
-			}
-			
-			function canvasToXML() {
-				if (webcanvas) {
-					var writing = webcanvas.getWriting();
-					
-					var output_textarea = document.
+            var webcanvas = null;
+    
+            function canvasLoad() {
+                var canvas = document.getElementById("webcanvas");
+    
+                if (canvas.getContext) {
+                    webcanvas = new WebCanvas(canvas);
+                    webcanvas.draw();
+                }
+            }
+
+            function writingToXML(writing) {
+                var char = new Character();
+                char.setUTF8("?");
+                char.setWriting(writing);
+                return char.toXML();
+            }
+    
+            function canvasToXML() {
+                if (webcanvas) {
+                    var writing = webcanvas.getWriting();
+    
+                    var output_textarea = document.
                                           getElementById("output_textarea");
-					
-					output_textarea.value = writing.toXML();
-				}
-			}
-			
-			function canvasClear() {
-				if (webcanvas) {
-					webcanvas.clear();
-					document.getElementById("output_textarea").value = "";
-				}				
-			}
-		</script>				
+    
+                    output_textarea.value = writingToXML(writing);
+                }
+            }
+
+            function canvasLoadJSON() {
+                if (webcanvas) {
+                    var input_textarea = document.
+                                         getElementById("input_textarea");
+
+                    var json = JSON.parse(input_textarea.value);
+
+                    var char = new Character();
+                    char.copy(json);
+
+                    webcanvas.setWriting(char.getWriting());
+                }   
+           
+            }
+    
+            function canvasClear() {
+                if (webcanvas) {
+                    webcanvas.clear();
+                    document.getElementById("output_textarea").value = "";
+                }
+            }
+        </script>
     </head>
 
     <body onload="canvasLoad();">
 
-		<table width="60%" border="1">
-			<tr>
-				<th>Canvas</th>
-				<th>Commands</th>
-			</tr>
-			<tr>
-				<td>
-			        <canvas id="webcanvas" width="400" height="400">
-			        Fallback content (can be an img tag)
-			        </canvas>
-				</td>
-				<td>
-					<ul>
-						<li><a href="#" onClick="canvasToXML();">to XML</a></li>
-						<li><a href="#" onClick="canvasClear();">clear</a></li>
-					</ul>
-				</td>
-			</tr>
-		</table>
-		
-		<p><strong>Output</strong></p>
-		
-		<textarea rows="20" cols="60" id="output_textarea"></textarea>
+        <table width="60%" border="1">
+            <tr>
+                <th>Canvas</th>
+                <th>Commands</th>
+            </tr>
+            <tr>
+                <td>
+                    <canvas id="webcanvas" width="400" height="400">
+                    Fallback content (can be an img tag)
+                    </canvas>
+                </td>
+                <td>
+                    <ul>
+                        <li><a href="#" onClick="canvasToXML();">to XML</a></li>
+                        <li><a href="#" onClick="canvasClear();">clear</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <th>Output (XML)</th>
+                <th>Input (JSON)</th>
+            </tr>
+            <tr>
+                <td>
+                  <textarea rows="20" cols="60" id="output_textarea">
+                  </textarea>
+                </td>
+                <td>
+                    <textarea rows="20" cols="60" id="input_textarea">
+{"utf8" : "?", "writing" : {"strokes" : [[{ "x" : 256, "y" : 266, "timestamp" :
+0 },{ "x" : 260, "y" : 266, "timestamp" : 46 },{ "x" : 263, "y" : 266,
+"timestamp" : 54 },{ "x" : 266, "y" : 266, "timestamp" : 62 },{ "x" : 273, "y" :
+266, "timestamp" : 70 },{ "x" : 280, "y" : 266, "timestamp" : 78 },{ "x" : 290,
+"y" : 266, "timestamp" : 86 },{ "x" : 296, "y" : 266, "timestamp" : 94 },{ "x" :
+323, "y" : 266, "timestamp" : 102 },{ "x" : 350, "y" : 266, "timestamp" : 110
+},{ "x" : 356, "y" : 266, "timestamp" : 118 },{ "x" : 383, "y" : 266,
+"timestamp" : 126 },{ "x" : 390, "y" : 266, "timestamp" : 134 },{ "x" : 400, "y"
+: 266, "timestamp" : 142 },{ "x" : 403, "y" : 266, "timestamp" : 150 },{ "x" :
+413, "y" : 266, "timestamp" : 158 },{ "x" : 420, "y" : 266, "timestamp" : 166
+},{ "x" : 430, "y" : 266, "timestamp" : 174 },{ "x" : 436, "y" : 266,
+"timestamp" : 182 },{ "x" : 443, "y" : 266, "timestamp" : 190 },{ "x" : 450, "y"
+: 266, "timestamp" : 198 },{ "x" : 453, "y" : 266, "timestamp" : 206 },{ "x" :
+460, "y" : 266, "timestamp" : 214 },{ "x" : 466, "y" : 266, "timestamp" : 222
+},{ "x" : 476, "y" : 266, "timestamp" : 230 },{ "x" : 486, "y" : 266,
+"timestamp" : 238 },{ "x" : 493, "y" : 266, "timestamp" : 246 },{ "x" : 503, "y"
+: 266, "timestamp" : 254 },{ "x" : 510, "y" : 266, "timestamp" : 262 },{ "x" :
+536, "y" : 266, "timestamp" : 270 },{ "x" : 540, "y" : 266, "timestamp" : 278
+},{ "x" : 566, "y" : 266, "timestamp" : 286 },{ "x" : 573, "y" : 266,
+"timestamp" : 294 },{ "x" : 583, "y" : 266, "timestamp" : 302 },{ "x" : 593, "y"
+: 266, "timestamp" : 310 },{ "x" : 596, "y" : 266, "timestamp" : 318 },{ "x" :
+606, "y" : 266, "timestamp" : 326 },{ "x" : 610, "y" : 266, "timestamp" : 334
+},{ "x" : 620, "y" : 266, "timestamp" : 342 },{ "x" : 626, "y" : 270,
+"timestamp" : 350 },{ "x" : 630, "y" : 270, "timestamp" : 358 },{ "x" : 636, "y"
+: 270, "timestamp" : 366 },{ "x" : 640, "y" : 270, "timestamp" : 374 },{ "x" :
+646, "y" : 270, "timestamp" : 382 },{ "x" : 653, "y" : 270, "timestamp" : 390
+},{ "x" : 660, "y" : 270, "timestamp" : 398 },{ "x" : 663, "y" : 270,
+"timestamp" : 406 },{ "x" : 670, "y" : 270, "timestamp" : 414 },{ "x" : 676, "y"
+: 270, "timestamp" : 422 },{ "x" : 683, "y" : 270, "timestamp" : 430 },{ "x" :
+690, "y" : 270, "timestamp" : 438 },{ "x" : 693, "y" : 270, "timestamp" : 446
+},{ "x" : 696, "y" : 270, "timestamp" : 462 },{ "x" : 700, "y" : 270,
+"timestamp" : 470 },{ "x" : 703, "y" : 270, "timestamp" : 534 },{ "x" : 706, "y"
+: 270, "timestamp" : 542 },{ "x" : 710, "y" : 270, "timestamp" : 558 },{ "x" :
+713, "y" : 270, "timestamp" : 566 },{ "x" : 716, "y" : 270, "timestamp" : 582
+},{ "x" : 720, "y" : 270, "timestamp" : 590 },{ "x" : 723, "y" : 270,
+"timestamp" : 598 },{ "x" : 726, "y" : 270, "timestamp" : 606 },{ "x" : 730, "y"
+: 270, "timestamp" : 613 },{ "x" : 733, "y" : 270, "timestamp" : 622 },{ "x" :
+736, "y" : 270, "timestamp" : 630 },{ "x" : 740, "y" : 270, "timestamp" : 638
+},{ "x" : 743, "y" : 266, "timestamp" : 734 },{ "x" : 746, "y" : 266,
+"timestamp" : 742 },{ "x" : 750, "y" : 266, "timestamp" : 750 },{ "x" : 753, "y"
+: 266, "timestamp" : 758 },{ "x" : 760, "y" : 263, "timestamp" : 766 },{ "x" :
+763, "y" : 263, "timestamp" : 774 },{ "x" : 766, "y" : 263, "timestamp" : 782
+},{ "x" : 770, "y" : 263, "timestamp" : 790 },{ "x" : 773, "y" : 263,
+"timestamp" : 798 }], [{ "x" : 483, "y" : 103, "timestamp" : 1696 },{ "x" : 483,
+"y" : 106, "timestamp" : 1702 },{ "x" : 483, "y" : 110, "timestamp" : 1710 },{
+"x" : 483, "y" : 113, "timestamp" : 1718 },{ "x" : 483, "y" : 120, "timestamp" :
+1726 },{ "x" : 483, "y" : 130, "timestamp" : 1734 },{ "x" : 483, "y" : 133,
+"timestamp" : 1742 },{ "x" : 483, "y" : 143, "timestamp" : 1750 },{ "x" : 483,
+"y" : 150, "timestamp" : 1758 },{ "x" : 483, "y" : 160, "timestamp" : 1766 },{
+"x" : 486, "y" : 166, "timestamp" : 1774 },{ "x" : 486, "y" : 193, "timestamp" :
+1782 },{ "x" : 486, "y" : 196, "timestamp" : 1790 },{ "x" : 493, "y" : 223,
+"timestamp" : 1798 },{ "x" : 493, "y" : 233, "timestamp" : 1806 },{ "x" : 496,
+"y" : 236, "timestamp" : 1814 },{ "x" : 496, "y" : 263, "timestamp" : 1822 },{
+"x" : 496, "y" : 266, "timestamp" : 1830 },{ "x" : 496, "y" : 276, "timestamp" :
+1838 },{ "x" : 496, "y" : 280, "timestamp" : 1846 },{ "x" : 496, "y" : 290,
+"timestamp" : 1854 },{ "x" : 496, "y" : 300, "timestamp" : 1862 },{ "x" : 496,
+"y" : 306, "timestamp" : 1870 },{ "x" : 496, "y" : 313, "timestamp" : 1878 },{
+"x" : 496, "y" : 320, "timestamp" : 1886 },{ "x" : 496, "y" : 330, "timestamp" :
+1894 },{ "x" : 496, "y" : 333, "timestamp" : 1902 },{ "x" : 496, "y" : 343,
+"timestamp" : 1910 },{ "x" : 496, "y" : 346, "timestamp" : 1918 },{ "x" : 496,
+"y" : 356, "timestamp" : 1926 },{ "x" : 496, "y" : 363, "timestamp" : 1934 },{
+"x" : 496, "y" : 366, "timestamp" : 1942 },{ "x" : 496, "y" : 376, "timestamp" :
+1950 },{ "x" : 496, "y" : 380, "timestamp" : 1958 },{ "x" : 496, "y" : 386,
+"timestamp" : 1966 },{ "x" : 496, "y" : 390, "timestamp" : 1974 },{ "x" : 496,
+"y" : 400, "timestamp" : 1982 },{ "x" : 496, "y" : 410, "timestamp" : 1990 },{
+"x" : 496, "y" : 413, "timestamp" : 1998 },{ "x" : 496, "y" : 440, "timestamp" :
+2006 },{ "x" : 496, "y" : 443, "timestamp" : 2014 },{ "x" : 496, "y" : 453,
+"timestamp" : 2022 },{ "x" : 496, "y" : 460, "timestamp" : 2030 },{ "x" : 496,
+"y" : 466, "timestamp" : 2038 },{ "x" : 496, "y" : 473, "timestamp" : 2046 },{
+"x" : 496, "y" : 483, "timestamp" : 2054 },{ "x" : 496, "y" : 490, "timestamp" :
+2062 },{ "x" : 496, "y" : 493, "timestamp" : 2070 },{ "x" : 496, "y" : 503,
+"timestamp" : 2078 },{ "x" : 496, "y" : 506, "timestamp" : 2086 },{ "x" : 496,
+"y" : 516, "timestamp" : 2094 },{ "x" : 496, "y" : 520, "timestamp" : 2102 },{
+"x" : 496, "y" : 530, "timestamp" : 2110 },{ "x" : 496, "y" : 540, "timestamp" :
+2118 },{ "x" : 496, "y" : 543, "timestamp" : 2126 },{ "x" : 496, "y" : 553,
+"timestamp" : 2134 },{ "x" : 496, "y" : 560, "timestamp" : 2142 },{ "x" : 496,
+"y" : 566, "timestamp" : 2150 },{ "x" : 496, "y" : 573, "timestamp" : 2158 },{
+"x" : 496, "y" : 580, "timestamp" : 2166 },{ "x" : 496, "y" : 583, "timestamp" :
+2174 },{ "x" : 496, "y" : 593, "timestamp" : 2182 },{ "x" : 496, "y" : 603,
+"timestamp" : 2190 },{ "x" : 496, "y" : 606, "timestamp" : 2198 },{ "x" : 503,
+"y" : 626, "timestamp" : 2206 },{ "x" : 503, "y" : 630, "timestamp" : 2214 },{
+"x" : 503, "y" : 640, "timestamp" : 2222 },{ "x" : 503, "y" : 643, "timestamp" :
+2230 },{ "x" : 503, "y" : 653, "timestamp" : 2238 },{ "x" : 503, "y" : 660,
+"timestamp" : 2246 },{ "x" : 503, "y" : 663, "timestamp" : 2254 },{ "x" : 503,
+"y" : 673, "timestamp" : 2262 },{ "x" : 503, "y" : 676, "timestamp" : 2270 },{
+"x" : 503, "y" : 686, "timestamp" : 2278 },{ "x" : 503, "y" : 693, "timestamp" :
+2286 },{ "x" : 503, "y" : 700, "timestamp" : 2294 },{ "x" : 503, "y" : 703,
+"timestamp" : 2302 },{ "x" : 503, "y" : 713, "timestamp" : 2310 },{ "x" : 503,
+"y" : 720, "timestamp" : 2318 },{ "x" : 503, "y" : 723, "timestamp" : 2326 },{
+"x" : 496, "y" : 743, "timestamp" : 2334 },{ "x" : 496, "y" : 746, "timestamp" :
+2342 },{ "x" : 493, "y" : 753, "timestamp" : 2350 },{ "x" : 493, "y" : 760,
+"timestamp" : 2358 },{ "x" : 493, "y" : 770, "timestamp" : 2366 },{ "x" : 490,
+"y" : 776, "timestamp" : 2374 },{ "x" : 490, "y" : 780, "timestamp" : 2382 },{
+"x" : 490, "y" : 786, "timestamp" : 2390 },{ "x" : 486, "y" : 790, "timestamp" :
+2398 },{ "x" : 486, "y" : 796, "timestamp" : 2406 },{ "x" : 486, "y" : 800,
+"timestamp" : 2414 },{ "x" : 483, "y" : 803, "timestamp" : 2422 },{ "x" : 480,
+"y" : 806, "timestamp" : 2430 },{ "x" : 480, "y" : 813, "timestamp" : 2438 },{
+"x" : 480, "y" : 816, "timestamp" : 2446 },{ "x" : 480, "y" : 820, "timestamp" :
+2454 },{ "x" : 476, "y" : 826, "timestamp" : 2462 },{ "x" : 476, "y" : 830,
+"timestamp" : 2470 },{ "x" : 476, "y" : 833, "timestamp" : 2478 },{ "x" : 476,
+"y" : 836, "timestamp" : 2486 },{ "x" : 476, "y" : 840, "timestamp" : 2494 },{
+"x" : 476, "y" : 843, "timestamp" : 2502 },{ "x" : 476, "y" : 846, "timestamp" :
+2510 },{ "x" : 476, "y" : 850, "timestamp" : 2518 },{ "x" : 473, "y" : 853,
+"timestamp" : 2526 },{ "x" : 473, "y" : 856, "timestamp" : 2534 },{ "x" : 473,
+"y" : 860, "timestamp" : 2542 },{ "x" : 473, "y" : 863, "timestamp" : 2550 },{
+"x" : 473, "y" : 866, "timestamp" : 2558 },{ "x" : 473, "y" : 870, "timestamp" :
+2566 },{ "x" : 473, "y" : 873, "timestamp" : 2574 },{ "x" : 473, "y" : 876,
+"timestamp" : 2590 },{ "x" : 473, "y" : 873, "timestamp" : 2662 }], [{ "x" :
+490, "y" : 270, "timestamp" : 3352 },{ "x" : 490, "y" : 273, "timestamp" : 3358
+},{ "x" : 490, "y" : 276, "timestamp" : 3366 },{ "x" : 490, "y" : 280,
+"timestamp" : 3374 },{ "x" : 490, "y" : 283, "timestamp" : 3390 },{ "x" : 490,
+"y" : 286, "timestamp" : 3398 },{ "x" : 486, "y" : 286, "timestamp" : 3406 },{
+"x" : 483, "y" : 293, "timestamp" : 3414 },{ "x" : 483, "y" : 296, "timestamp" :
+3422 },{ "x" : 480, "y" : 303, "timestamp" : 3430 },{ "x" : 476, "y" : 306,
+"timestamp" : 3438 },{ "x" : 470, "y" : 326, "timestamp" : 3446 },{ "x" : 466,
+"y" : 330, "timestamp" : 3454 },{ "x" : 453, "y" : 350, "timestamp" : 3462 },{
+"x" : 450, "y" : 353, "timestamp" : 3470 },{ "x" : 436, "y" : 373, "timestamp" :
+3478 },{ "x" : 423, "y" : 393, "timestamp" : 3486 },{ "x" : 420, "y" : 396,
+"timestamp" : 3494 },{ "x" : 400, "y" : 416, "timestamp" : 3502 },{ "x" : 396,
+"y" : 423, "timestamp" : 3510 },{ "x" : 383, "y" : 443, "timestamp" : 3518 },{
+"x" : 380, "y" : 446, "timestamp" : 3526 },{ "x" : 373, "y" : 466, "timestamp" :
+3534 },{ "x" : 370, "y" : 470, "timestamp" : 3542 },{ "x" : 356, "y" : 490,
+"timestamp" : 3550 },{ "x" : 343, "y" : 503, "timestamp" : 3558 },{ "x" : 340,
+"y" : 506, "timestamp" : 3566 },{ "x" : 326, "y" : 520, "timestamp" : 3574 },{
+"x" : 323, "y" : 526, "timestamp" : 3582 },{ "x" : 320, "y" : 533, "timestamp" :
+3590 },{ "x" : 313, "y" : 536, "timestamp" : 3598 },{ "x" : 306, "y" : 556,
+"timestamp" : 3606 },{ "x" : 293, "y" : 576, "timestamp" : 3613 },{ "x" : 290,
+"y" : 580, "timestamp" : 3622 },{ "x" : 276, "y" : 593, "timestamp" : 3630 },{
+"x" : 273, "y" : 596, "timestamp" : 3638 },{ "x" : 260, "y" : 616, "timestamp" :
+3646 },{ "x" : 256, "y" : 620, "timestamp" : 3654 },{ "x" : 250, "y" : 623,
+"timestamp" : 3662 },{ "x" : 246, "y" : 626, "timestamp" : 3670 },{ "x" : 233,
+"y" : 640, "timestamp" : 3678 },{ "x" : 213, "y" : 653, "timestamp" : 3686 },{
+"x" : 210, "y" : 653, "timestamp" : 3694 },{ "x" : 196, "y" : 666, "timestamp" :
+3702 },{ "x" : 193, "y" : 670, "timestamp" : 3710 },{ "x" : 186, "y" : 673,
+"timestamp" : 3718 },{ "x" : 183, "y" : 676, "timestamp" : 3726 },{ "x" : 176,
+"y" : 680, "timestamp" : 3734 },{ "x" : 173, "y" : 683, "timestamp" : 3742 },{
+"x" : 170, "y" : 686, "timestamp" : 3750 },{ "x" : 166, "y" : 690, "timestamp" :
+3758 },{ "x" : 166, "y" : 693, "timestamp" : 3766 },{ "x" : 163, "y" : 693,
+"timestamp" : 3774 },{ "x" : 163, "y" : 696, "timestamp" : 3782 },{ "x" : 160,
+"y" : 696, "timestamp" : 3790 },{ "x" : 160, "y" : 700, "timestamp" : 3798 },{
+"x" : 160, "y" : 703, "timestamp" : 3822 },{ "x" : 156, "y" : 703, "timestamp" :
+3838 },{ "x" : 156, "y" : 706, "timestamp" : 3853 },{ "x" : 153, "y" : 706,
+"timestamp" : 3869 },{ "x" : 150, "y" : 706, "timestamp" : 3877 },{ "x" : 146,
+"y" : 710, "timestamp" : 3885 },{ "x" : 143, "y" : 710, "timestamp" : 3957 },{
+"x" : 140, "y" : 706, "timestamp" : 3965 },{ "x" : 140, "y" : 703, "timestamp" :
+3973 }], [{ "x" : 506, "y" : 300, "timestamp" : 4544 },{ "x" : 510, "y" : 303,
+"timestamp" : 4549 },{ "x" : 510, "y" : 306, "timestamp" : 4565 },{ "x" : 513,
+"y" : 306, "timestamp" : 4573 },{ "x" : 513, "y" : 313, "timestamp" : 4581 },{
+"x" : 516, "y" : 316, "timestamp" : 4589 },{ "x" : 530, "y" : 330, "timestamp" :
+4597 },{ "x" : 533, "y" : 333, "timestamp" : 4605 },{ "x" : 546, "y" : 353,
+"timestamp" : 4613 },{ "x" : 550, "y" : 356, "timestamp" : 4621 },{ "x" : 563,
+"y" : 376, "timestamp" : 4629 },{ "x" : 566, "y" : 380, "timestamp" : 4637 },{
+"x" : 580, "y" : 400, "timestamp" : 4645 },{ "x" : 593, "y" : 413, "timestamp" :
+4653 },{ "x" : 606, "y" : 426, "timestamp" : 4661 },{ "x" : 626, "y" : 446,
+"timestamp" : 4669 },{ "x" : 630, "y" : 450, "timestamp" : 4677 },{ "x" : 650,
+"y" : 470, "timestamp" : 4685 },{ "x" : 653, "y" : 473, "timestamp" : 4693 },{
+"x" : 666, "y" : 493, "timestamp" : 4701 },{ "x" : 686, "y" : 500, "timestamp" :
+4709 },{ "x" : 690, "y" : 503, "timestamp" : 4717 },{ "x" : 703, "y" : 516,
+"timestamp" : 4725 },{ "x" : 710, "y" : 520, "timestamp" : 4733 },{ "x" : 716,
+"y" : 523, "timestamp" : 4741 },{ "x" : 720, "y" : 526, "timestamp" : 4749 },{
+"x" : 726, "y" : 530, "timestamp" : 4757 },{ "x" : 730, "y" : 533, "timestamp" :
+4765 },{ "x" : 733, "y" : 533, "timestamp" : 4773 },{ "x" : 736, "y" : 536,
+"timestamp" : 4781 },{ "x" : 736, "y" : 540, "timestamp" : 4789 },{ "x" : 740,
+"y" : 540, "timestamp" : 4797 },{ "x" : 740, "y" : 543, "timestamp" : 4805 },{
+"x" : 743, "y" : 546, "timestamp" : 4813 },{ "x" : 746, "y" : 546, "timestamp" :
+4821 },{ "x" : 753, "y" : 550, "timestamp" : 4829 },{ "x" : 756, "y" : 556,
+"timestamp" : 4837 },{ "x" : 760, "y" : 556, "timestamp" : 4845 },{ "x" : 773,
+"y" : 570, "timestamp" : 4853 },{ "x" : 776, "y" : 570, "timestamp" : 4861 },{
+"x" : 790, "y" : 583, "timestamp" : 4869 },{ "x" : 793, "y" : 583, "timestamp" :
+4877 },{ "x" : 796, "y" : 586, "timestamp" : 4885 },{ "x" : 800, "y" : 590,
+"timestamp" : 4893 },{ "x" : 806, "y" : 593, "timestamp" : 4901 },{ "x" : 810,
+"y" : 596, "timestamp" : 4909 },{ "x" : 813, "y" : 600, "timestamp" : 4917 },{
+"x" : 816, "y" : 603, "timestamp" : 4925 },{ "x" : 820, "y" : 606, "timestamp" :
+4933 },{ "x" : 823, "y" : 606, "timestamp" : 4941 },{ "x" : 826, "y" : 610,
+"timestamp" : 4949 },{ "x" : 830, "y" : 613, "timestamp" : 4957 },{ "x" : 833,
+"y" : 613, "timestamp" : 4965 },{ "x" : 836, "y" : 616, "timestamp" : 4973 },{
+"x" : 840, "y" : 620, "timestamp" : 4981 },{ "x" : 843, "y" : 623, "timestamp" :
+4989 },{ "x" : 846, "y" : 623, "timestamp" : 4997 },{ "x" : 846, "y" : 626,
+"timestamp" : 5005 },{ "x" : 850, "y" : 626, "timestamp" : 5013 },{ "x" : 853,
+"y" : 630, "timestamp" : 5021 },{ "x" : 856, "y" : 630, "timestamp" : 5029 },{
+"x" : 856, "y" : 633, "timestamp" : 5037 },{ "x" : 860, "y" : 633, "timestamp" :
+5045 },{ "x" : 863, "y" : 636, "timestamp" : 5053 },{ "x" : 866, "y" : 636,
+"timestamp" : 5061 },{ "x" : 866, "y" : 640, "timestamp" : 5069 },{ "x" : 870,
+"y" : 643, "timestamp" : 5077 },{ "x" : 873, "y" : 643, "timestamp" : 5085 },{
+"x" : 876, "y" : 646, "timestamp" : 5093 },{ "x" : 880, "y" : 646, "timestamp" :
+5109 },{ "x" : 880, "y" : 650, "timestamp" : 5117 },{ "x" : 883, "y" : 653,
+"timestamp" : 5125 },{ "x" : 886, "y" : 653, "timestamp" : 5133 },{ "x" : 890,
+"y" : 656, "timestamp" : 5149 },{ "x" : 893, "y" : 656, "timestamp" : 5157 },{
+"x" : 893, "y" : 660, "timestamp" : 5173 }], [{ "x" : 290, "y" : 726,
+"timestamp" : 6151 },{ "x" : 293, "y" : 726, "timestamp" : 6157 },{ "x" : 296,
+"y" : 726, "timestamp" : 6165 },{ "x" : 300, "y" : 726, "timestamp" : 6173 },{
+"x" : 303, "y" : 726, "timestamp" : 6181 },{ "x" : 306, "y" : 726, "timestamp" :
+6189 },{ "x" : 316, "y" : 726, "timestamp" : 6197 },{ "x" : 326, "y" : 726,
+"timestamp" : 6205 },{ "x" : 333, "y" : 726, "timestamp" : 6213 },{ "x" : 360,
+"y" : 726, "timestamp" : 6221 },{ "x" : 366, "y" : 726, "timestamp" : 6229 },{
+"x" : 400, "y" : 726, "timestamp" : 6237 },{ "x" : 406, "y" : 726, "timestamp" :
+6245 },{ "x" : 433, "y" : 726, "timestamp" : 6253 },{ "x" : 443, "y" : 726,
+"timestamp" : 6261 },{ "x" : 476, "y" : 733, "timestamp" : 6269 },{ "x" : 510,
+"y" : 740, "timestamp" : 6277 },{ "x" : 516, "y" : 740, "timestamp" : 6285 },{
+"x" : 556, "y" : 746, "timestamp" : 6293 },{ "x" : 563, "y" : 746, "timestamp" :
+6301 },{ "x" : 590, "y" : 746, "timestamp" : 6309 },{ "x" : 600, "y" : 746,
+"timestamp" : 6317 },{ "x" : 610, "y" : 746, "timestamp" : 6325 },{ "x" : 620,
+"y" : 746, "timestamp" : 6333 },{ "x" : 623, "y" : 746, "timestamp" : 6341 },{
+"x" : 633, "y" : 746, "timestamp" : 6349 },{ "x" : 636, "y" : 746, "timestamp" :
+6357 },{ "x" : 643, "y" : 746, "timestamp" : 6365 },{ "x" : 646, "y" : 746,
+"timestamp" : 6373 },{ "x" : 653, "y" : 746, "timestamp" : 6381 },{ "x" : 656,
+"y" : 746, "timestamp" : 6389 },{ "x" : 660, "y" : 746, "timestamp" : 6397 },{
+"x" : 663, "y" : 743, "timestamp" : 6405 },{ "x" : 666, "y" : 743, "timestamp" :
+6413 },{ "x" : 670, "y" : 743, "timestamp" : 6421 },{ "x" : 673, "y" : 743,
+"timestamp" : 6429 },{ "x" : 676, "y" : 743, "timestamp" : 6437 },{ "x" : 680,
+"y" : 743, "timestamp" : 6461 },{ "x" : 683, "y" : 743, "timestamp" : 6477 },{
+"x" : 683, "y" : 740, "timestamp" : 6485 },{ "x" : 686, "y" : 740, "timestamp" :
+6493 },{ "x" : 690, "y" : 740, "timestamp" : 6501 },{ "x" : 693, "y" : 740,
+"timestamp" : 6509 },{ "x" : 696, "y" : 740, "timestamp" : 6517 },{ "x" : 700,
+"y" : 740, "timestamp" : 6525 },{ "x" : 703, "y" : 740, "timestamp" : 6533 },{
+"x" : 706, "y" : 740, "timestamp" : 6549 },{ "x" : 710, "y" : 740, "timestamp" :
+6573 },{ "x" : 710, "y" : 736, "timestamp" : 6581 },{ "x" : 713, "y" : 736,
+"timestamp" : 6597 },{ "x" : 716, "y" : 736, "timestamp" : 6637 },{ "x" : 720,
+"y" : 736, "timestamp" : 6661 },{ "x" : 723, "y" : 736, "timestamp" : 6701 }]]}}
+                    </textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <input type="button" value="Load!"
+                    onClick="canvasLoadJSON();">
+                </td>
+            </tr>
+        </table>
     </body>
 </html>

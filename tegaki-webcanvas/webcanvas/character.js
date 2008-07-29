@@ -27,6 +27,18 @@ var Point = function(x, y, pressure, xtilt, ytilt, timestamp) {
     this.timestamp = timestamp || null;
 }
 
+Point.prototype.copy = function(point) {
+    var keys = ["x", "y", "pressure", "xtilt", "ytilt", "timestamp"];
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+
+        if (point[key] != null)
+            this[key] = point[key];
+    }
+}
+
+
 Point.prototype.toXML = function() {
     var values = [];
     var keys = ["x", "y", "pressure", "xtilt", "ytilt", "timestamp"];
@@ -46,6 +58,15 @@ var Stroke = function() {
 }
 
 Stroke.prototype = new Array;
+
+Stroke.prototype.copy = function(stroke) {
+    for(var i = 0; i < stroke.length; i++) {
+        var point = new Point();
+        point.copy(stroke[i]);
+        this[i] = point;
+    }
+    this.length = stroke.length;
+}
 
 Stroke.prototype.getDuration = function() {
     if (this.length > 0) {
@@ -76,6 +97,15 @@ Stroke.prototype.toXML = function() {
 
 var Writing = function() {
     this.strokes = [];
+}
+
+Writing.prototype.copy = function(writing) {
+    for(var i = 0; i < writing.strokes.length; i++) {
+        var stroke = new Stroke();
+        stroke.copy(writing.strokes[i]);
+        this.strokes[i] = stroke;
+    }
+    this.strokes.length = writing.strokes.length;
 }
 
 Writing.prototype.getDuration = function() {
@@ -140,6 +170,15 @@ Writing.prototype.toXML = function() {
 var Character = function() {
     this.writing = new Writing();
     this.utf8 = null;
+}
+
+Character.prototype.copy = function(character) {
+    this.setUTF8(character.utf8);
+
+    var writing = new Writing();
+    writing.copy(character.writing);
+
+    this.setWriting(writing);
 }
 
 Character.prototype.getUTF8 = function() {
