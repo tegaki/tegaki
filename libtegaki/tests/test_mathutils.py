@@ -18,7 +18,7 @@
 
 import unittest
 
-from tegaki.maths import *
+from tegaki.mathutils import *
 
 class MathTest(unittest.TestCase):
 

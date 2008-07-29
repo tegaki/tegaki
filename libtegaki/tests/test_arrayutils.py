@@ -18,7 +18,7 @@
 
 import unittest
 
-from tegaki.array import *
+from tegaki.arrayutils import *
 
 
 class ArrayTest(unittest.TestCase):
