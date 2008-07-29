@@ -19,6 +19,7 @@
 import unittest
 import os
 import StringIO
+import minjson
 
 from tegaki.character import *
 
@@ -169,15 +170,23 @@ class CharacterTest(unittest.TestCase):
 
         self._testReadXML(char)
 
-    def testWritePoint(self):
+    def _getPoint(self):
         point = Point()
         point.x = 1
         point.y = 2
         point.timestamp = 3
+        return point
 
+    def testPointToXML(self):
+        point = self._getPoint()
         self.assertEquals(point.to_xml(), '<point x="1" y="2" timestamp="3" />')
 
-    def testWriteStroke(self):
+    def testPointToJSON(self):
+        point = self._getPoint()
+        self.assertEquals(minjson.read(point.to_json()),
+                          {u'y': 2, u'timestamp': 3, u'x': 1})
+
+    def _getStroke(self):
         point = Point()
         point.x = 1
         point.y = 2
@@ -191,6 +200,11 @@ class CharacterTest(unittest.TestCase):
         stroke = Stroke()
         stroke.append_point(point)
         stroke.append_point(point2)
+                
+        return stroke
+
+    def testStrokeToXML(self):
+        stroke = self._getStroke()
 
         expected = """<stroke>
   <point x="1" y="2" timestamp="3" />
@@ -199,7 +213,15 @@ class CharacterTest(unittest.TestCase):
 
         self.assertEquals(expected, stroke.to_xml())
 
-    def testWriteWriting(self):
+    def testStrokeToJSON(self):
+        stroke = self._getStroke()
+
+        expected = [{ u"x" : 1, u"y" : 2, u"timestamp" : 3 },
+{ u"x" : 4, u"y" : 5, u"pressure" : 0 }]
+
+        self.assertEquals(minjson.read(stroke.to_json()), expected)
+
+    def _getWriting(self):
         point = Point()
         point.x = 1
         point.y = 2
@@ -216,6 +238,11 @@ class CharacterTest(unittest.TestCase):
                 
         writing = Writing()
         writing.append_stroke(stroke)
+                
+        return writing
+
+    def testWritingToXML(self):
+        writing = self._getWriting()
 
         expected = """<strokes>
   <stroke>
@@ -226,27 +253,25 @@ class CharacterTest(unittest.TestCase):
 
         self.assertEquals(expected, writing.to_xml())
 
-    def testWriteXMLFile(self):
-        point = Point()
-        point.x = 1
-        point.y = 2
-        point.timestamp = 3
-                
-        point2 = Point()
-        point2.x = 4
-        point2.y = 5
-        point2.pressure = 0.1
+    def testWritingToJSON(self):
+        writing = self._getWriting()
 
-        stroke = Stroke()
-        stroke.append_point(point)
-        stroke.append_point(point2)
-                
-        writing = Writing()
-        writing.append_stroke(stroke)
+        expected = {u"strokes" : [[{ u"x" : 1, u"y" : 2, u"timestamp" : 3 },
+{ u"x" : 4, u"y" : 5, u"pressure" : 0 }]]}
+
+        self.assertEquals(minjson.read(writing.to_json()), expected)
+
+    def _getCharacter(self):
+        writing = self._getWriting()
 
         char = Character()
         char.set_writing(writing)
         char.set_utf8("A")
+
+        return char
+
+    def testWriteXMLFile(self):
+        char = self._getCharacter()
 
         io = StringIO.StringIO()
         char.write(io)
@@ -255,6 +280,14 @@ class CharacterTest(unittest.TestCase):
         new_char.read_string(io.getvalue())
 
         self.assertEquals(char, new_char)
+
+    def testCharacterToJSON(self):
+        char = self._getCharacter()
+
+        expected = {u"utf8" : u"A", u"writing" : {u"strokes" : [[{ u"x" : 1,
+u"y" : 2, u"timestamp" : 3 }, { u"x" : 4, u"y" : 5, u"pressure" : 0 }]]}}
+
+        self.assertEquals(minjson.read(char.to_json()), expected)
 
     def testNewWriting(self):
         writing = Writing()

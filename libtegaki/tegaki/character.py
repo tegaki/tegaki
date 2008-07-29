@@ -71,6 +71,15 @@ class Point(dict):
 
         return "<point %s />" % " ".join(attrs)
 
+    def to_json(self):
+        attrs = []
+
+        for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
+            if self[key] is not None:
+                attrs.append("\"%s\" : %d" % (key, int(self[key])))
+
+        return "{ %s }" % ", ".join(attrs)
+
 class Stroke(list):
 
     def __init__(self):
@@ -94,6 +103,15 @@ class Stroke(list):
         s += "</stroke>"
 
         return s
+
+    def to_json(self):
+        s = "["
+        
+        s += ",".join([point.to_json() for point in self])
+        
+        s += "]"
+
+        return s        
 
 class Writing(object):
 
@@ -237,6 +255,15 @@ class Writing(object):
 
         return s
 
+    def to_json(self):
+        s = "{\"strokes\" : ["
+
+        s += ", ".join([stroke.to_json() for stroke in self.strokes])
+
+        s += "]}"
+
+        return s
+
     def __str__(self):
         return str(self.get_strokes(full=True))
 
@@ -312,6 +339,18 @@ class Character(object):
             s += "  %s\n" % line
         
         s += "</character>"
+
+        return s
+
+    def to_json(self):
+        s = "{"
+
+        attrs = ["\"utf8\" : \"%s\"" % self.utf8,
+                 "\"writing\" : " + self.writing.to_json()]
+
+        s += ", ".join(attrs)
+
+        s += "}"
 
         return s
 
