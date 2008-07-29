@@ -540,21 +540,22 @@ class Canvas(gtk.Widget):
         return True
 
     def _refresh(self, writing, n_strokes=None, force_draw=False):
-        self._draw_background()
+        if self.flags() & gtk.REALIZED and self.pixmap:
+            self._draw_background()
 
-        self._draw_background_character()
-        self._draw_background_writing()
+            self._draw_background_character()
+            self._draw_background_writing()
 
-        strokes = writing.get_strokes(full=True)
+            strokes = writing.get_strokes(full=True)
 
-        if not n_strokes:
-            n_strokes = len(strokes)
+            if not n_strokes:
+                n_strokes = len(strokes)
 
-        for i in range(n_strokes):
-            self._draw_stroke(strokes[i], i, self.handwriting_line_gc)
+            for i in range(n_strokes):
+                self._draw_stroke(strokes[i], i, self.handwriting_line_gc)
 
-        if force_draw:
-            self._redraw()
+            if force_draw:
+                self._redraw()
 
     # Public...
 
@@ -617,8 +618,8 @@ class Canvas(gtk.Widget):
         else:
             self.writing = writing
 
-        if self.flags() & gtk.REALIZED:
-            self.refresh(force_draw=True)
+        
+        self.refresh(force_draw=True)
 
     def clear(self):
         self.writing.clear()
