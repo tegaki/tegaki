@@ -105,11 +105,11 @@ class Stroke(list):
         return s
 
     def to_json(self):
-        s = "["
+        s = "{\"points\" : ["
         
         s += ",".join([point.to_json() for point in self])
         
-        s += "]"
+        s += "]}"
 
         return s        
 

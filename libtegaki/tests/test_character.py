@@ -216,8 +216,8 @@ class CharacterTest(unittest.TestCase):
     def testStrokeToJSON(self):
         stroke = self._getStroke()
 
-        expected = [{ u"x" : 1, u"y" : 2, u"timestamp" : 3 },
-{ u"x" : 4, u"y" : 5, u"pressure" : 0 }]
+        expected = {u'points': [{u'y': 2, u'timestamp': 3, u'x': 1}, {u'y': 5,
+u'pressure': 0, u'x': 4}]}
 
         self.assertEquals(minjson.read(stroke.to_json()), expected)
 
@@ -256,8 +256,8 @@ class CharacterTest(unittest.TestCase):
     def testWritingToJSON(self):
         writing = self._getWriting()
 
-        expected = {u"strokes" : [[{ u"x" : 1, u"y" : 2, u"timestamp" : 3 },
-{ u"x" : 4, u"y" : 5, u"pressure" : 0 }]]}
+        expected = {u'strokes': [{u'points': [{u'y': 2, u'timestamp': 3, u'x':
+1}, {u'y': 5, u'pressure': 0, u'x': 4}]}]}
 
         self.assertEquals(minjson.read(writing.to_json()), expected)
 
@@ -284,8 +284,8 @@ class CharacterTest(unittest.TestCase):
     def testCharacterToJSON(self):
         char = self._getCharacter()
 
-        expected = {u"utf8" : u"A", u"writing" : {u"strokes" : [[{ u"x" : 1,
-u"y" : 2, u"timestamp" : 3 }, { u"x" : 4, u"y" : 5, u"pressure" : 0 }]]}}
+        expected = {u'utf8': u'A', u'writing': {u'strokes': [{u'points': [{u'y':
+2, u'timestamp': 3, u'x': 1}, {u'y': 5, u'pressure': 0, u'x': 4}]}]}}
 
         self.assertEquals(minjson.read(char.to_json()), expected)
 

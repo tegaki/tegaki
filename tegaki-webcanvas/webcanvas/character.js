@@ -59,12 +59,12 @@ var Stroke = function() {
 }
 
 Stroke.prototype.copy = function(stroke) {
-    for(var i = 0; i < stroke.length; i++) {
+    for(var i = 0; i < stroke.points.length; i++) {
         var point = new Point();
-        point.copy(stroke[i]);
+        point.copy(stroke.points[i]);
         this.points[i] = point;
     }
-    this.points.length = stroke.length;
+    this.points.length = stroke.points.length;
 }
 
 Stroke.prototype.getPoints = function() {
