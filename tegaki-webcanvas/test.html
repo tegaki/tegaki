@@ -42,6 +42,36 @@
                     output_textarea.value = writingToXML(writing);
                 }
             }
+            
+            function canvasToPNG() {
+                if (webcanvas) {
+                    var dataURL = webcanvas.toPNG();
+                    
+                    if (dataURL) {
+                        var preview = document.getElementById("preview");
+                        if(preview.childNodes.length == 2) {
+                            var image = preview.childNodes[1];
+                        }
+                        else {
+                            var image = document.createElement("img");
+                            preview.appendChild(image);
+                        }
+                        
+                        image.src = dataURL;
+                    }
+                }
+            }        
+
+            function canvasToPNGURL() {
+                if (webcanvas) {
+                    
+                    var dataURL = webcanvas.toPNG();
+                    
+                    if (dataURL) {
+                        window.open(dataURL, "_blank");
+                    }
+                }
+            }                
 
             function canvasLoadJSON() {
                 if (webcanvas) {
@@ -64,6 +94,18 @@
                     document.getElementById("output_textarea").value = "";
                 }
             }
+            
+            function canvasRevertStroke() {
+                if (webcanvas) {
+                    webcanvas.revertStroke();
+                }
+            }            
+            
+            function canvasReplay() {
+                if (webcanvas) {
+                    webcanvas.replay();
+                }
+            }               
         </script>
     </head>
 
@@ -82,8 +124,11 @@
                 </td>
                 <td>
                     <ul>
-                        <li><a href="#" onClick="canvasToXML();">to XML</a></li>
-                        <li><a href="#" onClick="canvasClear();">clear</a></li>
+                        <li><a href="javascript:canvasToXML();">to XML</a></li>
+                        <li><a href="javascript:canvasToPNG();">to PNG</a> (<a href="javascript:canvasToPNGURL();">URL</a>)</li>
+                        <li><a href="javascript:canvasClear();">clear</a></li>
+                        <li><a href="javascript:canvasRevertStroke();">revert stroke</a></li>
+                        <li><a href="javascript:canvasReplay();">replay</a></li>
                     </ul>
                 </td>
             </tr>
@@ -329,7 +374,14 @@
                     <input type="button" value="Load!"
                     onClick="canvasLoadJSON();">
                 </td>
-            </tr>
+            </tr>          
         </table>
+        
+        <p><strong>Image preview</strong></p>
+        
+        <div id="preview">
+        
+        </div>
+        
     </body>
 </html>

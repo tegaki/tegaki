@@ -24,6 +24,13 @@ WebCanvas = function(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     
+    if (document.all) {
+        /* For Internet Explorer */
+        this.canvas.unselectable = "on";
+        this.canvas.onselectstart = function() { return false };  
+        this.canvas.style.cursor = "default";
+    }
+        
     this.internal2real_scalex = canvas.width * 1.0 / CANVAS_WIDTH;
     this.internal2real_scaley = canvas.height * 1.0 / CANVAS_HEIGHT;
     
@@ -33,13 +40,21 @@ WebCanvas = function(canvas) {
     this.writing = new Writing();
     this.buttonPressed = false;
     this.first_point_time = null;
+    this.locked = false;
     
     this._initListeners();
 }
 
 WebCanvas.prototype._withHandwritingLine = function() {
     this.ctx.strokeStyle = "rgb(0, 0, 0)";
-    this.ctx.lineWidth = 4;
+    this.ctx.lineWidth = 8;
+    this.ctx.lineCap = "round";
+    this.ctx.lineJoin = "round";
+}
+
+WebCanvas.prototype._withStrokeLine = function() {
+    this.ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
+    this.ctx.lineWidth = 8;
     this.ctx.lineCap = "round";
     this.ctx.lineJoin = "round";
 }
@@ -77,9 +92,8 @@ WebCanvas.prototype._drawAxis = function() {
 WebCanvas.prototype._initListeners = function() {
     
     function callback(webcanvas, func) {
-        /* Without this trick, "this" in the callback refers to
-           the canvas HTML object.
-           With this trick, "this" refers to the WebCanvas object! */
+        /* Without this trick, "this" in the callback refers to the canvas HTML object.
+                          With this trick, "this" refers to the WebCanvas object! */
         return function(event) {
             func.apply(webcanvas, [event]);
         }
@@ -91,7 +105,9 @@ WebCanvas.prototype._initListeners = function() {
         this.canvas.attachEvent("onmousedown",
                                 callback(this, this._onButtonPressed));
         this.canvas.attachEvent("onmouseup",
-                                callback(this, this._onButtonReleased));
+                                callback(this, this._onButtonReleased));                               
+        this.canvas.attachEvent("onmouseout",
+                                callback(this, this._onButtonReleased));                                     
     }
     else if (this.canvas.addEventListener) {
         this.canvas.addEventListener("mousemove",
@@ -102,22 +118,30 @@ WebCanvas.prototype._initListeners = function() {
         this.canvas.addEventListener("mouseup",
                                      callback(this, this._onButtonReleased),
                                      false);
+        this.canvas.addEventListener("mouseout",
+                                     callback(this, this._onButtonReleased),
+                                     false);                                     
     }
     else
         alert("Your browser does not support interaction.");
 }
 
 WebCanvas.prototype._onButtonPressed = function(event) {
+    if (this.locked) return;
+    
     this.buttonPressed = true;
 
     var position = this._getRelativePosition(event);
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(position.x, position.y);
-    
     var point = new Point();
     point.x = Math.round(position.x * this.real2internal_scalex);
-    point.y = Math.round(position.y * this.real2internal_scalex);
+    point.y = Math.round(position.y * this.real2internal_scaley);
+    
+    this.ctx.save();
+    this.ctx.scale(this.internal2real_scalex, this.internal2real_scaley);    
+    this._withHandwritingLine();
+    this.ctx.beginPath();
+    this.ctx.moveTo(point.x, point.y);
     
     var now = new Date();
     
@@ -133,21 +157,26 @@ WebCanvas.prototype._onButtonPressed = function(event) {
 }
 
 WebCanvas.prototype._onButtonReleased = function(event) {
-    this.buttonPressed = false;
+    if (this.locked) return;
+
+    if (this.buttonPressed) {
+        this.buttonPressed = false;
+        this.ctx.restore(); 
+    }
 }
 
 WebCanvas.prototype._onMove = function(event) {
+    if (this.locked) return;
+
     if (this.buttonPressed) {
         var position = this._getRelativePosition(event);
 
-        this.ctx.save();
-        this._withHandwritingLine();
-        this.ctx.lineTo(position.x, position.y);
-        this.ctx.stroke();
-    
         var point = new Point();
         point.x = Math.round(position.x * this.real2internal_scalex);
-        point.y = Math.round(position.y * this.real2internal_scalex);
+        point.y = Math.round(position.y * this.real2internal_scaley);        
+                        
+        this.ctx.lineTo(point.x, point.y);
+        this.ctx.stroke();      
     
         var now = new Date();
     
@@ -170,25 +199,30 @@ WebCanvas.prototype._getRelativePosition = function(event) {
     return {"x":x,"y":y};
 }
 
-WebCanvas.prototype._drawWriting = function() {
+WebCanvas.prototype._drawWriting = function(length) {
     var nstrokes = this.writing.getNStrokes();
+    
+    if (!length) length = nstrokes;
 
     if (nstrokes > 0) {
         var strokes = this.writing.getStrokes();
 
         this.ctx.save();
-
-        for(var i = 0; i < nstrokes; i++) {
+        
+        this._withHandwritingLine();   
+        
+        for(var i = 0; i < length; i++) {
             var stroke = strokes[i];
 
-            var first_point = stroke[0];
+            var first_point = stroke.getPoints()[0];
 
             this.ctx.beginPath();
-
+            
             this.ctx.moveTo(first_point.x, first_point.y);
-
-            for (var j = 1; j < stroke.length; j++) {
-                var point = stroke[j];
+            
+            for (var j = 1; j < stroke.getNPoints(); j++) {
+                var point = stroke.getPoints()[j];
+                
                 this.ctx.lineTo(point.x, point.y);
             }
 
@@ -200,16 +234,107 @@ WebCanvas.prototype._drawWriting = function() {
     }
 }
 
+WebCanvas.prototype._drawWritingAnimation = function(default_speed) {
+    var nstrokes = this.writing.getNStrokes();
+
+    if (nstrokes > 0) {
+        var strokes = this.writing.getStrokes();
+        
+        this.ctx.save();     
+        this.ctx.scale(this.internal2real_scalex, this.internal2real_scaley);   
+        this._withStrokeLine();        
+
+        var currstroke = 0;
+        var currpoint = 0;
+        var state = this.getLocked();
+        this.setLocked(true);
+        var webcanvas = this; // this inside _onAnimate doesn't refer to the web canvas
+        
+        _onAnimate = function() {
+            
+            var point = strokes[currstroke].getPoints()[currpoint];
+            
+            if (currpoint == 0) {                
+                webcanvas.ctx.beginPath();
+                webcanvas.ctx.moveTo(point.x, point.y);
+            }
+            else {
+                webcanvas.ctx.lineTo(point.x, point.y);
+                webcanvas.ctx.stroke();
+            }
+
+            if (strokes[currstroke].getNPoints() == currpoint + 1) {
+                // if we reach the stroke last point
+                                                                                   
+                currpoint = 0;
+                currstroke += 1;    
+
+                // redraw completely the strokes we have
+                webcanvas._drawBackground();
+                webcanvas._drawAxis();
+                webcanvas._drawWriting(currstroke); 
+                
+                if (strokes.length == currstroke) {
+                    // if we reach the last stroke
+                    webcanvas.ctx.restore();
+                    webcanvas.setLocked(state);
+                    return;
+                }
+                else {
+                    // there are still strokes to go...
+                }
+                                   
+            }
+            else {
+                currpoint += 1;
+            }
+
+            var delay;
+
+            if (default_speed == null &&
+                strokes[0].getPoints()[0].timestamp != null) {
+
+                if (currpoint == 0 && currstroke == 0) {
+                    // very first point
+                    delay = 0;
+                }
+                else if (currstroke > 0 && currpoint == 0) {
+                    // interstroke duration
+                    var t2 = strokes[currstroke].getPoints()[0].timestamp;
+                    var last_stroke = strokes[currstroke - 1].getPoints();
+                    var t1 = last_stroke[last_stroke.length - 1].timestamp;
+                    delay = (t2 - t1);
+                }
+                else {
+                    var pts = strokes[currstroke].getPoints()
+                    delay = pts[currpoint].timestamp -
+                            pts[currpoint-1].timestamp;
+                }
+            }
+            else
+                delay = default_speed;
+
+            setTimeout(_onAnimate, delay);
+        }
+        
+        _onAnimate.call();        
+    }
+}
+
 WebCanvas.prototype.getWriting = function() {
     return this.writing;
 }
 
 WebCanvas.prototype.setWriting = function(w) {
+    if (this.locked) return;
+
     this.writing = w;
     this.draw();
 }
 
 WebCanvas.prototype.clear = function() {
+    if (this.locked) return;
+
     this.setWriting(new Writing());
 }
 
@@ -224,4 +349,50 @@ WebCanvas.prototype.draw = function() {
     this._drawWriting();
     
     this.ctx.restore();
+}
+
+WebCanvas.prototype.replay = function(speed) {
+    if (this.locked) return;
+
+    this.ctx.save();
+
+    this.ctx.scale(this.internal2real_scalex, this.internal2real_scaley);
+
+    this._drawBackground();
+    this._drawAxis();
+
+    this.ctx.restore();
+    
+    this._drawWritingAnimation(speed);   
+}
+
+WebCanvas.prototype.revertStroke = function() {
+    if (this.locked) return;
+
+    if (this.writing.getNStrokes() > 0) {
+        this.writing.removeLastStroke();
+        this.draw();
+    }
+}
+
+WebCanvas.prototype.getLocked = function() {
+    return this.locked;
+}
+
+WebCanvas.prototype.setLocked = function(locked) {
+    this.locked = locked;
+}
+
+WebCanvas.prototype.toDataURL = function(contentType) {
+    if (this.locked) return;
+
+    if (this.canvas.toDataURL) {       
+        return this.canvas.toDataURL(contentType);
+    }
+    else
+        return null;
+}
+
+WebCanvas.prototype.toPNG = function() {
+    return this.toDataURL("image/png");
 }

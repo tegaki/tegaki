@@ -55,38 +55,45 @@ Point.prototype.toXML = function() {
 /* Stroke */
 
 var Stroke = function() {
+    this.points = [];
 }
-
-Stroke.prototype = new Array;
 
 Stroke.prototype.copy = function(stroke) {
     for(var i = 0; i < stroke.length; i++) {
         var point = new Point();
         point.copy(stroke[i]);
-        this[i] = point;
+        this.points[i] = point;
     }
-    this.length = stroke.length;
+    this.points.length = stroke.length;
+}
+
+Stroke.prototype.getPoints = function() {
+    return this.points;
+}
+
+Stroke.prototype.getNPoints = function() {
+    return this.points.length;
 }
 
 Stroke.prototype.getDuration = function() {
-    if (this.length > 0) {
-        last = this.length - 1;
+    if (this.points.length > 0) {
+        last = this.points.length - 1;
 
-        if (this[last].timestamp != null && this[0].timestamp != null)
-            return (this[last].timestamp - this[0].timestamp);
+        if (this.points[last].timestamp != null && this.points[0].timestamp != null)
+            return (this.points[last].timestamp - this.points[0].timestamp);
     }
     return null;
 }
 
 Stroke.prototype.appendPoint = function(point) {
-    this.push(point);
+    this.points.push(point);
 }
 
 Stroke.prototype.toXML = function() {
     var s = "<stroke>\n";
 
-    for (var i=0; i < this.length; i++)
-        s += "  " + this[i].toXML() + "\n";
+    for (var i=0; i < this.points.length; i++)
+        s += "  " + this.points[i].toXML() + "\n";
 
     s += "</stroke>";
 
