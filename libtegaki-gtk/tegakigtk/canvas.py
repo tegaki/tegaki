@@ -71,6 +71,8 @@ class Canvas(gtk.Widget):
         self._background_character = None
         self._background_writing = None
 
+        self._first_point_time = None
+
         self.connect("motion_notify_event", self.motion_notify_event)
         
     # Events...
@@ -226,6 +228,11 @@ class Canvas(gtk.Widget):
                 self._first_point_time = event.time
                 point.timestamp = 0
             else:
+                if self._first_point_time is None:
+                    # in the case we add strokes to an imported character
+                    self._first_point_time = event.time - \
+                                             self.writing.get_duration() - 50
+                                         
                 point.timestamp = event.time - self._first_point_time
                 
             #point.pressure = pressure

@@ -117,12 +117,12 @@ Writing.prototype.copy = function(writing) {
 
 Writing.prototype.getDuration = function() {
     var last = this.strokes.length - 1;
-    var lastp = this.strokes[last].length - 1;
+    var lastp = this.strokes[last].getPoints().length - 1;
     if (this.strokes.length > 0)
-        if (this.strokes[0][0].timestamp != null &&
-            this.strokes[last][lastp].timestamp != null)
-            return (this.strokes[last][lastp].timestamp -
-                    this.strokes[0][0].timestamp);
+        if (this.strokes[0].getPoints()[0].timestamp != null &&
+            this.strokes[last].getPoints()[lastp].timestamp != null)
+            return (this.strokes[last].getPoints()[lastp].timestamp -
+                    this.strokes[0].getPoints()[0].timestamp);
     return null;
 }
 

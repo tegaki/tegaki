@@ -144,12 +144,18 @@ WebCanvas.prototype._onButtonPressed = function(event) {
     this.ctx.moveTo(point.x, point.y);
     
     var now = new Date();
-    
+
     if (this.writing.getNStrokes() == 0) {
         this.first_point_time = now.getTime();
         point.timestamp = 0;
     }
     else {
+        if (this.first_point_time == null) {
+            /* in the case we add strokes to an imported character */
+            this.first_point_time = now.getTime() -
+                                    this.writing.getDuration() - 50;
+        }
+        
         point.timestamp = now.getTime() - this.first_point_time;
     }
     
