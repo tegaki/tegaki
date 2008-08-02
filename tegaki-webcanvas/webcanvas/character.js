@@ -100,6 +100,51 @@ Stroke.prototype.toXML = function() {
     return s;
 }
 
+Stroke.prototype.smooth = function() {
+    /* Smoothing method based on a (simple) moving average algorithm. 
+     *
+     * Let p = p(0), ..., p(N) be the set points of this stroke, 
+     *     w = w(-M), ..., w(0), ..., w(M) be a set of weights.
+     *
+     * This algorithm aims at replacing p with a set p' such as
+     *
+     *    p'(i) = (w(-M)*p(i-M) + ... + w(0)*p(i) + ... + w(M)*p(i+M)) / S
+     *
+     * and where S = w(-M) + ... + w(0) + ... w(M). End points are not
+     * affected.
+     */
+
+    var weights = [1, 1, 2, 1, 1]; // Weights to be used
+    var times = 3;                 // Number of times to apply the algorithm
+
+    if (this.points.length >= weights.length) {
+        var offset = Math.floor(weights.length / 2);
+        var sum = 0;
+
+        for (var j = 0; j < weights.length; j++) {
+            sum += weights[j];
+        }
+
+        for (var n = 1; n <= times; n++) {
+            var s = new Stroke();
+            s.copy(this);
+
+            for (var i = offset; i < this.points.length - offset; i++) {
+                this.points[i].x = 0;
+                this.points[i].y = 0;
+                
+                for (var j = 0; j < weights.length; j++) {
+                    this.points[i].x += weights[j] * s.points[i + j - offset].x;
+                    this.points[i].y += weights[j] * s.points[i + j - offset].y;
+                }
+
+                this.points[i].x = Math.round(this.points[i].x / sum);
+                this.points[i].y = Math.round(this.points[i].y / sum);
+            }
+        }
+    }
+}
+
 /* Writing */
 
 var Writing = function() {
@@ -170,6 +215,12 @@ Writing.prototype.toXML = function() {
     s += "</strokes>";
 
     return s;
+}
+
+Writing.prototype.smooth = function() {
+    for (var i = 0; i < this.strokes.length; i++) {
+        this.strokes[i].smooth();
+    }
 }
 
 /* Character */

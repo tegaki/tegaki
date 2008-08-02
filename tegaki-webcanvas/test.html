@@ -105,7 +105,13 @@
                 if (webcanvas) {
                     webcanvas.replay();
                 }
-            }               
+            }      
+
+            function canvasSmooth() {
+                if (webcanvas) {
+                    webcanvas.smooth();
+                }
+            }
         </script>
     </head>
 
@@ -129,6 +135,7 @@
                         <li><a href="javascript:canvasClear();">clear</a></li>
                         <li><a href="javascript:canvasRevertStroke();">revert stroke</a></li>
                         <li><a href="javascript:canvasReplay();">replay</a></li>
+                        <li><a href="javascript:canvasSmooth();">smooth strokes</a></li>
                     </ul>
                 </td>
             </tr>
