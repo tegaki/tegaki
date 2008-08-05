@@ -12,7 +12,7 @@
 
 預金（よきん）がある	avoir un compte en banque
 口座（こうざ）がある	avoir un compte en banque
-預金（よきん）を引（ひ）き出（き）す	retirer de l'argent
+預金（よきん）を引（ひ）き出（だ）す	retirer de l'argent
 口座（こうざ）預金（よきん）	compte courant
 預金（よきん）する	déposer de l'arger à la banque
 
@@ -67,3 +67,98 @@
 歌（うた）の文句（もんく）	paroles d'une chansons
 文句（もんく）を言う	se plaindre
 決（き）まり文句（もんく）	cliché, banalité, formule toute faite
+
+職（しょく）のない人	personne sans emploi
+いろいろな職業（しょくぎょう）の人	personnes de différentes professions
+人を紹介（しょうかい）する	présenter quelqu'un
+サラリーマンから職人（しょくにん）に転職（てんしょく）する	changer de métier de salaryman à artisan
+
+新（あたら）しい建物（たてもの）が建設（けんせつ）された	un nouveau bâtiment a été construit
+体育室（たいいくしつ）を設（もう）ける	construire/établir une salle de sport
+調理（ちょうり）する	faire la cuisine
+工業（こうぎょう）設備（せつび）	équipement industriel
+近代的（きんだいてき）設備（せつび）	équipement moderne
+機械（きかい）を設備（せつび）する	installer/équiper des machines
+口実（こうじつ）を設（もう）ける	trouver un prétexte, une excuse
+口実（こうじつ）にする	trouve un prétexte, une excuse
+
+愛（あい）の証（あかし）を立（た）てる	faire preuve d'amour
+歯（は）が痛（いた）い	avoir mal aux dents
+虫歯（むしば）がある証拠（しょうこ）	le signe d'avoir une carie
+確（たし）かな証拠（しょうこ）	preuve solide
+健康（けんこう）保健（ほけん）証（しょう）	carte d'assurance maladie
+歯医者（はいしゃ）	dentiste
+定理（ていり）を証明（しょうめい）する	prouver un théorème
+
+人を許（ゆる）す	pardonner quelqu'un
+人間（にんげん）は完全（かんぜん）じゃない	les humains ne sont pas parfaits
+許（ゆる）し合（あ）う	se pardonner
+無免許（むめんきょ）運転（うんてん）	conduite sans permis
+飲酒（いんしゅ）運転（うんてん）	conduite en état d'ivresse
+とんでもない！	quel culot ! ça par exemple !
+
+講（こう）	lecture, club (kanji seulement)
+安全（あんぜん）運転（うんてん）の講習会（こうしゅうかい）	cours pour apprendre à conduire en sécurité
+警察（けいさつ）署長（しょちょう）	commissaire de police
+講義（こうぎ）を聞（き）く	suivre un cours
+体育（たいいく）実技（じつぎ）試験（しけん）	épreuve d'éducation physique
+白（しろ）バイ隊（たい）の隊員（たいいん）	membre des policiers motards
+
+謝（あやま）る	s'excuser
+謝（あやま）りの手紙（てがみ）	lettre d'excuses
+塾（じゅく）の月謝（げっしゃ）	frais de scolarité des cours privés
+袋（ふくろ）が見当（みあ）たらない	ne pas trouver un sac
+数日後（すうじつご）	quelques jours plus tard
+感謝（かんしゃ）感激（かんげき）	sentiment de remerciement
+感激（かんげき）する	s'émouvoir
+感激（かんげき）しやすい人	personne émotive
+
+評（ひょう）	critique, commentaire, remarque
+評判（ひょうばん）の小説（しょうせつ）	un roman célèbre, renommé
+新聞（しんぶん）に書評（しょひょう）が出る	critique de livre publiée dans un journal
+高（たか）く評価（ひょうか）する	avoir une haute estime
+過小（かしょう）評価（ひょうか）する	sous-estimer
+過大（かだい）評価（ひょうか）する	sur-estimer
+
+護（ご）	protéger (kanji seulement)
+近所（きんじょ）の川（かわ）	la rivière des alentours
+弱（よわ）い者（もの）を保護（ほご）する	protéger les faibles
+海豹（あざらし）の子	bébé phoque
+護岸（ごがん）工事（こうじ）	travail d'endiguement
+ぐったりしている	être mort de fatigue
+動物園（どうぶつえん）	zoo
+病人（びょうにん）の看護（かんご）をする	soigner un malade
+
+識（しき）	connaissance (kanji seulement)
+知識（ちしき）のない人	personne ignorante
+経験（けいけん）によって得（え）た知識（ちしき）	connaissance acquise avec l'expérience
+知識（ちしき）の進歩（しんぽ）	le progrès de la science
+良識（りょうしき）に反（はん）する	contraire au bon sens, insensé
+良識（りょうしき）のある	sensé
+標識（ひょうしき）を守（まも）る	respecter la signalisation, les feux
+
+コンビにのお弁当（べんとう）	plat préparé du combini
+弁解（べんかい）する	s'excuser
+関西弁（かんさいべん）	dialecte du Kansai
+
+承（うけたまわ）る	entendre, écouter
+親（おや）の承諾（しょうだく）をもらう	avoir le consentement des parents
+承諾（しょうだく）を得（え）て…	avec le consentement
+すぐに承諾（しょうだく）する	consentir tout de suite à
+お年寄（としよ）りから地元（じもと）の話が伝承（でんしょう）されている	histoire locale transmise oralement par les personnes âgées
+昔話（むかしばなし）を語（かた）る	raconter une veille histoire
+民間（みんかん）伝承（でんしょう）	tradition folklorique
+話（はなし）の起承転結（きしょうけんせつ）	structure d'un récit
+頭（あたま）がはっきりする	mes idées se clarifient
+計画（けいかく）はっきりしてくる	le projet prend forme
+
+地場（じば）産業（さんぎょう）が興（おこ）る	l'industrie locale prospère, fleurit
+木を興（おこ）す	redresser un arbre
+火事（かじ）/発作（ほっさ）を興（おこ）す	provoquer un incendit/une crise
+新事業（しんじぎょう）を興（おこ）す	créer une nouvelle entreprise
+寄席（よせ）に行く	aller à un spectacle
+落語（らくご）に興味（きょうみ）がある	s'intéresser au rakugo
+興奮（こうふん）する	être excité, enthousiaste
+宴会（えんかい）	banquet, festin
+余興（よきょう）	divertissement
+
