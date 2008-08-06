@@ -1,0 +1,374 @@
+Folder structure
+================
+
+bin/                for command-line tools (e.g. dictionary compiler, db export)
+data/www/           for public media files
+tegakidb/           for the website source
+templates/html/     for the HTML templates
+
+Database structure
+==================
+
+Since we are potentially dealing with lots of data, data structures should be
+designed to be very performant.
+
+User
+----
+
+user_id: Integer Key
+name: String (max 30, alphanumeric only)
+n_handwriting_samples: Integer (Default: 0)
+description: Text
+
+UserPermissions
+---------------
+user_id: Foreign Key
+can_access: Boolean (Default: True)
+can_edit: Boolean (Default: False)
+can_proofread: Boolean (Default: False)
+can_access_admin: Boolean (Default: False)
+
+UserSensitiveInfo
+-----------------
+
+user_id: Foreign Key
+password_sha256: String (max 256)
+email:  String (max 30, check that is correctly formatted)
+last_visit: Date and Time
+last_ip: String (max 40)
+
+UserPreferences
+---------------
+
+user_id: Foreign Key
+show_handwriting_samples: Boolean (Default False)
+character_sets: String (max 30)
+dictionaries: String (max 30)
+device_used: Integer (MOUSE, TABLET, PDA)
+
+UserLevel
+---------
+
+user_level_id: Integer Key
+user_id: Foreign Key
+lang: String (max 10)
+level: Integer (NONE, BEGINNER, INTERMEDIARY, ADVANCED, NATIVE)
+
+[Notes]
+
+character_sets: a comma-separated list of character_set_id. Only characters
+from those sets will be asked to the user.
+
+dictionaries: a comma-separated list of dictionary_id. It will be attempted to
+find characters in thoses dictionaries to display definitions below the
+character asked.
+
+CharacterSet
+------------
+
+character_set_id: Integer Key
+name: String (max 30)
+lang: String (max 10)
+description: String (max 255)
+characters: TEXT
+
+[Notes]
+
+characters: the characters in the set can be defined by lists of character codes
+and/or code ranges. Codes are unicode. E.g.
+
+20..30, 34, 35, 40...45, 48
+
+20..30 means from 20 to 30 included.
+40...45 means from 40 to 45 excluded.
+
+lang: a language code as defined in
+http://www.iana.org/assignments/language-subtag-registry.
+
+The preferred lang codes will be:
+- ja: Japanese
+- ko: Korean
+- zh-Hans: Simplified Chinese
+- zh-Hant: Traditional Chinese
+
+Other zh-* tags may be used for very specific Chinese characters.
+
+[Example]
+
+name: ASCII characters
+lang: en
+description: characters in US-ASCII
+characters: 0..255
+
+Character
+---------
+
+character_id: Integer Key
+lang: String (same as the one in CharacterSet)
+unicode: Integer
+n_correct_handwriting_samples: Integer (Default 0)
+n_handwriting_samples: Integer (Default 0)
+
+HandwritingSample
+-----------------
+
+handwriting_sample_id: Integer Key
+character_id: Foreign Key
+user_id: Foreign Key
+data: Blob
+compressed: Integer (NON_COMPRESSED=0, GZIP=1, BZ2=2)
+date: Date and Time
+n_proofread: Integer (Default: 0)
+proofread_by: String (max 255)
+device_used: Integer (MOUSE, TABLET, PDA)
+model: Boolean
+stroke_order_incorrect: Boolean (Default: False)
+stroke_number_incorrect: Boolean (Default: False)
+wrong_stroke: Boolean (Default: False)
+wrong_spacing: Boolean (Default: False)
+client: String
+
+[Notes]
+
+data: the XML output of a Character object. Some parameters will be both in the
+XML data and in the table fields.
+- When data is submitted, the table fields must be updated to be the same as in
+the XML.
+- When XML is generated from the database, the fields in the XML must be
+updated with the fields from the database.
+
+Because the XML received can't be trusted, it should be checked for consistency:
+- well-formed XML
+- correct types at the right location (e.g. x and y should be Integers)
+
+model: a handwriting sample of good quality can be set to True and will be used
+by the system as a model.
+
+proofread_by: comma-separated string of user_id.
+
+client: which client used (e.g. tegaki-gtk, webcanvas)
+
+Dictionary
+----------
+
+dictionary_id: Integer Key
+name: String (max 30)
+description: String (max 255)
+lang: String (max 10)
+
+DictionaryDefinition
+--------------------
+
+dictionary_id: Foreign Key
+unicode: Integer
+definition: Text
+
+[Notes]
+
+definition: may context simple HTML tags
+
+Pages
+=====
+
+About page
+----------
+
+Static content
+
+Subscription page
+-----------------
+
+- login [mandatory]
+- password [mandatory]
+- email [optional]
+
+- Characters sets (at least one)
+- Dictionaries (zero or more)
+- User Level for ja, ko, zh-Hans, zh-Hant (at least one not set to None)
+
+Implement a simple system to prevent massive creation of accounts (should be
+accessible).
+
+Password lost
+-------------
+
+Change password by reassigning a new one. Not possible if email not provided.
+
+Login page
+----------
+
+People with can_access set to False are banned from the website and as a
+result can't login to the website.
+
+Account page
+------------
+
+Change preferences or personal information.
+
+Index page
+----------
+
+Index page's ASCII art
+
+--------------------------------------------------
+[tegaki-db is ... Click to learn more]
+
+         [C]
+[dictionary definition]
+
+;-------------------;
+|         |         |
+|         |         |
+|         |         |
+|         |         |
+|         |         |
+;-------------------;
+|         |         |
+|         |         |
+|         |         |
+|         |         |
+|         |         |
+;-------------------;
+
+[Clear | Revert Stroke | Send!]
+
+--------------------------------------------------
+
+Note1: Display the about message on the index only if the user is not logged in
+Note2: When the "Send!" button is clicked, AJAX should be used to minize the
+bandwidth required to transfer the data.
+Note3: If the user is not logged in and click on the send button, redirect to
+log in page!
+
+C: The character to be written by the user. What character is to be displayed
+next is to be determined by an algorithm.
+
+dictionary definition: E.g. English translation + reading (pinyin or hiragana).
+Since a character may have more than one definition attached to it, the
+definition must be chosen at random.
+
+User profile
+------------
+
+- Name
+- Number of contributed characters
+- Description
+- List of last handwriting samples contributed [Click to see the handwriting
+sample]
+
+Handwriting sample page
+-----------------------
+
+- Character in utf8
+- Lang
+- Author
+- Webcanvas (in locked mode, i.e. it is not possible to edit the character)
+
+This page is not visible if the user has set show_handwriting_samples to False.
+
+Classification page
+-------------------
+
+The purpose of the classification is to determine the values for:
+- stroke_order_incorrect
+- wrong_stroke
+- wrong_spacing
+
+using human's proofreading.
+
+For each of those three fields, the proofreader will have to choose between
+True or False using a radio button. To help in this process, stroke order
+images will be displayed.
+
+If a handwriting sample with model=True is available, display the stroke order
+image (using the PNG writing renderer) for both the model and the handwriting
+sample to classify. This will help the proofreader to compare the handwriting
+sample with the model.
+
+Otherwise, only display the stroke order image for the handwriting sample to
+classify.
+
+For stroke_number_incorrect, human interaction is not necessary because we can
+use a file with a mapping "unicode -> stroke number" to do that automatically.
+
+One character at a time is displayed on the classification page. Use AJAX to
+load the next handwriting sample to classify.
+
+Which handwriting sample to classify next?
+- n_proofread < 3
+- handwriting samples with smaller n_proofread classified first
+
+Increment n_handwriting_samples in the User and Character tables. Increment
+n_correct_handwriting_samples in Character table if the handwriting sample is
+correct. A handwriting sample is correct if all stroke_order_incorrect,
+stroke_number_incorrect, wrong_stroke and wrong_spacing values are set to False.
+
+Only people with can_proofread permission can classify handwriting samples.
+
+Additionally, a RSS feed (protected by authentication) could be used to check
+when new characters with n_proofread=0 need to be classified.
+
+Statistics
+----------
+
+- Best contributors
+- Number of handwriting samples for each character
+
+News
+----
+
+Latest annoncements. News can be edited in the administration by users with
+can_edit to True.
+
+Session
+=======
+
+A number of information, most importantly from UserPreferences should be kept in
+the session.
+
+Next character to display
+=========================
+
+The next character to display to the user on the main page should match the
+following critieria:
+- should be in the character sets chosen by the user
+- should be the character with the smallest number of correct samples available
+
+The rationale for that is to have a balanced number of handwriting samples for
+each character.
+
+Internationalization
+====================
+
+The default language of the interface should be English but it should be
+possible to translate the interface into other languages.
+
+Export
+======
+
+In production mode, the server should use MySQL or PostgreSQL but it should be
+possible to export all tables, with the exception of UserSensitiveInfo, to a
+SQLite database using a tool placed in bin/.
+
+The database API should be usable from other applications. For example, SQLite
+databases will be used by tegaki-models.
+
+Unit tests
+==========
+
+Test the website with unit tests! :)
+
+XML-RPC webservice
+==================
+
+Some functions should be exported over XML-RPC. For example:
+
+client(name) -> True if succeeded # For the client to identify itself to the
+                                  # webservice
+
+authenticate(login, password) -> A SHA-256 session id if succeeded or False.
+
+send_character(sessionid, xml, compressed) -> True if succeeded
+
+The XML-RPC will be used by a pygtk client (which will use the canvas in
+libtegaki-gtk). Other possible clients include a Facebook application.
