@@ -156,11 +156,17 @@ name: String (max 30)
 description: String (max 255)
 lang: String (max 10)
 
-DictionaryDefinition
---------------------
+DictionaryEntry
+---------------
 
+dictionary_entry_id: Integer Key
 dictionary_id: Foreign Key
 unicode: Integer
+definition_id: Foreign Key
+
+DictionaryDefinition
+--------------------
+definition_id: Integer Key
 definition: Text
 
 [Notes]
@@ -235,7 +241,7 @@ Index page's ASCII art
 --------------------------------------------------
 
 Note1: Display the about message on the index only if the user is not logged in
-Note2: When the "Send!" button is clicked, AJAX should be used to minize the
+Note2: When the "Send!" button is clicked, AJAX should be used to minimize the
 bandwidth required to transfer the data.
 Note3: If the user is not logged in and click on the send button, redirect to
 log in page!
@@ -308,6 +314,12 @@ Only people with can_proofread permission can classify handwriting samples.
 Additionally, a RSS feed (protected by authentication) could be used to check
 when new characters with n_proofread=0 need to be classified.
 
+Handwriting samples browse
+--------------------------
+
+People with the required permission can browse and search for handwriting
+samples in the database.
+
 Statistics
 ----------
 
@@ -330,7 +342,7 @@ Next character to display
 =========================
 
 The next character to display to the user on the main page should match the
-following critieria:
+following criteria:
 - should be in the character sets chosen by the user
 - should be the character with the smallest number of correct samples available
 
