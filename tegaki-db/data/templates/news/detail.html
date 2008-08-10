@@ -1,5 +1,11 @@
+{% extends "base/base.html" %}
+
+{% block title %}Tegaki-db - {{news_item.title}}{% endblock %}
+
+{% block content %}
 <h1>{{news_item.title}}</h1>
 
 <p>by {{news_item.user.username}} on {{news_item.pub_date}}</p>
 
 <p>{{news_item.body}}</p>
+{% endblock %}
