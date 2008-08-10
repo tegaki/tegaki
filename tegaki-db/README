@@ -1,0 +1,31 @@
+tegaki-db
+=========
+
+tegaki-db is a web site for people to contribute their handwriting.
+
+
+Requirements
+------------
+
+Python          2.4
+Django          0.96
+
+
+Setting the development environment
+-----------------------------------
+
+$ cp data/conf/settings.py tegakidb/
+
+# edit tegakidb/settings.py
+
+$ mysql -u user -p
+
+mysql > CREATE DATABASE tegakidb;
+
+$ cd tegakidb/
+$ ./manage.py syncdb
+
+$ ./manage.py runserver
+
+Then see http://localhost:8000.
+
