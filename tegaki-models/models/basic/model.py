@@ -46,12 +46,14 @@ class Model(object):
         # or not
         self.NON_DIAGONAL = False
 
-        self.ROOT = os.path.join("models", "basic")
-        self.update_folder_paths()
-
         self.DOMAIN = ghmm.Float()
 
         self.verbose = options.verbose
+
+        self.CORPORA = ["japanese-learner1", "japanese-native1"]
+
+        self.ROOT = os.path.join("models", "basic")
+        self.update_folder_paths()
 
     ########################################
     # General utils...
@@ -83,6 +85,11 @@ class Model(object):
         """
         dict = {}
         for file in glob.glob(os.path.join(directory, "*", "*", "*.xml")):
+            corpus_name = file.split("/")[-3]
+            # exclude data which are not in the wanted corpora
+            if corpus_name not in self.CORPORA:
+                continue
+            
             char_code = int(os.path.basename(file)[:-4])
             if not dict.has_key(char_code):
                 dict[char_code] = []
@@ -114,10 +121,13 @@ class Model(object):
     # Feature extraction...
     ########################################
 
-    def get_feature_vectors(self, writing):
+    def get_feature_vectors(self, writing, normalize=False):
         """
         Get deltax and deltay as feature vectors.
         """
+        if normalize:
+            writing = writing.normalize()
+            
         strokes = writing.get_strokes()
         vectors = [(x,y) for stroke in strokes for x,y in stroke]
         vectors = array_sample(vectors, self.SAMPLING)
@@ -156,6 +166,8 @@ class Model(object):
 
                 output_file = os.path.join(output_dir,
                                            str(char_code) + ".sset")
+
+                self.print_verbose(output_file)
 
 
                 if os.path.exists(output_file):
@@ -278,6 +290,8 @@ class Model(object):
             output_file = os.path.join(self.INIT_HMM_ROOT,
                                        "%d.xml" % char_code)
 
+            self.print_verbose(output_file)
+
             if os.path.exists(output_file):
                 os.unlink(output_file)
 
@@ -300,7 +314,7 @@ class Model(object):
             os.makedirs(self.TRAIN_HMM_ROOT)
         
         for file in initial_hmm_files:
-            char_code = int(os.path.basename(file)[:5])
+            char_code = int(os.path.basename(file).split(".")[0])
             hmm = ghmm.HMMOpen(file)
             sset_file = os.path.join(self.TRAIN_FEATURES_ROOT,
                                      str(char_code) + ".sset")
@@ -347,7 +361,7 @@ class Model(object):
         hmms = []
         
         for file in files:
-            char_code = int(os.path.basename(file)[:5])
+            char_code = int(os.path.basename(file).split(".")[0])
             hmm = ghmm.HMMOpen(file)
             hmm.char_code = char_code     
             hmms.append(hmm)
@@ -370,7 +384,7 @@ class Model(object):
         s = ""
         
         for file in self.get_eval_feature_files():
-            char_code = int(os.path.basename(file)[:5])
+            char_code = int(os.path.basename(file).split(".")[0])
             sset = self.get_sequence_set(file)
 
             # evaluate all evaluation sets at the same time
