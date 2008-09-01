@@ -200,7 +200,7 @@ class CharacterEditor:
         
 
 def usage(pgm):
-    print "%s output_folder" % pgm
+    print "%s output_folder [comma-separated-character-list]" % pgm
 
 if __name__ == "__main__":
     import sys
@@ -208,11 +208,15 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         usage(sys.argv[0])
     else:
-        char_list = ["一", "二", "三", "泣", "漢", "温", "使", "便", "旅", "族",
-                     "水", "氷", "撃", "女", "安", "北", "化", "忘", "妄", "近",
-                     "集", "育", "坊", "訪", "防", "妨", "駅", "福", "副", "神",
-                     "版", "坂", "板", "金", "全", "錬", "練", "業", "習", "央",
-                     "決", "代", "反", "想", "歯", "象", "始", "初", "発", "感"]
+        if len(sys.argv) == 2:
+            char_list = ["一", "二", "三", "泣", "漢", "温", "使", "便", "旅",
+                        "族", "水", "氷", "撃", "女", "安", "北", "化", "忘",
+                        "妄", "近", "集", "育", "坊", "訪", "防", "妨", "駅",
+                        "福", "副", "神", "版", "坂", "板", "金", "全", "錬",
+                        "練", "業", "習", "央", "決", "代", "反", "想", "歯",
+                        "象", "始", "初", "発", "感"]
+        else:
+            char_list = sys.argv[2].split(",")
                      
         editor = CharacterEditor(sys.argv[1], char_list)
     
