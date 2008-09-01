@@ -39,6 +39,8 @@ class Model(models.basic.model.Model):
         self.N_DIMENSIONS = 2
         self.NON_DIAGONAL = True
 
+        self.CORPORA = ["japanese-learner1", "japanese-native1"]
+
         self.ROOT = os.path.join("models", "prop_n_states")
         self.update_folder_paths()
 

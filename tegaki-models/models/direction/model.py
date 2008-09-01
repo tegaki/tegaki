@@ -40,6 +40,8 @@ class Model(models.basic.model.Model):
         self.N_STATES_PER_STROKE = 3
         self.N_DIMENSIONS = 2
 
+        self.CORPORA = ["japanese-learner1", "japanese-native1"]
+
         self.ROOT = os.path.join("models", "direction")
         self.update_folder_paths()
 
