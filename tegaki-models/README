@@ -14,6 +14,72 @@ tegaki-gtk
 
 [*] The Python bindings are also required.
 
+Adding more training-data
+-------------------------
+
+Let's say we want to add training data for latin characters. The folder
+structure is as follows.
+
+data/eval/[corpus_name]/[set_name]/*.xml
+data/train/[corpus_name]/[set_name]/*.xml
+
+[corpus-name] and [set_name] can be pretty much whatever you like but it's
+better to follow some kind of convention.
+
+In case we have handwriting data for two different persons, we use
+"latin-writer1" and "latin-writer2" as corpus folder names.
+
+If each person writes three times each character, we could use "s1", "s2"
+and "s3" as set folder names.
+
+*.xml files are of the form char_code.xml where char_code is a the
+unicode number of the character. For example, the file for "a" would be 97.xml.
+
+To create the handwriting data, you can use the character editor. For example:
+
+$ mkdir -p data/train/latin-writer1/s1
+$ ./character-editor data/train/latin-writer1/s1 \
+a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
+
+Adding a new model
+------------------
+
+Let's say we want to create a new model called basic_latin.
+
+1) mkdir models/basic_latin
+2) cp models/basic/__init__.py models/basic_latin/
+3) Create a file models/basic_latin/model.py. The minimalist code is:
+
+import os
+from tegaki.arrayutils import *
+import models.basic.model
+
+class Model(models.basic.model.Model):
+
+    def __init__(self, *args):
+        models.basic.model.Model.__init__(self, *args)
+        self.CORPORA = ["latin-writer1", "latin_writer2"]
+        self.ROOT = os.path.join("models", "basic_latin")
+        self.update_folder_paths()
+
+4) To run through all the steps, run: ./mmanager basic_latin all
+
+Run ./mmanager without arguments to see the help.
+
+5) Have a look at models/basic/model.py to see what parameters and methods
+   you can override. Change whatever you like to improve the accuracy.
+
+6) Try with your own handwriting with:
+
+./mmanager basic_latin pad
+
+The above may yield strange results due to a bug in either pygtk or ghmm. In
+that case, try:
+
+./mmanager pad | ./mmanager basic_latin eval -s
+
+The results appear in the console.
+
 License
 -------
 
