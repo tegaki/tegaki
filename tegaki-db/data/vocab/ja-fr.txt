@@ -16,8 +16,8 @@
 口座（こうざ）預金（よきん）	compte courant
 預金（よきん）する	déposer de l'arger à la banque
 
-口座（こうざ）の住（す）まい	habitation temporaire
-口座（こうざ）は	pour le moment...
+当座（とうざ）の住（す）まい	habitation temporaire
+当座（とうざ）は	pour le moment...
 
 フランス領（りょう）	territoire français
 広大（こうだい）な領土（りょうど）	large territoire
@@ -42,7 +42,7 @@
 両眼（りょうがん)ともの視力（しりょく）が落（お）ちた	la vue des deux yeux a diminué
 近眼（きんがん）用（よう）のめがね	lunettes pour la vue de près
 
-小説家（小説家）になる	devenir romancier
+小説家（しょうせつか）になる	devenir romancier
 文学賞（ぶんがくしょう）をもらう夢（ゆめ）	le rêve de recevoir un prix de littérature
 正夢（まさゆめ）だったら、いいな	si mon rêve pouvait se réaliser !
 彼はスポーツに夢中（むちゅう）だ	le sport le passionne
@@ -81,6 +81,7 @@
 機械（きかい）を設備（せつび）する	installer/équiper des machines
 口実（こうじつ）を設（もう）ける	trouver un prétexte, une excuse
 口実（こうじつ）にする	trouve un prétexte, une excuse
+言訳（いいわけ）を言う	donner une excuse
 
 愛（あい）の証（あかし）を立（た）てる	faire preuve d'amour
 歯（は）が痛（いた）い	avoir mal aux dents
@@ -137,7 +138,7 @@
 良識（りょうしき）のある	sensé
 標識（ひょうしき）を守（まも）る	respecter la signalisation, les feux
 
-コンビにのお弁当（べんとう）	plat préparé du combini
+コンビニのお弁当（べんとう）	plat préparé du combini
 弁解（べんかい）する	s'excuser
 関西弁（かんさいべん）	dialecte du Kansai
 
@@ -162,3 +163,486 @@
 宴会（えんかい）	banquet, festin
 余興（よきょう）	divertissement
 
+そのことはまた改(あらた）めて話し合いましょう	nous en reparlerons
+日本は単一（たんいつ）民族（みんぞく）の国	le Japon est une nation uniforme
+独自（どくじ）の文化（ぶんか）	nation particulière
+調和（ちょうわ）	harmonie
+外国人を見下（みくだ）す	regarder les étrangers de haut
+
+視力（しりょく）	acuité visuelle
+聴力（ちょうりょく）	acuité auditive
+
+人の感情（かんじょう）を損（そこ）なう	blesser quelqu'un (dans ses sentiments)
+健康（けんこう）を損（そこ）なう	se détruire la santé
+電車に乗（の）り損（そこ）なう	manquer un train
+危（あや）うく死ぬところだった	il a failli mourir
+危（あや）うく車に引（ひ）かれ損（そこ）なう	manquer de se faire écraser par une voiture
+
+株（かぶ）を買う	acheter des actions
+株（かぶ）をやる	jouer en Bourse
+株（かぶ）が上（あ）がる、下（くだ）る	les actions montent, diminuent
+株（かぶ）で大きく損（そん）をする	subur de grande pertes sur une action
+金銭（きんせん）の損（そん）	perte d'argent
+値（ね）が上（あ）がる、下（くだ）る	le prix monte, diminue
+巨額（きょがく）の金（きん）	grand somme d'argent
+巨額（きょがく）の損失（そんしつ）	grande perte
+損害額（そんがいがく）の合計（ごうけい）	le total des pertes
+
+楽（らく）な暮（く）らし	vie aisée
+我（わ）が家（や）の暮（く）らしを支（ささ）える	supporter/soutenir la vie du foyer
+子供（こども）の未来（みらい）を見守（みまも）る 	s'occuper de l'avenir de ses enfants, couver du regard
+一家（いっか）の支（ささ）え	le soutien de la famille
+心（こころ）の支（ささ）え	soutien moral
+海外（かいがい）支店（してん）で働（はたら）く	travailler dans une succursale à l'étranger
+
+立（た）ち入（い）り禁止（きんし）	défense d'entrer
+病人（びょうにん）に酒を禁止（きんし）する	interdire/proscrire le vin à un malade
+柔道（じゅうどう）では禁止（きんし）されている技（わざ）	technique/prise interdite au Judo
+
+球技（きゅうぎ）	sport de ballon
+技術（ぎじゅつ）	technique
+技術（ぎじゅつ）用語（ようご）	terme technique
+特技（とくぎ）	don particulier
+
+例（れい）を採（と）る	prendre un exemple
+どちらをお採（と）りになりますか	lequel vous prenez ?
+昆虫（こんちゅう）を採集（さいしゅう）する	collectionner des insectes
+果実（かじつ）と花（はな）を採（と）る	cueillir des fruits et des fleurs
+樹木（じゅもく）を伐採（ばっさい）する	abattre des arbres
+
+接（つ）ぐ	souder, unir
+ヨーロッパに滞在（たいざい）する	séjourner en Europe
+滞在（たいざい）を延長（えんちょう）する	prolonger son séjour
+延長戦（えんちょうせん）	les prolongations (match)
+この道は高速道路（こうそくどうろ）に接続（せつぞく）している	cette route se raccorde à l'autoroute
+列車（れっしゃ）が急行（きゅうこう）に接続（せつぞく）している	ce train est en correspondance avec un express
+電源（でんげん）を切る	couper le contact
+電源（でんげん）が入（はい）らない	il n'y a pas de contact
+自然（しぜん）と接触（せっしょく）して生活（せいかつ）する	vivre en contact avec la nature
+直接（ちょくせつ）	direct
+
+特権（とっけん）を授（さず）ける	donner/accorder un privilège
+理科（りか）の授業（じゅぎょう）	devoir de sciences
+数学（すうがく）を教授（きょうじゅ）する	enseigner les mathématiques
+授賞式（じゅしょうしき）	remise des prix
+
+人を夕食（ゆうしょく）に招（まね）く	inviter quelqu'un à dîner
+手招（てまね）きする	appeler quelqu'un d'un signe de la main
+招待状（しょうたいじょう）	invitation écrite
+
+姿（すがた）がいい	être bien proportionné (lit. avoir une bonne apparence)
+姿（すがた）を現（あらわ）す	se faire voir
+そのままの姿（すがた）で	tel quel
+姿（すがた）を消（け）す	disparaître
+
+カメラを提（さ）げている観光客（かんこうきゃく）	touriste qui porte un appareil photo
+計画（けいかく）を提出（ていしゅつ）する	présenter/proposer un projet
+提案（ていあん）する	faire une proposition
+提案（ていあん）を投票（とうひょう）にかける	voter une proposition
+死（し）は生（せい）を前提（ぜんてい）とする	la mort présuppose la vie
+
+往(おう）	voyage (kanji seulement)	
+チームを初優勝（はつゆうしょう）へと導（みちび）く	mener une équipe à sa première victoire
+悪（わる）の道に導（みちび）く	entrainer quelqu'un sur le mauvais chemin
+監督（かんとく）の導（みちび）き	"guidance" du coach
+一丸（いちがん）になって敵（かたき）に当（あた）る	s'unir/faire bloc contre l'ennemi
+人の指導力（しどうりょく）一目（いちもく）置（お）く	reconnaître le leadership de quelqu'un
+車の往来（おうらい）が少ない	la circulation des voitures est faible
+丘（おか）に登（のぼ）る	monter une colline
+往年（おうねん）の名選手（めいせんしゅ）	grande champion d'autrefois
+産業化（さんぎょうか）は往々（おうおう）にして公害（こうがい）を伴（ともな）うものだ	l'industrialisation entraîne/accompagne souvent la pollution
+
+復（ふく)	retourner, rétablir (kanjis seulement)
+往復（おうふく）する	aller et revenir
+往復（おうふく）切符（きっぷ）	ticket aller-retour
+もうくたくただ	je n'en peux plus
+歴史（れきし）を復習（ふくしゅう）する	réviser l'histoire
+信用（しんよう）を回復（かいふく）する	retrouver sa confiance
+元気を回復（かいふく）する	recouvrer ses forces
+
+徳（とく）の高い人	personne de grande vertu
+道徳（どうとく）を守（まも）る	respecter la morale
+道徳的（どうとくてき）な生活（せいかつ）を送（おく）る	mener une vie morale
+人徳（じんとく）のある人	personne de grande vertu
+こちらの方が徳用（とくよう）だ	ce produit est plus économique
+
+術（じゅつ）	art, technique
+為（な）す術（すべ）もない	il n'y a rien à faire
+技術（ぎじゅつ）を磨（みが）く	affiner/polir/aiguiser sa technique
+芸術家（げいじゅつか）	artiste
+美術館（びじゅつかん）	musée
+
+話を飾（かざ）る	agrémenter/enrichir un récit
+窓を花で飾（かざ）る	orner une fenêtre de fleurs
+
+衛（えい）	défense, protection (kanji seulement)
+月（つき）は地球(ちきゅう）の衛星（えいせい）である
+守衛（しゅえい）がゲートを管理（かんり）している	le gardien garde la porte
+衛生（えいせい）に注意（ちゅうい）する	faire attention à son hygiène
+
+三次元（さんじげん）空間（くうかん）	espace/étendue à trois dimensions
+宇宙（うちゅう）空間（くうかん）	l'Espace
+
+学校（がっこう）を造（つく）る	construire une école
+子供（こども）を造（つく）る	faire un enfant
+
+木造（もくぞう）の建物（たてもの）	bâtiment en bois
+木造（もくぞう）家屋（かおく）	maison de bois
+
+費用（ひよう）をかける/払（はら）う	faire des dépenses
+
+時計（とけい）の構造（こうぞう）	structure/mécanisme d'une horloge
+人体（じんたい）の構造（こうぞう）	structure/constitution du corps humain
+
+道を迷（まよ）う	se perdre
+迷子（まいご）	enfant perdu
+休日（きゅうじつ）を過（す）ごす	passer ses vacances
+通路（つうろ）が入（い）り組（く）む	la route se complique
+迷路（めいろ）	labyrinthe
+
+意見（いけん）を述（の）べる	exprimer son opinion
+スピーチを述（の）べる	prononcer un discours
+早口（はやぐち）で述（の）べ立（た）てる	parler de long en large
+詳（くわ）しく記述（きじゅつ）する	décrire en détails
+仕事に気を配（くば）る	être attentif à son travail
+紙（かみ）を配（くば）る	distributer une feuille
+
+逆（ぎゃく）に	à　l'inverse
+みんなの意見に逆（さか）らう	aller à l'encontre de l'opinion de tout le monde
+風に逆（さか）らって走る	courir contre le vent
+効果（こうか）を現（あらわ）す	produire de l'effet
+効果（こうか）のある	efficace
+逆効果（ぎゃくこうか）	effet inverse
+
+過程（かてい）を観察（かんさつ）する	observer un processus
+ボート作りの過程(かてい）	le processus de construction d'un bateau
+一週間が過（す）ぎる	plus d'une semaine
+感情に対してあまりにも過敏（かびん）だ	être trop sensible à propos des sentiments
+
+公共（こうきょう）の敵（てき）	ennemi public
+適度（てきど）に飲む	boire avec modération
+適度（てきど）の温度（おんど）	température modérée
+適度（てきど）の運動(うんどう）をする	faire de l'exercice modéré
+
+睡眠（すいみん）が足（た）りない	mal dormir
+睡眠（すいみん）が深（ふか）い	sommeil profond
+適当（てきとう）	convenable, qualifié, approprié, raisonnable
+
+ここは快適（かいてき）だ	il fait bon ici
+快適（かいてき）な休暇（きゅうか）	bonnes vacances
+この家は住むには快適（かいてき）だ	cette maison est confortable
+
+なるべく早く来てください	venez le plus vite possible
+
+一歩（いっぽ）退（しりぞ）く	reculer d'un pas
+一歩（いっぽ）前進（ぜんしん）する	faire un pas en avant
+一歩（いっぽ）後退（こうたい）する	faire un pas en arrière
+
+祖父（そふ）	grand-père
+
+定年（ていねん）で退職（たいしょく）する	prendre sa retraite à cause de la limite d'âge
+退職金（たいしょくきん）/退職年金（たいしょくねんきん）	retraite, pension
+第一線（だいいっせん）で働いている人達	personnes qui travaillent dans une profession de pointe
+退屈（たいくつ）する	s'ennuyer
+
+性格（せいかく）が全然（ぜんぜん）違う	différents caractères
+理性的(りせいてき）な人	personne raisonnable
+性別（せいべつ）	distinction de sexe
+人の性（せい）は善（ぜん）である	l'homme est bon par nature
+性的（せいてき）関係（かんけい）	relation sexuelle
+性的（せいてき）魅力（みりょく）	sex-appeal
+性的（せいてき）魅力（みりょく）のある	sexy
+
+情（なさ）けをかける	avoir de la pitié, de la compassion
+力を込（こ）める	rassembler ses forses
+愛情（あいじょう）を込（こ）めて	avec amour
+心（こころ）を込（こ）めて	de tout son coeur
+
+生態（せいたい）	mode de vie
+生態学（せいたいがく）	écologie
+表情（ひょうじょう）	expression du visage
+
+快（こころよ）く引（ひ）き受（う）ける	accepter avec plaisir
+快（こころよ）い笑顔（えがお）	sourire aimable
+快（こころよ）く寝（ね）る	dormir confortablement
+この車は以前ほど快調（かいちょう）に走らない	cette voiture est moins bon état qu'elle ne l'était
+快調（かいちょう）である	être en bon état/être en forme
+
+寒（さむ）さに慣（な）れる	s'habituer au froid
+慣(な）れた手つきで	d'une main habile/experte
+肝心（かんじん）な点（てん）	point essentiel
+慣（な）れが肝心（かんじん）だ	c'est l'expérience qui est essentielle
+日本の習慣（しゅうかん）	la coutume japonaise
+家族（かぞく）の習慣（しゅうかん）	l'habitude de la famille
+
+応（おう）	accepter (kanji seulement)
+招待（しょうたい）に応（おう）じる	répondre à une invitation
+挑戦（ちょうせん）に応（おう）じる	relever/accepter un défi
+要求（ようきゅう）に応（おう）じる	répondre à une demande
+応援（おうえん）を求（もと）める	demander du secours
+真相（しんそう）を求（もと）める	rechercher la vérité
+アパートを求（もと）めている	rechercher un appartement
+応援（おうえん）する	encourager, supporter
+緊急（きんきゅう）事態（じたい）	état d'urgence
+英語に対応（たいおう）する日本語	mot japonais qui correspond à un mot anglais
+病人（びょうにん）の手当（てあ）てをする	soigner un malade
+応急（おうきゅう）手当（てあ）てをする	donner les premiers soins/soins d'urgence
+
+文明（ぶんめい）の恩恵（おんけい）	les bienfaits de la civilisation
+文明国（ぶんめいこく）	pays civilisé
+恩恵（おんけい）を施（ほどこ）す	accorder une faveur
+恩（おん）を受けた人を忘れない	ne pas oublier une personne qui nous a fait une faveur
+恩師（おんし）の世話（せわ）で	avec l'aide de mon ancien (honorable) professeur
+恩返（おんがえ）しをする	le revaloir (en réponse à une faveur)
+
+目を訓練（くんれん）する	exercer l'oeil
+職業（しょくぎょう）を訓練（くんれん）する	apprendre un métier
+
+能動態（のうどうたい）	la voix active
+能動的（のうどうてき）	actif
+受動態（じゅどうたい）	la voix passive
+受動的（じゅどうてき）	passif
+受動性（じゅどうせい）	passivité
+
+態（ざま）	apparence
+カメレオンの擬態（ぎたい）	le mimétisme du caméléon
+化学反応（はんのう）	réaction chimique
+少しも反応（はんのう）がない	ne produire aucun effet
+反応（はんのう）する	réagir,répondre
+態度（たいど）をかえる	changer son attitude
+
+夢を実現（じつげん）する	réaliser ses rêves
+理想（りそう）を実現（じつげん）する	réaliser son idéal
+
+法律家（ほうりつか）を志（こころざ）す	avoir l'intention, projeter
+女優（じょゆう）になることを志（こころざ）す	avoir pour but de devenir actrice
+やろうと志（こころざ）すものは、何でもやり遂（と）げる	réaliser tout ce que l'on entreprend
+意志（いし）が強い	avoir de la volonté
+意志（いし）を表示（ひょうじ）する	manifester de la volonté
+小説家を志望（しぼう）する	vouloir être romancier
+志望（しぼう）を叶（かな）える	vouloir être romancier
+第一（だいいち）志望（しぼう）の大学に合格（ごうかく）する	être admis à son premier voeu (université)
+
+肥（こ）えた土地（とち）	terre fertiel
+化学（かがく）肥料（ひりょう）	engrais chimique
+肥満（ひまん）する	grossir
+
+よく効（きく）薬（くすり）	médicament qui fait de l'effet, opére bien
+効果（こうか）のあるもの	qui fait de l'effet
+効果（こうか）を現す	produire de l'effet
+有効（ゆうこう）な手段（しゅだん）	mesure efficace
+有効（ゆうこう）に使う	faire bon usage (utiliser efficacement)
+有効（ゆうこう）期間（きかん）	durée de validité
+
+学校に務（つと）める/勤（つと）める	travailler dans une école
+責任（せきにん）を負（お）う	porter/endosser la responsabilité
+大事な務めを負（お）う	endosser une tâche/charge importante
+長年（ながねん）の経験（けいけん）	expérience de longues années
+勤務（きんむ）する	être de service, travailler
+勤務中（きんむちゅう）だ	être de service, de garde
+
+勢力（せいりょく）を得（え）る	acquérir de l'influence, du pouvoir
+勢力（せいりょく）の強い台風	typhon puissant
+勢（いきお）いを増（ま）す風	vent qui gagne en puissance
+座（すわ）った姿勢（しせい）	position assise
+
+道（みち）行（ゆ）く	descendre la route
+修業（しゅうぎょう）する	s'instruire, étudier
+
+独（ひと）りで暮（く）らす	vivre seul
+独（ひと）り芝居（しばい）	one man show
+芝居（しばい）を見に行く	aller au théâtre
+独特（どくとく）な演技（えんぎ）	jeu/interprétation (acteur) particulier/particulière
+
+女（おんな）を犯（おか）す	violer une femme
+法律（ほうりつ）を犯（おか）す　violer une loi
+国境（こっきょう）を犯（おか）す	violer des frontières
+犯人（はんにん）	malfaiteur
+
+この地域（ちいき）で	dans cette région
+どう？近（ちか）ごろ	comment vas-tu récemment?
+近（ちか）ごろは肉が高い	la viande est chère ces derniers temps
+犯罪（はんざい）が増（ふ）える	les crimes se multiplient
+防犯（ぼうはん）ベル	sonnette d'alarme
+防犯（ぼうはん）に努（つと）める	prendre des mesures pour la prévention contre le crime
+
+状	forme
+招待状（しょうたいじょう）	carte d'invitation
+異状（いじょう）がない	ne pas avoir d'anomalie, de défaut
+いい状態（じょうたい）である	être en bon état
+
+全（すべ）てが解（と）ける	tout s'éclaire (lit. tout se défait/dénoue)
+問題を解（と）ける	résoudre un problème (lit. défair/dénouer)
+時計を分解（ぶんかい）する	démonter une montre
+遂（つい）に問題を解（と）き明（あ）かす	finir par/finalement résoudre un problème
+仕組（しく）みを理解（りかい）する	comprendre un mécanisme
+
+義（ぎ）	justice, droiture
+早寝（はやね）早起（はやお）きをする主義（しゅぎ）	le principe "se coucher tôt se lever tôt"
+主義（しゅぎ）として	par principe
+〜する主義（しゅぎ）ある	avoir pour principe de...
+有意義（ゆういぎ）に過ごす	passer du temps utilement
+有意義（ゆういぎ）な人生を送る	mener une vie pleine
+義理（ぎり）の兄さん	beau-frère
+義理（ぎり）がある	avoir des obligations, être redevable
+
+
+人が群（むら）がる	les gens se rassemblent, s'attroupent
+魚の群（む）れ	banc/groupe de poissons
+群（ぐん）をなす	se grouper
+釘（くぎ）を抜（ぬ）く	ôter un clou
+群（ぐん）を抜（ぬ）く	se dinstinguer
+抜群（ばつぐん）の成績（せいせき）	notes brillantes, sans égal
+抜群（ばつぐん）の迫力（はくりょく）	vigueur/force sans pareille
+大群（たいぐん）	grande foule
+
+機能（きのう）を果（は）たす	remplir une fonction
+
+愛情を表明（ひょうめい）する	exprimer son amour
+意図（いと）を表明（ひょうめい）する	manifester ses intentions
+考えを表現（ひょうげん）する	exprimer une pensée
+
+手本（てほん）を示（しめ）す	montrer l'exemple
+道を示（しめ）す	indiquer le chemin
+
+計画（けいかく）を抱（いだ）く	porter un projet
+関心（かんしん）を抱（いだ）く	porter de l'intérêt
+抱（だ）かれたまま眠（ねむ）る	dormir dans les bras de quelqu'un
+
+異常（いじょう）な関心（かんしん）	intérêt particulier
+異常（いじょう）な事件（じけん）	évènement extraordinaire
+
+非（ひ）を認（みと）める	reconnaître ses fautes
+非常（ひじょう）に	extrêmement
+非行（ひこう）少年（しょうねん）	jeune délinquant
+非難（ひなん）する	blâmer
+非難（ひなん）される/を受ける	être blâmé
+非難（ひなん）すべき	devrait être blâmé
+
+万能（ばんのう）選手（せんしゅ）	athlète complet
+神様は全能（ぜんのう）である	Dieu est tout puissant/omnipotent
+芸能人（げいのうじん）	artiste
+〜可能性（かのうせい）がある	il est possible que...
+
+則（そく）	régle, modèle
+則（のっと）る	se conformer à
+書式（しょしき）に則（のっと）って	selon la formule
+〜原則（げんそく）にする	observer le principe de...
+原則（げんそく）を欠（か）く	manquer de principe
+不規則（ふきそく）な食生活で体を壊（こわ）す	se détiorer la santé à force d'avoir une alimentation irrégulière
+
+財（ざい）を成（な）す	faire fortune
+財産（ざいさん）がある	avoir de la fortune
+財布（さいふ）	porte-feuille
+
+心の貧（まず）しい人	personne pauvre d'esprit
+貧（まず）しい家庭（かてい)	famille/foyer pauvre
+逆境（ぎゃっきょう）に立（た）ち向（む）かう	faire face à l'adversité
+貧乏（びんぼう）な人	personne pauvre
+貧乏（びんぼう）する	tomber dans la pauvreté
+この街から偉人（いじん）がでた	cette ville a donné naissance à un grand homme
+
+賛成（さんせい）する	donner son approbation
+賛成（さんせい）を得（え）る	obtenir l'approbation
+絶賛（ぜっさん）する	faire l'éloge
+絶賛（ぜっさん）を浴（あ）びる	être comblé d'éloges
+賛否（さんぴ）を問（と）う	demander à quelqu'un de se prononcer (pour ou contre)
+賛否（さんぴ）	les oui et les non, les pour et les contre (vote)
+賛否（さんぴ）は相半（あいなか）ばする	les oui et les non sont à 50-50
+
+話の真偽（しんぎ）を質（ただ）す	examiner/vérifier la véracité d'une histoire
+弱い体質（たいしつ）の人	personne de constitution faible
+質問（しつもん）する	poser une question
+質素（しっそ）な食事（しょくじ）	repas modeste, simple
+
+自分を責（せ）めてはいけない	il ne faut pas s'accabler (s'accuser, se reprocher)
+責（せ）め合（あ）う	se reprocher à soi-même
+責任（せきにん）を負（お）う	porter/endosser la responsabilité
+自責（じせき）の念（ねん）にかられている	avoir des remords
+
+青春（せいしゅん）	l'adolescence
+
+平方（へいほう）メードル	mètres carrés
+平方根（へいほうこん）	racine carée
+立方（りっぽう）メードル	mètres cubes
+
+略（りゃく）	abréviation
+祝（いわ）う	fêter
+招（まね）く	inviter
+
+魚に飽（あ）きる	être dégouté du poisson/en avoir assez du poisson
+聞（き）き飽（あ）きる	être fatigué d'écouter
+
+戸籍（こせき）	état civil, registre de famille
+入籍（にゅうせき）する	entrer dans le registre familial
+保守的（ほしゅてき）な王国（おうこく）	royaume/monarchie conservateur/conservatrice
+人に偏見（へんけん）を抱（いだ）く	avoir des préjugés
+偏見（へんけん）のある	partial
+
+選挙（せんきょ）する	voter, élire
+
+貿（ぼう）	commerce, échange (voyage seulement)
+貿易（ぼうえき）する	faire du commerce
+貿易船（ぼうえきせん）	bâteau de commerce
+貿易港（ぼうえきこう）	port de commerce
+
+賀（が）を述（の）べる	exprimer ses félicitations
+賀状（がじょう）	carte de voeu
+祝賀式（しゅくがしき）	cérémonie de félécitations
+賀春（がしゅん）	New Year greeting
+
+資（し）	ressources (kanji seulement)
+資料（しりょう）を集（あつ）める
+お金を提供（ていきょう）する	offrir de l'argent
+資料（しりょう）を提供（ていきょう）する	documenter
+資源（しげん）を開発（かいはつ）する	exploiter des ressources
+資源（しげん）を保有（ほゆう）する	disposer de ressources
+司書（ししょ）の資格（しかく）を持つ	avoir la qualité/qualification de bibliothéquaire
+
+調査（ちょうさ）する	faire une enquête
+人口（じんこう）の調査（ちょうさ）	recensement de la population
+
+手を貸（か）す	prêter sa main (donner son aide)
+本を貸（か）し出（だ）すほかに...	outre prêter des livres,...
+
+易（えき）	divination
+易（やさ）しい仕事（しごと）
+易（やさ）しく読める本	livre qui se lit facilement
+交易（こうえき）する	faire du commerce
+容易（ようい）なことではない	ce n'est pas une chose facile
+容易（ようい）にする	faciliter
+
+属（ぞく）	appartient, affilié (kanji seulement)
+〜に付属（ふぞく）する	dépendre de...
+会社の付属（ふぞく）研究室（けんきゅうしつ）	laboratoire annexé à une entreprise
+日本に所属（しょぞく）する島（しま）	île qui appartient au/dépend du Japon 
+金属（きんぞく）	métal
+金属性（きんぞくせい）	métallique
+
+査（さ）	enquête (kanjis seulement)
+空（あ）き巣（す）事件（じけん）の捜査（そうさ）	enquête concernant des cambriolages
+聞(き）き取（と）り調査（ちょうさ）	enquête
+交番（こうばん）の巡査（じゅんさ）	agent du poste de police
+
+一家（いっか）を構（かま）える	se mettre en ménage
+店を構（かま）える	tenir une boutique
+態度（たいど）をとる	prendre une attitude
+時計（とけい）の構造（こうぞう）	structure d'une montre
+駅の構内（こうない）で	dans l'enceinte de la gare
+呑気（のんき）に構（かま）える	mener une vie insouciante, prendre une attitude non-chalante
+
+格（かく）を上がる	monter en rang
+試験（しけん）合格（ごうかく）する	réussir un examen
+性格（せいかく）	caractère
+体格（たいかく）検査（けんさ）を受（う）ける	passer un examen de condition physique
+
+検（けん）	investigation (kanji seulement)
+検問（けんもん）で車を止（と）められる	se faire à arrêter la voiture pour contrôle
+警官（けいかん）は車を１台１台検問（けんもん）した	le policier arrêta les voitures unes par unes
+検挙（けんきょ）される人は多い	les gens qui se font arrêter sont nombreux
+
+桜（さくら）の若葉（わかば）	les jeunes feuilles de cerisier
+桜（さくら）並木（なみき）	une rangée de cerisiers
+桜餅（さくらもち）	mochi au parfum sakura
+
+枝（えだ）	branche
