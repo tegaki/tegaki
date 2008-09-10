@@ -1,3 +1,7 @@
+# Format:
+# line := japanese\tfrench
+# japanese := word(reading)...
+# reading := reading1/reading2/...
 
 #########
 # 五年生 #
@@ -623,6 +627,10 @@
 空（あ）き巣（す）事件（じけん）の捜査（そうさ）	enquête concernant des cambriolages
 聞(き）き取（と）り調査（ちょうさ）	enquête
 交番（こうばん）の巡査（じゅんさ）	agent du poste de police
+調査（ちょうさ）を行（おこな）う	procéder à une enquête
+試験（しけん）を行（おこな）う	faire un examen
+手術（しゅじゅつ）を行（おこな）う	procéder à une opération
+そんなことは今日ではもう行（おこな）われていない	ça ne se fait plus de nos jours
 
 一家（いっか）を構（かま）える	se mettre en ménage
 店を構（かま）える	tenir une boutique
@@ -646,3 +654,206 @@
 桜餅（さくらもち）	mochi au parfum sakura
 
 枝（えだ）	branche
+
+全（まった）く関連（かんれん）がない	il n'y aucun rapport
+非常（ひじょう）に優（すぐ）れた学位論文（がくいろんぶん）	une thèse excellente
+
+暮（くら）し方（かた）は受けた教育（きょういく）に基（もと）づいている	le style de vie tire son origine dans l'éducation
+
+版（はん）を重（かさ）ねる	tirer plusieurs éditions
+再版（さいはん）	seconde édition	
+絶版（ぜっはん）	édition épuisée
+版画（はんが）を彫（ほ）る	sculpter/graver une gravure
+出版（しゅっぱん）の自由（じゆう）	liberte de presse (lit. de publier)
+本（ほん）を出版（しゅっぱん）する	publier un livre
+限定版（げんていばん）	édition limitée
+
+念願（ねんがん）が成就（じょうじゅ）しました	mon voeu s'est réalisé
+成功（せいこう）の暁（あかつき）には	en cas de réussite
+
+語（ご）の意味（いみ）を限定（げんてい）する	définir le sens d'un mot
+限定（げんてい）された数（かず）	en nombre limité
+
+定義（ていぎ）するのが難しい語もある	il y a des mots difficiles à définir
+
+憲法（けんぽう）第九（だいきゅう）条	article 9 de la constitution
+条件（じょうけん）つきで	sous condition
+箇条（かじょう）書きにする	écrire qqc article par article
+生活（せいかつ）信条（しんじょう）	principe de vie
+
+信念（しんねん）を持（も）つ	avoir des convictions
+選択（せんたく）の自由（じゆう）はない	ne pas avoir le choix
+選択（せんたく）する	choisir
+
+幹（みき/かん）	tronc
+幹線（かんせん）	ligne principale
+新幹線（しんかんせん）	ligne de super-express
+幹線（かんせん）道路（どうろ）	artère
+上級（じょうきゅう）幹部（かんぶ）	cadre supérieur
+幹部（かんぶ）になる	devenir cadre
+
+城（しろ）を築（きず）く	bâtir un château
+家を新築（しんちく）する	construire/faire construire une maison
+新築（しんちく）の家	une maison neuve
+建築（けんちく）現場（げんば）	le chantier/le lieu de construction
+建築（けんちく）会社（かいしゃ）	entreprise de construction
+建築家（けんちくか）	architecte
+家を建築（けんちく）する	construire une maison
+
+将来（しょうらい）の設計（せっけい）をする	faire des projets d'avenir	
+
+山の精（せい）	esprit de la montagne
+精（せい）を出（だ）して働（はたら）く	travailler de toute son ardeur
+高い精度（せいど）	haute précision
+軍（ぐん）の精鋭（せいえい）	l'élite de l'armée
+健全（けんぜん）な精神（せいしん）	esprit sain
+
+代表（だいひょう）を送（おく）る	envoyer un représentant
+世論（よろん）を代表（だいひょう）する	représenter l'opinion publique
+我家（わがや）を代表（だいひょう）する	au nom de la famille
+代表的（だいひょうてき）	représentatif
+
+これ程（ほど）苦（くる）しんだことはない	je n'ai jamais souffert à ce point
+日程（にってい）を組（く）む	fixer le programme
+日程（にってい）を変更（へんこう）する	changer le programme
+音程（おんてい）が外（はず）れる	chanter/jouer faux (lit. l'intervalle musical se décroche)
+音程（おんてい）が狂（くる）う	chanter/jouer faux
+知能（ちのう）の程度（ていど）	degré d'intelligence
+生活（せいかつ）程度（ていど）を上（あ）げる/下（さ）げる	élever/abaisser son niveau de vie
+
+頭（あたま）の調子（しょうし）が狂（くる）う	être fou, perdre la tête
+女に狂（くる）う	courir les femmes (être fou des femmes)
+
+つらい仕事（しごと）を課（か）する	imposer un travail pénible
+国民（こくみん）に重税（じゅうぜい）を課（か）する	imposer un impôt lourd au peuple
+付加（ふか）税（ぜい）	surtaxe
+無税（むぜい）	sans taxe
+税金（ぜいきん）を申告（しんこく）する	déclarer ses impôts
+消費税（しょうひぜい）	taxe sur la consommation
+
+ガソリンを消費（しょうひ）する	consommer de l'essence
+お金を消費（しょうひ）する	consommer de l'argent
+
+人手（ひとで）が足（た）りない	manquer de bras
+人手（ひとで）を借（か）りる	avoir recours à de l'aide
+
+時間が不足（ふそく）する	manquer de temps
+
+イギリスからフランスに移（うつ）る	passer de l'Angleterre à la France 
+他（ほか）の問題（もんだい）に移（うつ）る	passer à un autre sujet
+病気（びょうき）を移（うつ）す	transmettre une maladie
+時間（じかん）を移（うつ）さず	sans perdre de temps (lit. sans passer du temps)
+容器（ようき）に移（うつ）す	transvaser,transvider	(lit. déplacer dans un récipient)
+家具（かぐ）を移動（いどう）する	déplacer des meubles
+人口（じんこう）の移動（いどう）	mouvement/déplacement de population
+新居（しんきょ）に移（うつ）る	emménager
+年末（ねんまつ）に移転（いてん）する	déménager à la fin de l'année
+移転先（いてんさき）	nouvelle adresse
+
+画像（がぞう）処理（しょり）	traitement de l'image
+情報（じょうほう）処理（しょり）	traitement de l'information
+信号（しんごう）処理（しょり）	traitement du signal
+事件（じけん）を処理（しょり）する	régler/traiter une affaire
+
+校舎（こうしゃ）	le bâtiment de l'école
+プロジェクトを処理（しょり）する	conduire/administrer un projet
+寄宿（きしゅく）する	être en pension/internat
+寄宿舎（きしゅくしゃ）	pensionat
+牛舎（ぎゅうしゃ）	étable
+
+10ユーロ余（あま）る	il y a dix euros de trop
+養分（ようぶん）な出費（しゅっぴ）をする	faire une dépense superflue
+冷蔵庫（れいぞうこ）の余（あま）り物（もの）	les restes dans le frigo
+読書（どくしょ）に余念（よねん）がない	être plongé dans sa lecture (lit. ne pas avoir d'autre idée)
+そりゃ余（あんま）りだ！	c'en est trop ! 
+
+美容院（びよういん）を営（いとな）む	tenir un salon de coiffure
+記念祭（きねんさい）を営（いとな）む	célébrer l'anniversaire de qqch
+医業（いぎょう）を営（いとな）む	éxercer la médecine
+日々（ひび）の営（いとな）み	la vie, le travail de tous les jours
+営業（えいぎょう）時間（じかん）	horaire d'ouverture
+年中無休（ねんちゅうむきゅう）営業（えいぎょう）する	être ouvert toute l'année	
+
+経験（けいけん）に富（と）む	avoir de l'exérience
+想像力（そうぞうりょく）に富（と）む小説（しょうせつ）	roman imaginatif (lit. riche en imagination)
+資源（しげん）に富（と）む	être riche en ressources
+豊富（ほうふ）なアイデア	idée abondantes
+工夫（くふう）に富（と）む	plein d'astuces
+富豪（ふごう）	millionnaire
+
+工夫（くふう）が足りない	manquer d'imagination/ingéniosité
+
+流出（りゅうしゅつ）する	s'écouler, fuire
+
+一時期（いちじき）フランスに住んだ	j'ai vécu pendant un temps en France
+
+過大評価（かだいひょうか）する	surestimer
+
+山田（やまだなにがし/やまだぼう）	un certain Yamada
+某月（ぼうげつ）某日（ぼうにち）に	tel mois tel jour
+
+時には（ときには）	parfois
+
+安易（あんい）な方法（ほうほう）	solution facile
+問題を解決（かいけつ）する	résoudre un problème
+
+容（よう）	contenir (kanji seulement)
+
+親（おや）バカ	fond parents
+
+ピアノを演奏（えんそう）する	jouer du piano
+
+容器（ようき）に入った化粧品（けしょうひん）	produits cosmétiques dans un récipient
+美容院（びよういん）	salon de coiffure
+容易（ようい）に買えない高級品（こうきゅうひん）	produit de grand standing que l'on ne peut facilement acheter
+火の側（そば）に寄（よ）る	s'approcher du feu
+友達の家へ立（た）ち寄（よ）る	passer chez un ami
+道の片方（かたほう）へ寄（よ）る	se ranger sur le bord de la route
+椅子（いす）と椅子を寄（よ）せる	rapprocher deux chaises
+頬（ほお）を寄（よ）せる	tendre sa joue (lit. approcher sa joue)
+出口に押（お）し寄（よ）せる	se presser vers la sortie
+
+お序（つい）での折（おり）にお立（たち）寄（よ）り下さい	venez à l'occasion
+序（つい）でに	en passant, à ce propos
+試合（しあい）は序盤（じょばん）から日本チームが圧倒（あっとう）する	l'équipe du Japon domine/écrase depuis le début du match
+
+折（おり）を待つ	attendre l'occasion
+順序（じゅんじょ）を立てる	mettre qqc en ordre
+順序（じゅんじょ）をつける	fixer l'ordre
+
+折（おり）があり次第（しだい）	dès que, à la première occasion
+学校（がっこう）を欠席（けっせき）する	s'absenter de l'école
+
+病気に因（よ）る欠席（けっせき）	absence due à une maladie
+彼の人気は何に起因（きいん）するのだろうか	à quoi tient sa popularité ?
+直接（ちょくせつ）の原因（げんいん）	la cause directe
+因果（いんが）関係（かんけい）	rapport de cause à effet, causalité
+客観的（きゃっかんてき）な要因（よういん）が不足（ふそく）している	les facteurs/éléments objectifs sont insuffisants
+発症（はっしょう）の要因（よういん）	facteur de maladie
+
+日本（にほん）選手（せんしゅ）団（だん）	équipe du Japon
+科学（かがく）調査（ちょうさ）団（だん）	mission scientifique
+応援団（おうえんだん）	supporters
+共通（きょうつう）の敵（かたき）に対（たい）して団結（だんけつ）する	s'unir contre un ennemi commun
+みんなが団結（だんけつ）したので、優勝（ゆうしょう）できた	nous avons remporté la victoire car tout le monde s'est uni
+団体（だんたい）を結成（けっせい）する	fonder une association/organisation
+
+乱暴（らんぼう）な返事（へんじ）	réponse violente
+乱暴（らんぼう）する	brutaliser (qqn)
+乱暴（らんぼう）される	se faire violer
+あんまり暴（あば）れる	être trop violent
+横暴（おうぼう）な振（ふ）る舞（ま）い	comportement tyrannique
+
+旧（きゅう）の車	ancienne voiture
+旧家（きゅうか）の出である	être d'une famille ancienne
+旧式（きゅうしき）な考（かんが）え	idée ancienne, démodée
+旧盆（きゅうぼん）	Bon Festival of the lunar calendar
+
+河（かわ）を渡（わた）る	traverser une rivière
+河口（かこう）	embouchure (d'un fleuve)
+セーヌの川岸（かわぎし）	le quai de la Seine
+運河（うんが）を作る	creuser un canal
+
+友情（ゆうじょう）を結（むす）ぶ	se lier d'amitié
+二人の友情（ゆうじょう）は固（かた）く結（むす）ばれている	leur amitié est solide (lit. solidement liée)
+
