@@ -1,7 +1,8 @@
 # Format:
-# line := japanese\tfrench
+# line := japanese\texplanation
 # japanese := word(reading)...
 # reading := reading1/reading2/...
+# explanation := [french_translation|japanese_equivalent]
 
 #########
 # 五年生 #
@@ -857,3 +858,192 @@
 友情（ゆうじょう）を結（むす）ぶ	se lier d'amitié
 二人の友情（ゆうじょう）は固（かた）く結（むす）ばれている	leur amitié est solide (lit. solidement liée)
 
+費用（ひよう）がかかる旅行（りょこう）	voyage coûteux
+交通費（こうつうひ）	dépenses de transport
+秩序（ちつじょ）を回復（かいふく）する	rétablir l'ordre
+
+定期的（ていきてき）に	périodiquement
+定期券（ていきけん）	carte d'abonnement
+
+人を呼（よ）び止めて道を聞く
+
+乗（の）り越（こ）す	manquer son arrêt de train
+建物に囲（かこ）まれた中庭（なかにわ）	cour entourée par des immeubles
+木に囲（かこ）まれている家（いえ）	maison entourée d'arbres
+テーブルを囲（かこ）む	se mettre autour d'une table
+
+独りきりで暮（く）らす	vivre seul
+これきりしか残っていない	il ne reste que ça
+中学（ちゅうがく）きり行ってない	n'avoir fait que des études secondaires
+
+水筒（すいとう）	gourde
+猪（いのしし）	sanglier
+
+あの店の方が余程（よほど）安い	ce magasin est bien moins cher
+
+牡（おす）と牝（めす）	mâle et femelle
+
+小銭（こぜに）	pièces, monnaie
+百円玉（ひゃくえんだま）	pièce de 100 yens
+千円札（せんえんさつ）	billet de 1000 yens
+千円を小銭（こぜに）に替（か）える	changer 1000 yens en monnaie
+
+電話を入（い）れる	téléphoner
+電話が入（はい）る	être appelé au téléphone
+電話がある	être appelé au téléphone
+電話がかかる	être appelé au téléphone
+
+この本があるかどうか問（と）い合（あ）わせる
+
+辞表（じひょう）を提出（ていしゅつ）する	présenter, remettr sa lettre de démission
+計画（けいかく）を提出（ていしゅつ）する	proposer un projet
+提出（ていしゅつ）を受理（じゅり）する	accepter une lettre de démission
+提出（ていしゅつ）を却下（きゃっか）する	rejeter une lettre de démission
+要求（ようきゅう）を却下（きゃっか）する	rejeter une demande
+会社を辞（や）める	quitter une entreprise
+
+我社（わがしゃ）	notre entreprise
+貴社（きしゃ）	votre entreprise
+
+退院（たいいん）する	sortir de l'hôpital
+些とも（ちっとも）分からない	少しも分からない
+
+台風（たいふう）で木が倒（たお）れた	les arbres sont tombés à cause du typhon
+
+不動産（ふどうさん）	bien immobilier
+
+準（じゅん）	correspondre à (kanji seulement)
+準備（じゅんび）出来ている	être prêt
+優勝（ゆうしょう）を照準（しょうじゅん）を合（あ）わせる	viser la victoire
+準決勝（じゅんけっしょう）	demi-finales
+この調子（ちょうし）で続ければ	si l'on continue à ce rythme, sur ce ton
+
+身長（しんちょう）を測（はか）る	mesurer la taille
+重量（じゅうりょう）を計（はか）る	mesurer le poids
+重量（じゅうりょう）のある荷物（にもつ）	bagage lourd
+予測（よそく）どおり	comme prévu
+予測（よそく）できる	prévisible
+予測（よそく）する	prévoir
+
+演（えん）	jeu (d'un acteur)
+演劇（えんげき）に見に行く	aller au théâtre
+最優秀演技賞（さいゆうしゅうえんぎしょう）	prix de la meilleure interprétation
+講演（こうえん）する	faire un discours
+講演会（こうえんかい）を開（ひら）く	faire une conférence
+
+ある国民（こくみん）の特製（とくせい）	la particularité d'un peuple
+液体（えきたい）にする	liquidifier
+液体（えきたい）になる	devenir liquide
+幹（みき）の樹液（じゅえき）	la sève du tronc
+液状（えきじょう）にする	liquidifier
+液状（えきじょう）になる	devenir liquide
+
+背中に軟膏（なんこう）を塗（ぬ）る	appliquer de la pommade
+口紅（くちべに）を塗（ぬ）る	se mettre du rouge à lèvres
+
+潔（けつ）	pur, propre
+清潔（せいけつ）にする	nettoyer
+清潔好き（せいけつずき）	qui aime la propreté
+清潔（せいけつ）な下着（したぎ）	linge propre
+不潔（ふけつ）な靴下（くつした）	chaussettes sales
+不潔（ふけつ）な精神（せいしん）	esprit impur
+潔白（けっぱく）である	être innocent
+
+そこは混（こん）んでいる	il y a du monde
+駅は混雑（こんざつ）している	la gare est encombrée
+雪（ゆき）が雨（あめ）に混（ま）じる	la neige s'est mélangée à la pluie
+電車のダイヤは混乱（こんらん）する	les horaires de trains sont pertubés
+
+どんどん減（へ）る	diminuer progressivement
+目減（めべ）りする	diminuer
+経費（けいひ）が半減（はんげん）した	les dépenses ont diminué de moitié
+
+前略（ぜんりゃく）..草々（そうそう）	mot utilisés pour démarrer et finir une lettre courte
+
+永（なが）い付（つ）き合（あ）い	longue fréquentation
+永久歯（えいきゅうし）	dents de sagesse
+
+永続（えいぞく）する状態（じょうたい）	situation qui dure
+永続性（えいぞくせい）のある	durable
+
+厚（あつ）い	épais
+肉を厚（あつ）く切る	couper la viande en tranches épaisses
+厚（あつ）くする	épaissir
+
+高校（こうこう）の教師（きょうし）をする	être professeur
+医師（いし）	médecin
+恩師（おんし）	ancien professeur
+
+寒さを防（ふせ）ぐ	se défendre du froid
+友人（ゆうじん）を防（ふせ）ぐ	défendre un ami
+感染（かんせん）を防（ふせ）ぐ	prévenir une infection
+防寒（ぼうかん）対策（たいさく）	remède pour la protection contre le froid
+事故（じこ）を予防（よぼう）する	prévenir un accident
+
+いつまでも生きられるとは限（かぎ）らない	on ne vivra pas toujours
+入室（にゅうしつ）は社員に限（かぎ）られている	l'entrée est limitée au personnel
+発言（はつげん）時間（きかん）を限（かぎ）る	limiter le temps de parole
+
+人間の知力（ちりょく）には限界（げんかい）がある	il y a une limite à l'intelligence humaine
+
+世間（せけん）は狭（せま）い	le monde est petit (lit. étroit)
+世間（せけん）は何も知らない	il ne connait pas le monde
+
+険（けわ）しい坂（さか）	pente raide, abrupte
+
+冒険（ぼうけん）を試（こころ）みる	tenter l'aventure
+冒険（ぼうけん）を冒（おか）す	courir l'aventure
+冒険家（ぼうけんか）	aventurier
+危険（きけん）なこと	quelque chose de dangereux
+
+この際（さい）一言（ひとこと）を言う	profiter de cette occasion pour toucher un mot
+一言（ひとこと）を言わせてくれ	laisse moi te dire deux mots
+
+際限（さいげん）のない世界（せかい）	un monde sans limites
+国際的（こくさいてき）な問題	problème international
+
+実際的（じっさいてき）な考（かんが）え	idée pratique
+実際（じっさい）にどうすればいいかな	comment faut-il faire concrètement ?
+
+手紙を破（やぶ）る	déchirir une lettre
+型破（かたやぶ）りな考え	idée peu conventionnelle
+破産（はさん）する	faire faillite
+
+予告（よこく）する	prévenir, annoncer
+予告（よこく）なしに	sans prévenir
+
+避難（ひなん）する	se réfugier
+避難（ひなん）場所（ばしょ）を地図（ちず）で確（たし）かめる	vérifier le refuge sur la carte
+児童（じどう）公園（こうえん）	parc pour enfants
+確実（かくじつ）な証拠（しょうこ）	preuve certaine
+確実（かくじつ）だ	c'est certain
+
+町（まち）の銭湯（せんとう）	les bains (publics) de la ville
+釣（つ）り銭（せん）	la monnaie (rendre la)
+金銭（きんせん）に細（こま）かい	être près de son argent
+細（こま）かい仕事	travail minutieux, méticuleux
+細（こま）かい雨	petite pluie
+
+銅（どう）メダル	médaille de bronze
+銅像（どうぞう）を建（た）てる	dresser une statue de bronze
+銅線（どうせん）	câble en cuivre
+
+鉄鋼（てっこう）　fer et acier (sidérurgie)
+鉱山（こうざん）	mine
+金（きん）の鉱脈（こうみゃく）	filon d'or
+鉱脈（こうみゃく）を見つける	trouver un filon
+鉱山（こうざん）の地帯（ちたい）	région minière
+
+苦情（くじょう）を言う	se plaindre
+苦情（くじょう）を持（も）ち込（こ）む	porter plainte
+平（たい）らな地面（じめん）	sol
+交通量（こうつうりょう）が多い	il y a beaucoup de trafic (route)
+
+密集（みっしゅう）している人口	popoulation dense
+日本の面積（めんせき）はフランスの三分の二ぐらい	la superficie du Japon est 2/3 celle de la France
+
+勉強する義務（ぎむ）がある	devoir étudier (avoir l'obligation)
+義務的（ぎむてき）に	obligatoirement
+
+保育園（ほいくえん）	crèche
+子供を幼稚園（ようちえん）に預（あず）ける	déposer ses enfants à l'école maternelle
