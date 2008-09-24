@@ -5,6 +5,736 @@
 # explanation := [french_translation|japanese_equivalent]
 
 #########
+# 三年生 #
+########
+
+幸（しあわ）せの人	personne heureuse
+幸（さいわ）いなことに	heureusement
+幸福（こうふく）である	être heureux
+幸福（こうふく）をもたらす	porter bohneur
+
+本を読（よ）み終（お）える
+
+〜の中央（ちゅうおう）に	au centre
+中央（ちゅうおう）アメリカ	Amérique centrale
+盆地（ぼんち）の中央（ちゅうおう）	centre du bassin (géographie)
+中央（ちゅうおう）公園（こうえん）	parc central
+
+鬼（おに）に化（ば）ける	se déguiser en ogre
+化（ば）け物（もの）	monstre
+伝統（でんとう）文化（ぶんか）を伝（つた）える	transmettre une culture traditionnelle
+伝（つた）わる文化（ぶんか）	culture qui se transmet
+
+重要（じゅうよう）な行事（ぎょうじ）	évènement important
+
+仕事（しごと）
+お年寄（としよ）りを仕（つか）える	servir/être dévoué aux personnes âgées
+人に奉仕（ほうし）する	rendre service à quelqu'un
+
+私の住（す）む家（いえ)	la maison où j'habite
+住（す）み心地（ごこち）がいい	confortable, fait bon vivre
+住宅（じゅうたく）	logement
+
+お母さんに代（か）わってお父さんが来た	papa est venu à la place de maman
+参観（さんかん）する	visiter
+参観人（さんかんにん）	visiteur
+親（おや）代（が）わりに	à la place des parents
+いろんな年代（ねんだい）の人	des gens de toutes générations
+
+夢見（ゆめみ）心地（ごこち）である	être rêveur
+お見舞（みま）いに行く	rendre visite à qqn à l'hôpital
+
+自他（じた）共（とも）に	généralement
+負（ま）けず嫌（ぎら）い	mauvais perdant, têtu
+他人（たにん）	les autres
+他（た）の子（こ）を引（ひ）っぱって行く	mener les autres (lit. tirer les autres)
+
+年賀状（ねんがじょう）を作る　faire une carte de voeux
+パソコンを使（つか）う	faire une carte de voeux
+使（つか）い方（かた）を教える	expliquer la façon d'utiliser
+愛犬（あいけん）と写（うつ）った写真（しゃしん）	la photo où je suis photographié avec mon chien (adoré)
+
+早速（さっそく）使用（しよう）する	s'en servir tout de suite
+早速（さっそく）する	ne pas perdre de temps
+
+決（き）まりを付ける	déterminer, décider
+決（き）まり悪（わる）い	gêné, honteux
+
+ぼくの係（かかり）	c'est mon rôle, ma charge
+地球（ちきゅう）の未来（みらい）に係（かか）る取（と）り組（く）み	initiative/effort qui concerne l'avenir de la planète
+関係（かんけい）ない	ça n'a pas de rapport
+
+いつもの倍（ばい）もご飯を食べる	manger deux fois plus que d'habitude	
+彼は張（は）り切（き）っている	il est en pleine forme
+人一倍（ひといちばい）頭（あたま）がいい	être exceptionnellement intelligent
+体重（たいじゅう）が倍増（ばいぞう）	le poids double
+
+遠足（えんそく）でロープウェーに乗（の）る	prendre le téléphérique lors d'une excursion
+乗（の）り心地（ごこち）が最高（さいこう）	la sensation de conduire est top !
+乗車券（じょうしゃけん）は記念（きねん）にとっておく	prendre le billet de train pour souvenir
+
+身（み）を切（き）るように寒い	lit. faire froid à en couper le corps
+身支度（みじたく）をする	se préparer, faire sa toilette
+全身（ぜんしん）汗（あせ）だくになる	être complètement en sueur
+
+夢中（むちゅう）にする	se passionner
+
+夏期休暇（かききゅうか）が始（はじ）まる	les vacances d'été débutent
+強化（きょうか）合宿（がっしゅく）	stage d'entraînement intensif
+合宿（がっしゅく）する	vivre en commun
+手始（てはじ）めは	au début
+試合（しあい）が開始（かいし）される	le match débute
+
+委（い）	confiance (kanji seulement)
+学級（がっきゅう）委員長（いいんちょう）	délégué de classe
+立候補（りっこうほ）する	candidater, se porter candidat
+得票（とくひょう）	le suffrage, résultat des votes
+委任（いにん）される	être chargé de
+委員（いいん）	membre
+
+変（か）わった方法（ほうほう）	d'une manière différente
+赤（あか）ちゃんを育（そだ）てる	élever un bébé
+子育（こそだ）てをする	éléver un enfant
+動物（どうぶつ）を飼育（しいく）する	éléver des animaux
+保育（ほいく）する	élever
+体育（たいいく）の時間	le temps de l'éducation physique
+
+観察（かんさつ）する	observer
+
+両親（りょうしん）が共働（ともばたら）き	les deux parents travaillent
+学童（がくどう）	écolier
+童話（どうわ）	conte
+児童（じどう）公園（こうえん）　parc pour enfants
+
+渋谷で彼女（かのじょ）を見（み）かける	l'apercevoir à Shibuya
+
+次（つぎ）のピアノの発表会（はっぴょうかい）	le prochain récital de piano
+二（に）の次（つぎ）にする	faire passer en second, laisser de côté
+
+局（きょく）	bureau
+局地的（きょくちてき）な雨	pluie locale
+交通（こうつう）が乱（みだ）れている	la circulation est déréglée
+郵便局（ゆうびんきょく）の集配（しゅうはい）	la distribution/tournée de la poste
+結局（けっきょく）	finalement
+
+本屋（ほんや）さん	librairie
+児童書（じどうしょ）の売（う）り場（ば）	le lieu de vente des livres pour enfants	
+部屋（へや）	chambre
+屋上（おくじょう）に	sur le toit
+
+ひどい熱（ねつ）が出て病院（びょういん）に行く	aller à l'hôpital à cause d'une vilaine fièvre
+急（きゅう）な病（やまい）	maladie soudaine
+気（き）の病（やまい）	maladie imaginaire
+つきっきりで看病（かんびょう）する	soigner sans relâche
+つきっきりで子供に勉強（べんきょう）を教（おし）える	faire étudier un enfant sans relâche
+
+水（みず）を飲（の）む
+たちまち長い行列（ぎょうれつ）になる	une file d'attente se forme rapidement/tout de suite
+水はスポーツ飲料（いんりょう）よりはるかに美味（おい）しい	l'eau est bien meilleure qu'une boisson pour le sport
+
+お面（めん）を書く	acheter un masque
+表面的（ひょうめんてき）に	extérieurement, en surface
+表面（ひょうめん）が銀色（ぎんいろ）に光（ひか）っている	la surface brille en argenté
+得意（とくい）満面（まんめん）	aire triomphant (lit. visage orgeuilleux)
+面倒（めんどう）臭（くさ）い	c'est gênant, chiant, ennuyant	
+
+真夏（まなつ）	plein été
+顔（かお）が真っ青（まっさお）になる	avoir le visage pâle
+白（しろ）い砂浜（すなはま）	plage de sable blanc
+写真（しゃしん）をとる	prendre des photos
+
+作文（さくぶん）に題（だい）を付ける	donner un titre à une oeuvre
+題材（だいざい）	le thème, le sujet	
+主題（しゅだい）	le thème, le sujet
+宿題（しゅくだい）	les devoirs (d'école)
+
+県（けん）	préfecture
+職場（しょくば）は県庁（けんちょう）にある
+県営（けんえい）球場（きゅうじょう）を建設（けんせつ）する	contruire un stade de base-ball préfectural
+
+相変（あいか）わらずに元気（げんき）	être en forme comme toujours
+相撲（すもう）をとる	lutter (sumo)
+相手（あいて）	partenaire, adversaire
+形相（ぎょうそう）が変（か）わる	changer de visage
+
+食事（しょくじ）のたびに歯（は）をみがく	se laver les dents à chaque repeas
+虫歯（むしば）	carrie
+永久歯（えいきゅうし）	dent de sagesse (lit. dents éternelles) 
+
+開店（かいてん）したスーパー	magasin ouvert
+たしかな品物（しなもの）	produit sûr
+輸入品（ゆにゅうひん）のお菓子（かし）	gâteau importé
+評判（ひょうばん）がいい	de bonne réputation
+
+二号車（にごうしゃ）	deuxième voiture
+先生（せんせい）の号令（ごうれい）で	au commandement du professeur
+信号（しんごう）が青（あお）い	le feu est vert
+
+独特（どくとく）の風味（ふうみ）がある	il y a un goût particulier
+野菜（やさい）の持（も）ち味（あじ）	le goût intrinsèque à un légume	
+フランスに興味（きょうみ）がわく	avoir un intérêt pour la France qui se forme
+
+和風（わふう）の建物（たてもの）	bâtiment de style Japonais
+調和（ちょうわ）が大切（たいせつ）	l'harmonie est importante
+和歌（わか）	poème de 31 syllables
+
+命（いのち）は尊（とうと）い	la vie est précieuse
+命拾（いのちびろ）いする	manquer la mort de peu
+命令（めいれい）を実行（じっこう）する	exécuter un ordre
+
+三代（さんだい）続（つづ）いている商店（しょうてん）	magasin qui continue depuis trois générations
+商売（しょうばい）する	exercer un commerce
+商業（しょうぎょう）を営（いとな）む	exercer un commerce
+
+息（いき）を深（ふか）く吸（す）う	respirer profondément
+息抜（いきぬ）きする	se détendre
+水中（すいちゅう）に生息（せいそく）する	vivre dans l'eau
+生息地（せいそくち）	habitat
+
+ホームランを打（う）つ	faire un home-run (lit. taper un home-run)
+鼻（はな）が高（たか）い	être fier (lit. avoir le nez haut)
+鼻息（はないき）荒（あら）く試合（しあい）に出（で）かける	aller au match avec plein d'entrain
+鼻血（はなぢ）	sang du nez
+
+目撃者（もくげきしゃ）の談（だん）によれば	d'après les dires des témoins
+相談（そうだん）する	consulter qqn
+こわい怪談（かいだん	conte fantastique　qui fait peur
+雑談（ざつだん）する	bavarder, papoter
+
+詩（し）を朗読（ろうどく）する	réciter une poésie
+詩人（しじん）の作品（さくひん）	l'oeuvre d'un poète
+詩集（ししゅう）	recueil de poèmes
+
+町（まち）の歴史（れきし）を調（しら）べる	se renseigner sur l'histoire de la ville
+授業（じゅぎょう）の下調（したしら）べをする	préparer sa leçon
+司書（ししょ）の人	le/la bibliothécaire
+優（やさ）しい口調（くちょう）	ton gentil, façon de parler gentille
+英語を知ることが役立（やくだ）つ	il est utile de connaître l'anglais
+
+長編（ちょうへん）小説（しょうせつ）の最初（さいしょ）の章（しょう）を読（よ）む	lire le premier chapitre d'un (long) roman
+長編（ちょうへん）映画（えいが）	long métrage
+文章（ぶんしょう）	phrase
+勲章（くんしょう）を授（さず）ける	accorder, donner une décoration
+文化（ぶんか）勲章（くんしょう）	palmes académiques
+
+有名（ゆうめい）な研究家（けんきゅうか）	célèbre chercheur
+有（あ）り合（あ）わせの材料（ざいりょう）で	avec les matériaux que l'on a sous la main
+有能（ゆうのう）な外科医（げかい）	chirurgien compétent 
+
+恋愛（れんあい）をする	aimer
+恋愛（れんあい）関係（かんけい）	relation amoureuse
+
+仕事（しごと）を手早く（てばやく）処理（しょり）する	mener une affaire rondement
+
+自転車（じてんしゃ）の具合（ぐあい）	l'état d'un vélo
+具合（ぐあい）よくなる	prendre une bonne tournure
+具体的（ぐたいてき）にいうと	concrètement parlant
+道具（どうぐ）	outil
+工具（こうぐ）を持っていく	amener des outils
+工具箱（こうぐばこ）	boîte à outils
+
+ぼくが投（な）げる番（ばん）だ	c'est à mon tour de lancer
+君（きみ）が話す番（ばん）だ	c'est à ton tour de lancer
+工作（こうさく）の時間（じかん）に	au cours de bricolage
+輪投（わな）げをする	jouer au lancer d'anneau
+指輪（ゆびわ）	bague
+投手（とうしゅ）	pitcher (base-ball)
+
+ホームランを打（う）つ	faire un home-run (lit. taper un home-run)
+逆転（ぎゃくてん）	renversement de situation (match)
+耳打（むみう）ちする	chuchoter, dire à l'oreille
+打席（だせき）に入（はい）る	aller à l'emplacement pour bater (base-ball)
+	
+海辺（うみべ）で	au bord de mer
+落（お）ちている物（もの）を拾（ひろ）う	ramasser des objets tombés
+小さな石（いし）を拾（ひろ）い上（あ）げる	ramasser une petite pierre
+流木（りゅうぼく）などを拾（ひろ）い集（あつ）める	rassembler　du bois (qui a flotté) etc
+拾（ひろ）い出（だ）す	sélectionner
+
+宝（たから）を探（さが）す	rechercher un trésor
+博物館（はくぶつかん）の宝（たから）	la richesse (le trésor) d'un musée
+ここまで流（なが）れて来たもの	un objet qui est arrivé jusqu'ici
+私の計画（けいかく）が流（なが）れた	mon projet a avorté
+
+日（ひ）を定（さだ）める	fixer une date
+法律（ほうりつ）を定（さだ）める	
+
+全方位（ぜんほうい）外交（がいこう）	diplomatie tous azimuts
+南（みなみ）を指（さ）して進（すす）む	se diriger vers le sud
+指（ゆび）で地図（ちず）をなぞう	suivre (décalquer) une carte avec le doit
+方位（ほうい）磁石（じしゃく）の針（はり）が指（さ）す方向（ほうこう）を確（たし）かめる	vérifier la direction poitée par l'aiguille　de la boussole
+上司（じょうし）の指示（しじ）を受（う）ける	recevoir les instructions de son chef
+方向（ほうこう）を指示（しじ）する	indiquer une direction
+
+荷物（にもつ）を持（も）つ	porter un bagage
+それを持(も）ち運（はこ）べる袋（ふくろ）が欲（ほ）しい	j'ai besoin d'un sac avec lequel je puisse amener cela
+持久力（じきゅうりょく）を試（ため）す	éprouver (lit. essayer) son endurance
+
+調査（ちょうさ）の対象（たいしょう）	l'objet, le sujet d'une enquête
+対戦（たいせん）相手（あいて）	ennemi, adversair
+我々（われわれ）はみんな対等（たいとう）である	nous sommes tous égaux
+
+お母さんに反抗（はんこう）する	se rebeller contre sa mère
+反抗的（はんこうてき）	rebel
+胸（むね）を反（そ）らす	gonfler sa poitrine
+反（そ）った板（いた）	planche gondolée
+反対（はんたい）に	au contraire
+
+栗（くり）の皮（かわ）を剥（む）く	épucheler la peau d'une chataigne
+渋皮（しぶわか）	écorce intérieure
+皮膚（ひふ）を怪我（けが）する	se blesser la peau
+
+君（きみ）たちの学校（がっこう）	votre école
+山田（やまだ）君（くん）	Yamada-kun
+
+百点（ひゃくてん）を取（と）る	obtenir 100 points (note)
+書（か）き取（と）る	noter, prendre des notes
+漢字（かんじ）検定（けんてい）の八級（はちきゅう）を取得（しゅとく）する	obtenir le 8e niveau à la certification de kanji
+財産（ざいさん）そ取得（しゅとく）する	acquérir une propriété
+
+試験（しけん）を受（う）ける	passer un examen
+受付（うけつけ）	réception
+受験（じゅうけん）する	se présenter à un examen
+受験（じゅうけん）に通（とお）る	réussir un examen
+
+学級（がっきゅう）新聞（しんぶん）	journal de classe
+記事（きじ）をのせる	publier un article
+3か月の学期（がっき）	trimestre (période scolaire de trois mois)
+出来事（できごと）	évènement
+大事件（だいじけん）	grand évèmenent
+転校生（てんこうせい）	étudiant en échange
+
+迷路（めいろ）	labyrinthe
+住宅街（じゅうたくがい）	zone résidentielle
+袋小路（ふくろこうじ）に入（はい）り込（こ）む	s'engager dans une impasse
+その道（みち）は行（い）き止（ど）まりだった	ce chemin était un cul-de-sac
+線路（せんろ）	voie ferrée
+
+東京発（とうきょうはつ）の電車（でんしゃ）	train démarrant de Tokyo
+化石（させき）が発見（はっけん）されたところ	le lieu où a été découvert un fossile
+発電所（はつでんしょ）見学（けんがく）する	visiter la centrale électrique
+
+いつもより３０分（ぷん）早く登校（とうこう）する	aller à l'école 30min plus tôt que d'habitude
+校庭（こうてい）に集合（しゅうごう）する	se rassembler dans la cour de l'école
+山登（やまのぼ）りをする	faire de l'alpinisme
+登山口（とざんぐち）までバスで行く	aller en bus jusqu'au lieu de début de l'ascencion
+登場（とうじょう）する	entrer en scène
+
+朝（あさ）起（お）きる	se lever le matin
+起（お）き抜（ぬ）けの顔（かお）	le visage quand on vient juste de se lever
+家（いえ）を飛（と）び出（だ）す	sortir brusquement de la maison
+起立（きりつ）している	être debout
+
+部屋（へや）の本棚（ほんだな）を整理（せいり）する	ranger l'étagère de sa chambre
+本を整（ととの）える	mettre en ordre, ranger ses vêtements
+整然（せいぜん）としている部屋（へや）	chambre bien ordonnée
+理路（りろ）整然（せいぜん）と	logiquement
+
+この機械（きかい）はなんの役（やく）に立（た）つ？	à quoi sert cette machine ?
+役（やく）につく	entrer en fonctions
+テレビは日常（にちじょう）生活（せいかつ）で重要（じゅうよう）な役割（やくわり）を果（は）たしている	la télévision joue un rôle important dans la vie de tous les jours
+市役所（しやくしょ）	la mairie
+
+駅（えき）の改札口（かいさつぐち）	la barrière de ticket à la gare
+改札（かいさつ）する	contrôler des billets
+友達を待（ま）つ	attendre un ami
+待（ま）ち合（あ）わせの時間（じかん）	l'heure du rendez-vous
+誕生会（たんじょうかい）に招待（しょうたい）される	être invité à une fête d'anniversaire
+
+図書館（としょかん）で借（か）りた本を返（かえ）す	rendre le livre que l'on a emprunté à la bibliothèque
+繰（く）り返（かえ）し読（よ）む	lire une nouvelle fois
+返却日（へんきゃくび）を三日（みっか）過（す）ぎる	dépasser la date de retour de trois jours 
+借（か）りた物（もの）を返却（へんきゃく）する	rendre ce que l'on a emprunté
+
+走者（そうしゃ）を追（お）う	poursuivre un coureur
+追（お）い風（かぜ）	vent arrière
+ついに先頭（せんとう）に立（た）つ	enfin, finir par prendre la tête
+追跡（ついせき）するカメラ	la caméra qui suit
+
+手紙（てがみ）を送（おく）る	envoyer une lettre
+送（おく）り主（ぬし）	l'envoyeur d'un cadeau
+送別会（そうべつかい）	diner d'adieu
+
+台風（たいふう）が日本に向（む）かって進（すす）む	le typhon progresse vers le Japon
+進（すす）み具合（ぐあい）を報道（ほうどう）する	faire un rapport sur l'état de progression
+危険（きけん）に直面（ちょくめん）する	affronter le danger
+台風（たいふう）の進路（しんろ）	le chemin par lequel passe le typhon
+
+運（うん）がいい	avoir de la chance
+給食（きゅうしょく）を運（はこ）ぶ	transporter la nourriture destinée aux élèves
+運動（うんどう）する	faire de l'exercice
+運動（うんどう）の方向（ほうこう）	la direction d'un mouvement
+
+弟（おとうと）とゲームをして遊（あそ）ぶ	jouer avec son petit frère
+水遊（みずあそ）びをする	jouer dans l'eau, avec de l'eau
+遊園地（ゆうえんち）	parc d'attractions
+
+彼の投（な）げる球（たま）は速（はや）い	les balles qu'il lance sont rapides
+急速（きゅうそく）に	soudainement
+早速（さっそく）	tout de suite
+
+朝（あさ）寝坊（ねぼう）する	faire la grasse matinée
+道（みち）を急（いそ）ぐ	hâter le pas
+急（きゅう）な石段（いしだん）を一気（いっき）にかけ上（あ）がる	monter un escalier en pierre raide d'une seule traite
+
+ドラマの主人公（しゅじんこう）	personnage principal d'un drama
+悪（わる）と戦（たたか）うヒーロー	un héros qui combat contre le mal
+地球（ちきゅう）を狙（ねら）う悪（わる）い宇宙人（うちゅうじん）	de méchants extra-terrestres qui visent la terre
+
+チャンスを見逃（みのが）す	laisser échanper une chance
+機会（きかい）を逃（のが）す	laisser échapper une opportunité
+悪事（あくじ）を重（かさ）ねる	accumuler plusieurs méfaits
+
+涙（なみだ）が出（で）る	une larme s'échappe
+悲（かな）しい時（とき）	quand on est triste
+悲（かな）しみ	tristesse
+喜（よろこ）びで泣（な）く	pleurer de joie
+悲願（ひがん）達成（たっせい）する	réaliser un profond désir, un voeu
+
+いい感（かん）じ	une bonne impression
+おしゃれな感覚（かんかく）	sens esthétique
+感心（かんしん）する	admirer
+
+意（い）を決（けっ)す	décider
+自分（じぶん）の考（かんが）えを述（の）べる	exprimer son opinion
+意見（いけん）を述（の）べる	exprimer son opinion
+意外（いがい）なことに	à ma surprise
+意外（いがい）な反応（はんのう）	réaction inattendue
+
+感想（かんそう）はいかがですか	quelles sont vos impressions ?
+読書（どくしょ）感想文（かんそうぶん）	fiche de lecture de ses impressions
+空想（くうそう）	imagination
+空想的（くうそうてき）な世界（せかい）	monde imaginaire
+想像（そうぞう）	imagination
+感動（かんどう）する	être ému
+
+結末（けつまつ）がつく	se terminer
+結末（けつまつ）をつける	terminer qqc
+万事（ばんじ）うまく結末（けつまつ）がついた	tout s'est bien terminé
+
+死（し）ぬ	mourir
+飢（う）え死（じ）にする	mourir de faim
+死骸（しがい）を埋（う）める	enterrer un corps/cadavre
+
+勉強（べんきょう）する	étudier
+勉学（べんがく）に励（はげ）む	s'appliquer à ses études
+勤勉（きんべん）な少年（しょうねん）	jeune garçon appliqué
+
+木（き）に登（のぼ）った子猫（こねこ）を助（たす）ける	sauver un petit chat qui a grimpé dans un arbre
+手助（てだす）けをする	prêter main forte
+手助（てだす）けをたのむ	demander de l'aide
+救助（きゅうじょ）する	secourir
+
+レスキュー隊（たい）が出動（しゅつどう）した	l'équipe de secours est intervenue
+きびきびした動き（うごき）	mouvement énergique
+行動（こうどう）に移（うつ）る	passer à l'action
+行動（こうどう）に移（うつ）す	mettre en action
+
+卓球（たっきゅう）に試合（しあい）に勝（か）つ	gagner à une rencontre de ping-pong
+決勝戦（けっしょうせん）	la finale
+
+品物（しなもの）	produit
+動物（どうぶつ）	animal
+
+羊（ひつじ）	mouton
+羊飼（ひつじか）い	éleveur de moutons, berger
+羊毛（ようもう）	laine
+
+美（うつく）しい夕焼（ゆうや）け	splendide coucher de soleil
+空（そら）の美（うつく）しさに感動（かんどう）する	être touché par la splendeur du ciel
+美術館にもない自然（しぜん）の芸術（げいじゅつ）	un art naturel que l'on ne trouve pas dans les musées
+
+停留所（ていりゅうじょ）に着（つ）く	arriver à l'arrêt de bus
+着替（きが）える	se changer
+到着（とうちゃく）する	arriver
+
+駅（えき）	gare
+駅名（えきめい）を暗記（あんき）する	apprendre par coeur le nom de gares
+美味（おい）しい駅弁（えきべん）	un bon panier repas (gare)
+
+最悪（さいあく）の場合（ばあい）を見越（みこ）す	prévoir le pire
+
+学習（がくしゅう）する	apprendre
+総合（そうごう）する	faire la synthèse de qqc
+総合的（そうごうてき）	synthétique
+彼の行動力（こうどうりょく）を見習（みなら）う	suivre l'exemple de sa conduite
+助（たす）け合（あ）う習慣（しゅうかん）が大切（たいせつ）	l'habitude de s'entraider est importante
+	
+切手（きって）を集（あつ）める	collectionner des timbres
+資料（しりょう）を集（あつ）める	recueillir des documents
+寄（よ）せ集（あつ）めのチーム	équipe mélangée, équipe improvisée
+召集（しょうしゅう）をかける	convenir d'un meeting
+
+家族（かぞく）は全員（ぜんいん）太（ふと）りぎみ	tout le monde est en sur-poids dans ma famille
+クラブの会員（かいいん）	membre d'un club
+そこはいつも満員（まんいん）	c'est toujours bondé là-bas
+
+よく負（ま）ける	perdre souvent
+負（ま）け惜（お）しみ	mauvais perdant
+負傷（ふしょう）している	être blessé
+
+掲示板（けいじばん）	panneau d'affichage
+板（いた）	planche
+黒板（こくばん）に書く	écrire au tableau
+
+電柱（でんちゅう）に登（のぼ）る	grimper à un poteau électrique
+柱（はしら）を建（た）てる	élever des piliers
+鉄柱（てっちゅう）	pilier de fer
+
+客様（きゃくさま）	client
+様変（さまが）わり	changement complet
+花模様（はなもよう）	ornement de fleur
+何やら様子（ようす）がおかしい	il y a qqch d'anormal
+町（まち）の様子（ようす）が変わった	l'aspect de la ville a changé
+
+庭（にわ）の松（まつ）の根（ね）	les racines du pain du jardin
+屋根（やね）	toiture
+根気（こんき）のいる仕事（しごと）	travail qui demande de la patience
+
+心臓（しんぞう）を移植（いしょく）する	transplanter un coeur
+苗（なえ）を植（う）える	planter du semis
+植物（しょくぶつ）の世話（せわ）	le soin des plantes
+花（はな）の成長（せいちょう）がはげみになる	la croissance des plantes est un encouragement
+
+船体（せんたい）の横（よこ）	le côté de la coque d'un bateau
+危険（きけん）な横風（よこかぜ）	un vent de côté dangereux
+太平洋（たいへいよう）を横断（おうだん）する	traverser l'océan Pacifique
+
+事業（じぎょう）に成功（せいこう）する	réussir dans une affaire
+雨上（あめあ）がり	après la pluie
+
+歩道橋（ほどうきょう）	pont pour piétons
+橋（はし）から虹（にじ）を見（み）る	voir un arc-en-ciel depuis un pont
+鉄橋（てっきょう）	pont en fer
+
+荷物（にもつ）をたくさん乗（の）せたトラック	camion qui a embarqué plein de paquets
+積荷（つみに）を降（くだ）す	décharger une cargaison
+しっかり荷造（にづく）りされた箱（はこ）	boîte emballée solidement
+
+木（き）の葉（は）が赤（あか）と黄（き）に色付（いろづ）く	les feuilles des arbres se colorent en rouge et jaune
+枯葉（かれは）	feuilles mortes
+紅葉（こうよう）の見頃（みごろ）	le meilleur moment pour voir les feuilles rouges
+
+鍵（かぎ）を落（お）とす	faire tomber ses clés
+声（こえ）を落（お）とす	baisser la voix
+落（お）ち葉（ば）	feuilles mortes
+農家（のうか）が集落（しゅうらく）を成（な）している	les fermes forment un petit village
+
+薬（くすり）を処方（しょほう）する	prescrire un médicament
+目薬（めぐすり）をお願（ねが）いする	demander un médicament pour les yeux
+薬局（やっきょく）	pharmacie
+医者（いしゃ）が患者（かんじゃ）に優（やさ）しい	le docteur est gentil avec ses patients
+
+苦（にが）いコーヒー	café amer
+苦（くる）しい立場（たちば）	situation pénible
+苦笑（くしょう）する	avoir un rire amer, avoir un rire forcé
+
+平（ひら）たい器（うつわ）	un récipient plat
+平（たい）らな地面（じめん）	sol plat
+平（たい）らな表面（ひょうめん）	surface plane
+平均（へいきん）して	en moyenne
+平均（へいきん）を出（だ）す	établir une moyenne
+平均的（へいきんてき）日本人	le japonais moyen
+平均（へいきん）以上（いじょう）	au dessus de la moyenne
+平和（へいわ）を維持（いじ）する	maintenir la paix
+平和（へいわ）を回復（かいふく）する	rétablir la paix
+平和（へいわ）を乱（みだ）す	troubler la paix
+平時（へいじ）に	en temps normal, en temps de paix
+
+ポテトグラタンを完成（かんせい）する	terminer un gratin
+運動会（うんどうかい）に出場（しゅつじょう）する	participer à une rencontre sportive
+第一（だいいち）走者（そうしゃ）	le premier coureur
+着（つ）き次第（しだい）	aussitôt arrivé
+出来（でき）次第（しだい）	aussitôt terminé
+成功（せいこう）するのは君（きみ）次第（しだい）	cela dépend de vous de réussir
+それは事情（じじょう）次第（しだい）だ	cela dépend des circonstances
+式（しき）の次第（しだい）	le programme d'une cérémonie
+次第（しだい）によって	selon les circonstances
+
+自然（しぜん）の成（な）り行（ゆ）き	le cours (l'ordre) naturel des choses
+英国（えいこく）はフランスに農産物（のうさんぶつ）を依存（いぞん）している	l'Angleterre dépend de la France pour les produits agricoles
+
+筆（ふで）で書く	écrire au pinceau
+一筆（いっぴつ/ひとふで）書く	écrire un mot (quelques lignes)
+お便（たよ）りください	donnez-moi des nouvelles
+便（たよ）りのないのは良（い）い便（たよ）り	pas de nouvelles, bonnes nouvelles !
+達筆（たっぴつ）	calligraphie, belle écriture
+鉛筆（えんぴつ）	crayon
+
+ほぼ等（ひと）しい	presque égal, presque équivalent
+一等（いちとう）の切符（きっぷ）	ticket de première classe
+一等賞（いちとうしょう）	premier prix
+
+箱（はこ）にお菓子（かし）を入れる	mettre des gâteaux dans une boîte
+空（あ）き箱（ばこ）	boîte vide
+捨（す）てるにはもったいない	c'est du gâchi de le jeter
+宝箱（たからばこ）	coffre-fort
+
+笛（ふえ）の合図（あいず）で行進（こうしん）を始める	commencer la marche au signal du sifflet
+縦笛（たてぶえ）	flûte à bec
+鼓笛隊（こてきたい）	les tambours et les flûtes (le groupe des)
+観客（かんきゃく）の拍手（はくしゅ）	les applaudissements des spectateurs
+
+10秒（びょう）	10 secondes
+秒読（びょうよ）みをする	compter à rebours (à la nouvelle année)
+秒針（びょうしん）	l'aiguille des secondes
+
+花火（はなび）が上（あ）がる	le feu d'artifice est tiré
+
+出（で）ようとした瞬間（しゅんかん）に	au moment de sortir
+
+自由（じゆう）研究（けんきゅう）	recherche libre
+町名（ちょうめい）の由来（ゆらい）	l'origine du nom d'une ville
+理由（りゆう）のない	sans raison
+
+作者（さくしゃ）不明（ふめい）の作品（さくひん）	oeuvre dont on ne connait pas l'auteur, oeuvre anonyme
+悪者（わるもの）	mauvaise personne, criminel
+登場（とうじょう）人物（じんぶつ）	les personnages
+読者（どくしゃ）	le lecteur
+
+花（はな）が開（ひら）く	la fleur s'ouvre
+戸（と）を開（ひら）く	ouvrir une porte
+窓（まど）を開（あ）け放（はな）つ	laisser la fenêtre ouverte
+満開（まんかい）の桜（さくら）	cerisier en fleurs
+
+意見（いけん）を問（と）う	demander l'avis
+問（と）い合（あ）わせの電話（でんわ）番号（ばんごう）	le numéro pour des renseignements
+問題（もんだい）	problème, question
+
+外（そと）に目（め）を向（む）ける	diriger ses yeux vers l'extérieur
+風向（かぜむ）きが変（か）わる	la direction du vent change
+山（やま）の方向（ほうこう）	la direction de la montagne
+うまい考えが不図（ふと）浮（う）かぶ	une idée vient à l'esprit soudainement
+
+王宮（おうきゅう）	palais royal
+宮（みや）	temple shintoiste
+宮（みや）仕（つか）えの家来（けらい）	les hommes (serviteurs) au service du temple
+宮廷（きゅうてい）	la Cour
+明治（めいじ）神宮（じんぐう）	Meiji jingu
+
+図書館（としょかん）	bibliothèque
+館内（かんない）の天井（てんじょう）	le plafond à l'intérieur du bâtiment
+映画館（えいがかん）	le cinéma (le lieu)
+
+値段（ねだん）が安（やす）い	bas prix
+大安売（おおやすう）りの日（ひ）	le jour des soldes
+産地（さんち）直送（ちょくそう）	livraison directe depuis le lieu de production
+新鮮（しんせん）な野菜（やさい）	légumes frais
+安心（あんしん）する	se rassurer
+安全（あんぜん）なところ	lieu sûr
+
+子供（こども）を守（まも）る	protéger les enfants
+子供（こども）の将来（しょうらい）を見守（みまも）る	s'occuper de l'avenir de ses enfants
+守備（しゅび）する	défendre
+
+課外（かがい）授業（じゅぎょう）	cours extra-scolaires
+小麦（こむぎ）の実（み）	la graine de blé
+実入（みい）りがいい	la récole est bonne
+農家（のうか）の人	agriculteur
+実際（じっさい）に見せる	montrer concrètement
+
+一定（いってい）の時間（きかん）を決（き）める	fixer l'heure
+目標（もくひょう）を定（さだ）める	fixer un but
+日（ひ）を定（さだ）める	fixer un jour
+予定（よてい）どおり	comme prévu
+
+お客（きゃく）さんの長（なが）い列（れつ）	longue file de clients
+観客（かんきゃく）は大人（おとな）が多い	les adultes sont nombreux dans le public
+客席（きゃくせき）から来ている拍手（はくしゅ）	applaudissements provenant de la salle (public)
+
+民族（みんぞく）に泊（と）まる	loger dans une pension, un gite
+宿（やど）の正面（しょうめん）	la façade d'une demeure
+宿題（しゅくだい）	devoirs pour la maison
+
+映画（えいが）の試写会（ししゃかい）	avant-première
+画面（がめん）に像（ぞう）やライオンが写（うつ）し出（だ）された	des éléphants et des lions ont été dévoilés à l'écran
+写真（しゃしん）で見るよりずっと迫力（はくりょく）がある	il y a bien plus d'intensité qu'en regardant des photos
+
+書庫（しょこ）を片付（かたづ）ける	ranger sa bibliothèque
+冷蔵庫（れいぞうこ）	frigo
+文庫本（ぶんこぼん）	livre de poche
+倉庫（そうこ）	entrepôt, hangar
+
+気温（きおん）が30度（ど）を越（こ）えた	la température a franchi les 30 degrés
+湿度（しつど）が高（たか）い	l'humidité est élevée
+我慢（がまん）に限度（げんど）がある	il y a une limite à la patience
+
+校庭（こうてい）　la cour de l'école
+うちの庭（にわ）	mon jardin
+家庭（かてい）菜園（さいえん）	le potager de la maison
+ぐんぐん育（そだ）てる	grandir vite
+
+日本の元号（げんごう）	les ères Japonaises
+明治（めいじ）	ère Meiji
+大正（たいしょう）	ère Taisho
+昭和（しょうわ）	ère Showa
+平成（へいせい）	ère Heisei
+
+３日連続（れんぞく）して雨（あめ）が降（ふ）った	il a plus pendant trois jours consécutifs
+
+もう暗（くら）い	il fait déjà sombre
+真（ま）っ暗（くら）な夜空（よぞら）	le ciel complètement noir de la nuit
+星座（せいざ）の名前（なまえ）を暗記（あんき）する	apprendre le nom de constellations par coeur
+
+夏（なつ）は暑（あつ）い	l'été est chaud
+都会（とかい）の蒸（む）し暑（あつ）さが堪（たま）らない	la chaleur humide des villes est insoutenable
+残暑（ざんしょ）が続（つづ）くと予報（よほう）する	prédire que la chaleur estivale va continuer
+
+一学期（いちがっき）	la première période scolaire
+期待（きたい）を抱（いだ）く	garder de l'espoir
+長雨（ながあめ）の時期（じき）	période de longue pluie
+
+昔（むかし）この辺（あた）り一帯（いったい）は森（もり）だった	autrefois, toute cette zone était une forêt
+村（むら）に伝（つた）わる昔話（むかしばなし）	une vieille histoire qui se transmet au village
+大昔（おおむかし）は人が穴居（けっきょ）生活（せいかつ）していた	dans les temps anciens, les hommes vivaient dans des cavernes
+
+田中（たなか）と申（もう）します	je m'appelle Tanaka
+申（もう）し訳（わけ）ない	je n'ai pas d'excuse
+夏期（かき）講習（こうしゅう）の申（もう）し込（こ）みに来る	venir à l'inscription pour les cours d'été
+
+九州（きゅうしゅう）	Kyushu
+本州（ほんしゅう）	Honshu
+テキサス州（しゅう）の縮尺（しゅくしゃく）、２５万分（まんぶん）の１の地図（ちず）	carte de l'état du Texas à l'échelle de un 250000ème
+
+注文（ちゅうもん）を受（う）ける	recevoir une commande
+注文（ちゅうもん）を取（と）る	prendre commande
+注文（ちゅうもん）を取（と）り消（け）す	annuler une commande
+注文（ちゅうもん）する	commander
+お湯（ゆ）を注（そそ）ぐ	verser de l'eau chaude
+お湯（ゆ）に行く	aller aux bains
+みんなの注目（ちゅうもく）を引（ひ）く	attirer l'attention de tout le monde
+番組（ばんぐみ）で紹介（しょうかい）された注目（ちゅうもく）の店（みせ）	un magasin remarquable qui a été présenté dans une émission
+注意（ちゅうい）する	faire attention
+注意（ちゅうい）を〜に向（む）ける	diriger son attention vers...
+
+油脂（ゆし）のとりすぎは体（からだ）によくない	prendre trop d'huile est mauvais pour la santé
+油（あぶら）で揚（あ）げる	faire frire à l'huile
+油断（ゆだん）する	être imprudent
+人の油断（ゆだん）に乗（じょう）じる	prendre quelqu'un par surprise (exploiter l'imprudence)
+
+波（なみ）の音（おと）	le bruit des vagues
+波打（なみう）ち際（ぎわ）	la plage
+きれいな貝殻（かいがら）を見つける	trouver de jolis coquillages
+防波堤（ぼうはてい）	la digue
+
+プールで泳（およ）ぐ	nager dans une piscine
+平泳（ひらおよ）ぎが得意（とくい）	être fort en brasse
+遠泳（えんえい）大会（たいかい）	tournoi de nage de longue distance
+チャンピオンに挑戦（ちょうせん）する	se mesurer, défier le champion
+
+近（ちか）くの温泉（おんせん）に行く	aller au Onsen près d'ici
+お風呂（ふろ）で温（あたた）まったあとは	après s'être réchauffé au bain
+温和（おんわ）な顔（かお）	un visage paisible, doux
+
+お湯（ゆ）をわける	faire bouillir de l'eau
+湯気（ゆげ）で窓（まど）グラスが曇（くも）る	le fenêtre s'obscurcit à cause de la vapeur
+ティーポットに熱湯（ねっとう）を注（そそ）ぐ	verser de l'eau chaude dans la théière
+いい香（かお）り	un bon parfum
+
+御馳走（ごちそう）を作る	préparer un festin
+御馳走様（ごちそうさま）	c'était très bon
+
+#########
 # 五年生 #
 ########
 
@@ -974,8 +1704,7 @@
 医師（いし）	médecin
 恩師（おんし）	ancien professeur
 
-寒さを防（ふせ）ぐ	se défendre du froid
-友人（ゆうじん）を防（ふせ）ぐ	défendre un ami
+寒さを防（ふせ）ぐ	se défendre/prévenir du froid
 感染（かんせん）を防（ふせ）ぐ	prévenir une infection
 防寒（ぼうかん）対策（たいさく）	remède pour la protection contre le froid
 事故（じこ）を予防（よぼう）する	prévenir un accident
@@ -1047,3 +1776,157 @@
 
 保育園（ほいくえん）	crèche
 子供を幼稚園（ようちえん）に預（あず）ける	déposer ses enfants à l'école maternelle
+
+みんなの注目（ちゅうもく）を引く	attirer l'attention de tout le monde
+この本は注目（ちゅうもく）に値（あたい）する	ce livre est remarquable (lit. digne d'attention)
+注目（ちゅうもく）する	remarquer, prêter attention à
+
+ご遠慮（えんりょ）なく	ne vous privez pas
+初心者（しょしんしゃ）	débutant
+入門書（にゅうもんしょ）	introduction
+
+直行便（ちょっこうびん）	vol direct
+直通（ちょくつう）内線（ないせん）	ligne directe
+
+ホテルに宿泊（しゅうくはく）する	loger à l'hotel
+留守番（るすばん）する	garder la maison
+番犬（ばんけん）	chien de garde
+
+追試（ついし）	examen de rattrapage
+
+内科（ないか）	maladie interne
+一般（いっぱん）内科（ないか）	médecine généraliste
+内科医（ないかい）	médecin généraliste
+外科（げか）	chirurgie
+眼科（がんか）	ophtalmologie
+歯科（しか）	chirurgie dentaire
+
+ＮＨＫは何の略（りゃく）ですか	de quoi est l'abbréviation NHK ?
+ＡＩは人工(じんこう）知能(ちのう）の略（りゃく）です	AI est l'abréviation de Intelligence Artificielle
+略（ほぼ）確（たし）かだ	c'est presque sûr
+相手（あいて）の策略（さくりゃく）	la ruse de l'adversaire
+最強（さいきょう）のチームを攻略（こうりゃく）する	battre la meilleure équipe
+最終（さいしゅう）章（しょう）は省略（しょうりゃく）していい	tu peux omettre le dernier chapitre
+省略（しょうりゃく）して書く	écrire en abrégé
+
+記憶（きおく）に留（と）める	garder quelque chose en mémoire
+ノートに書（か）き留（と）める	prendre note dans un cahier
+留学生（りゅうがくせい）	étudiant en échange
+留学（りゅうがく）する	étudier à l'étranger
+停留所（ていりゅうじょ）	arrêt, station
+
+平均（へいきん）すると	en moyenne
+料金（りょうきん）均一（きんいつ）の品物（しなもの）	produits à prix unique (uniforme)
+均一性（きんいつせい）	régularité, uniformité
+均等（きんとう）に分配（ぶんぱい）する	répartir équitablement (uniformément)
+
+境（さかい）を決める	définir les bornes
+国境（こっきょう）を越（こ）える	franchir la frontière
+環境（かんきょう）問題（もんだい）	problèmes de l'environnement
+
+家族（かぞく）が増（ふ）える	la famille s'élargie (lit. augmente)
+速度（そくど）を増（ま）す	augmenter la vitesse
+家（いえ）増築（ぞうちく）する	agrandir une maison
+
+在学（ざいがく）している	être inscrit à l'école
+在学（ざいがく）証明証（しょうめいしょう）	certificat de scolarité
+滞在（たいざい）許可証（きょかしょう）	permis de séjour
+在学（ざいがく）期間（きかん）	durée de scolarité
+在学中（ざいがくちゅう）に	pendant ses études
+スーパが近くに在（あ）る	il y a un super-marché près d'ici
+
+駐車場（ちゅうしゃじょう）	parking
+駐輪場（ちゅうりんじょう）	parking pour vélo
+駐在所（ちゅうざいしょ）	station de police résidientielle
+
+基本（きほん）をよく知（し）る	bien connaître les bases
+地球（ちきゅう）の温暖化（おんだんか）	le réchauffement de la planète
+海軍（かいぐん）基地（きち）	base navale
+空軍（くうぐん）基地（きち）	base aérienne
+作戦（さくせん）基地（きち）	base d'opérations
+有害（ゆうがい）物質（ぶつしつ）の排出（はいしゅつ）基準（きじゅん)を守（まも）る	respecter les normes sur le rejet de matières nuisibles
+
+墓（はか）を掘（ほ）る	creuser une tombe
+墓（はか）を建（た）てる	dresser une tombe
+
+田舎（いなか）に永住（えいじゅう）する	s'installer (à vie) à la campagne
+墓参（はかまい）りに行く	visiter une tombe
+墓地（ぼち）	cimetière
+
+圧（あつ）	pression (kanji seulement)
+圧力（あつりょく）を加（くわ）える	exercer de la pression
+責任（せきにん）の重（おも）さに圧倒（あっとう）される	être écrasé par le poids d'une charge
+血圧（けつあつ）が高い	avoir de la tension
+
+車のエンジンはガソリンが燃（も）えることで動（うご）く	le moteur d'une voiture fonctionne en brûlant de l'essence
+古（ふる）い書類（しょるい）を燃（も）やす	brûler de vieux documents
+燃料（ねんりょう）切（き）れだ	il n'y a plus de carburant
+
+災（わざわ）い転（てん）じて福（ふく）となる	le chance arrive après le pire (la catastrophe)
+方向（ほうこう）を転（てん）じる	changer de direction	
+防災（ぼうさい）の日	le jour de la prévention contre les accidents
+震災（しんさい）が起（お）こる	une catastrophe sismique a lieu
+火災（かさい）を起（お）こす	causer un incendie
+
+この本を読んで益（えき）することがあった	il y avait des choses profitables dans ce livre
+何の益（えき）もない	il n'y aucune utilité
+有益（ゆうえき）な忠告（ちゅうこく）	conseil profitable, utile
+年間（ねんかん）の収益（しゅうえき）	les bénéfices annuels (société)
+国家（こっか）の利益（りやく）	l'intérêt national
+利益（りやく）になる	être d'intérêt, fructueux
+
+豊（ゆた）かな大地（たいち）　sol riche
+豊（ゆた）かな言語（げんご）	langue riche
+豊（ゆた）かな気持（きも）ち	sentiment riche
+豊富（ほうふ）な味覚（みかく）	goût riche
+家庭（かてい）生活（せいかつ）の喜（よろこ）びを味（あじ）わう	goûter au plaisir de la vie familiale
+我々の努力（どりょく）が実（みの）る	nos efforts portent leurs fruits
+
+手本（てほん）を示（しめ）す	montrer l'exemple
+手本（てほん）にする	prendre pour exemple
+示（しめ）しがつかない	donner un mauvaise exemple à qqn
+別（べつ）に指示（しじ）があるまで	jusqu'à nouvel ordre, instruction
+
+祖（そ）	ancêtre
+祖父（そふ）の和菓子屋（わがしや）さん	le magasin de confiserie japonaise de mon grand-père
+四代（よんだい）前の先祖（せんぞ）	ancêtre de 4 générations
+元祖（がんそ）	ancêtre, fondateur
+
+喫煙（きつえん）は悪臭（あくしゅう）だ	fumer est une mauvaise habitude
+君の喫煙（きつえん）を禁（きん）じる	je t'interdis de fumer
+喫煙（きつえん）は禁（きん）じられている	fumer est interdit
+社内（しゃない）で喫煙（きつえん）が禁止（きんし）されている	fumer est interdit
+禁煙（きんえん）する	s'abstenir de fumer
+禁煙（きんえん）車両（しゃりょう）	wagon non-fumeur
+禁句（きんく）	mot tabou
+
+畑（はたけ）を耕（たがや）す	cultiver um champ
+耕地（こうち）面積（めんせき）	superficie de terrain cultivé
+耕運機（こううんき)	motoculteur
+
+酸（さん）	acide
+レモンの酸味（さんみ）	l'acidité du citron
+
+人類（じんるい）に対（たい）する罪（つみ）	crime contre l'humanité
+罪（つみ）を犯（おか）す	comettre un crime
+罪（つみ）がない	innocent (pas de crime)
+罪（つみ）がある	être coupable
+罪（つみ）に落（お）ちる	tomber dans le pêché
+重罪（じゅうざい）	crime (lit. lourd pêché)
+
+刊（かん）	graver, publier (kanji seulement)
+朝刊（ちょうかん）	journal du matin
+休刊日（きゅうかんび）	le jour de congé d'un journal
+通勤（つうきん）時間（じかん）はどの位（くらい）ですか	combien de temps vous faut-il pour aller au travail
+通勤（つうきん）する	aller au travail
+週刊誌（しゅうかんし）	hebdomadaire
+学校（がっこう）に勤（つと）める	travailler dans une école
+
+向上（こうじょう）するという意思（いし）	l'intention de progresser
+
+主体的（しゅたいてき）	subjectif
+客観的（きゃっかんてき）	objectif
+主役（しゅやく）を努（つと）める	occuper le rôle principal
+物事（ものごと）の本質（ほんしつ）	l'essence des choses
+自分自身の言葉（ことば）を引用（いんよう）する	se citer soi-même
+
