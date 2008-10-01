@@ -3,6 +3,8 @@
 # japanese := word(reading)...
 # reading := reading1/reading2/...
 # explanation := [french_translation|japanese_equivalent]
+#
+# blank lines are ignored
 
 #########
 # 三年生 #
@@ -734,6 +736,227 @@
 御馳走（ごちそう）を作る	préparer un festin
 御馳走様（ごちそうさま）	c'était très bon
 
+太平洋（たいへいよう）	océan Pacifique
+機械油（きかいあぶら）が水面（すいめん）に浮（う）かぶ	le mazout flotte sur l'eau
+ハワイ諸島（しょとう）	archipel d'Hawaï
+ヨーロッパ大陸（たいりく）	le continent Européen
+洋上（ようじょう）	sur la mer
+西洋（せいよう）文化（ぶんか）	culture occidentale
+
+野（の）を横切（よこぎ）って行く	traver les champs
+時（じ）は矢（や）のように流（なが）れる	lit. le temps s'écoule comme une flêche
+流（なが）れ星（ぼし）	étoile filante
+浮遊（ふゆう）する	　flotter
+天体（てんたい）観測（かんそく）	l'observation astronomique (de corps céleste)
+流行（りゅうこう）している	être à la mode
+流行（りゅうこう）を追（お）う	suivre la mode
+
+深（ふか）い池（いけ）	étang profond
+深緑色（ふかみどりいろ）	vert foncé
+底（そこ）が見えない	on ne peut pas voir le fond
+水深（すいしん）を測（はか）る	mesurer/sonder la profondeur
+注意深（ちゅういぶか）い	attentif
+興味深（きょうみぶか）い	très intéressant
+
+投票（とうひょう）でキャプテンを決（き）める	choisir le capitaine en votant
+リーダーは決（き）め手（て）です	le leader est celui qui décide
+多数決（たすうけつ）の結果（けっか）	le résultat de la majorité
+
+丘（おか）の上から、港（みなと）を見下（みお）ろす	regarder le port depuis le haut de la colline
+古（ふる）めかしい港町（みなとまち）	ville portuaire antique
+悪疫（あくえき）が広（ひろ）がる	l'épidémie s'étend, se propage
+客船（きゃくせん）が出港（しゅっこう）して行く	le paquebot quitte le port
+
+秋晴（あきば）れの日（ひ）	un jour clair d'automne
+湖（みずうみ）へドライブに行く	faire une randonnée en voiture au lac
+紅葉（こうよう）が湖面（こえん）に映（うつ）り込（こ）んでいる	les feuilles rouges se reflètent à la surface du lac	
+
+手品師（てじなし）が消（き）えた	le magicien a disparu
+テレビを消（け）す	éteindre la télé
+消滅（しょうめつ）する	disparaître
+消毒（しょうどく）する	désinfecter
+
+漢字（かんじ）	les kanji
+漢文（かんぶん）の試験（しけん）	examen de chinois classique
+
+池（いけ）に氷（こおり）が張（は）っている	l'étang est gelé (recouvert de glace)
+この冬（ふゆ）の初氷（はつごおり）	la première neige de cet hiver
+最低（さいてい）気温（きおん）は氷点下（ひょうてんか）だった	les températures les plus basses étaient en dessous de zéro (du point de congélation)
+
+岸壁（がんぺき）	le quai
+川（かわ）の向（む）こう岸（ぎし）	la rive opposée d'une rivière
+海岸（かいがん）で	au bord de la mer
+
+多（おお）くの島（しま）	de nombreuses îles
+四方（しほう）に海に囲（かこ）まれた島国（しまぐに）	un pays insulaire entouré par les mer des quatre directions
+無人島（むじんとう）	île non peuplée
+
+雲（くも）の切（き）れ間（ま）	trou, intervalle dans les nuages
+太陽（たいよう）が顔（かお）を出した	le soleil a sorti le bou de son nez (lit. son visage)
+陽光（ようこう）が草原（そうげん）に降（ふ）り注（そそ）ぐ	la lumière du soleil pleut abondamment dans la prairie
+穏（おだ）やかな陽気（ようき）	une douce gaieté
+
+お見舞（みま）いに病院（びょういん）へ行く	visiter quelqu'un à l'hopital
+院長（いんちょう）先生（せんせい）	le directeur de l'hôpital
+病人（びょうにん）を回診（かいしん）する	faire une ronde (pour un docteur)
+退院（たいいん）する	sortir de l'hôpital
+
+二階（にかい）建（だ）ての家	maison à deux étages
+二（に）世帯（せたい）の住宅（じゅうたく）	logement pour deux familles
+階下（かいか）	étage du dessous, rez-de-chaussée
+階段（かいだん）を下（お）りる	descendre les escaliers
+
+剣道部（けんどうぶ）に入る	entrer au club de Kendo
+入部（にゅうぶ）する	rejoindre un club
+竹刀（しない）	sabre de bambou
+防具（ぼうぐ）が必要（ひつよう）	il faut une protection
+全部（ぜんぶ）の生徒（せいと）	tous les élèves
+住民（じゅうみん）の全部（ぜんぶ）	l'ensemble de la population
+
+製鉄（せいてつ）	industrie siderurgique
+中央（ちゅうおう）図書館（としょかん）	bibliothèque centrale
+地下鉄（ちかてつ）	métro
+鉄筋（てっきん）コンクリート	béton armé
+
+中国製（ちゅうごくせい）	made in China
+世界中（せかいじゅう）を旅（たび）して回（まわ）る	voyager à travers le monde, faire le tour du monde
+紀行文（きこうぶん）	journal de voyage
+文学界（ぶんがくかい）にデビューする	faire ses débuts dans le monde littéraire
+夢（ゆめ）に限界（げんかい）がない	il n'y pas de limite au rêve
+
+畑（はたけ）仕事（しごと）	le travail du champ
+田畑（たはた）	champs
+
+農家（のうか）	ferme
+農業（のうぎょう）を営（いとな）む	tenir une activité agricôle
+農薬（のうやく）	pesticide
+
+科学者（かがくしゃ）になって研究（けんきゅう）する	devenir scientifique et faire de la recherche
+真理（しんり）を探究（たんきゅう）する	rechercher la vérité
+自然（しぜん）の神秘（しんぴ）を探求（たんきゅう）する	être en quête, à la poursuite du mystère de la nature
+神秘的（しんぴてき）に	mystérieusement
+謎（なぞ）を究明（きゅうめい）する	élucider, éclaircir une énigme
+
+長い坂道（さかみち）	une longue pente
+下（くだ）り坂（ざか）	une descente
+
+炭（すみ）	charbon
+木炭（もくたん）を使ってバーベキュー	faire un barbecue avec du charbon de bois
+炭火（すみび）で肉（にく）を焼（や）く	faire griller de la viande au charbon
+炭酸水（たんさんすい）	eau contenant du carbonne
+お皿（さら）にさしみをきれいに盛（も）り付（つ）ける	préparer/présenter joliment du sashimi dans une assiette
+絵皿（えざら）	assiette décorative
+取（と）り皿（ざら）	petite assiette individuelle pour y mettre la nourriture d'autres plats 
+
+血（ち）の凍（こお）るような、こわい話	une histoire qui fait peur à en glacer le sang
+人の生（い）き血（ち）を吸（す）うドラキュラ	Dracula, qui suce le sang de la vie
+血色（けっしょく）のいい顔（かお）付（つ）き	avoir un teint coloré
+
+丁（ちょう）か半（はん）か	pair ou impair
+二（に）丁目（ちょうめ）	le deuxième quartier (division d'une ville)
+包丁（ほうちょう)	couteau de cuisine
+
+豆腐（とうふ）の一（いち）丁（ちょう）	une part de Tofu
+去年（きょねん）の写真（しゃしん）をアルバムに整理（せいり）する	ranger les photos de l'année dernière dans un album
+月日（つきひ）は飛（と）ぶように過（す）ぎ去（さ）る	les jours s'écoulent comme s'ils volaient
+政界（せいかい）を去（さ）る	quitter le monde, le milieu de la politique
+希望（きぼう）は永遠（えいえん）に去（さ）った	　l'espoir est perdu à jamais
+過去（かこ）が思（おも）い出（ださ）される	ça me rappelle le passé
+過去（かこ）数年間（すうねんかん）	ces dernières années
+
+公園（こうえん）の角（かど）を右（みぎ）へ曲（ま）がる	tourner à gauche au coin (à l'angle) du parc
+元気（げんき）の出る曲（きょく）を歌（うた）う	chanter un air qui donne la pêche
+
+私の住（す）む区（く）	l'arrondissemnt où je vis
+区内（くない）の資源（しげん）	les ressources de l'arrondissement
+色（いろ）を区別（くべつ）する	distinguer/différencier les couleurs
+
+礼（れい）を失（しっ)する	manquer de politesse à qqn
+お礼（れい）の印（しるし）に	en témoignage de ma reconnaissance
+礼（れい）を言（い）う	remercier qqn
+礼（れい）を述（の）べる	exprimer sa reconnaissance
+礼儀（れいぎ）を大切（たいせつ）にする	suivre la politesse
+礼状（れいじょう）を書く	écrire une lettre de remerciement
+失礼（しつれい）	impolitesse
+
+神社（じんじゃ）にお参（まい）りする	visiter un temple shinto
+神様（かみさま）を祭（まつ）る	déifier, célébrer un dieu
+精神的（せいしんてき）	mental, spirituel
+お守（まも）りを買う	acheter un talisman/porte bonheur
+
+福（ふく）の神（かみ）	dieu du bonheur
+商店街（しょうてんがい）で福袋（ふくぶくろ）を買う	acheter un paquet surprise dans une rue commerçante
+福引（ふくび）き券（けん）	ticket de tombola
+みんなから祝福（しゅくふく）された	être félicité par tout le monde
+祝福（しゅくふく）を与（あた）える	accorder sa bénédiction
+
+お祭（まつ）り	festival
+現物人（げんぶつにん）の多い祭礼（さいれい）	fête (religieuse) où les spectateurs sont nombreux
+
+マラソンは力（ちから）の配分（はいぶん）が大切（たいせつ）	il est important de répartir ses forces lors d'un marathon
+アンケートを配（くば）る	distribuer un questionnaire
+当日（とうじつ）の天気（てんき）が心配（しんぱい）	le temps pour le jour fixé m'inquiète
+
+駅（えき）を目当（めあて）てに行く	prendre une gare pour repère
+甘（あま）い香（かお）りのお酒（さけ）	sake avec un parfum sucré
+酒蔵（さかぐら）	cave à vin
+日本酒（にほんしゅ）	alcool japonais 
+
+重（おも）い責任（せきにん）	lourde responsabilité
+毛布（もうふ）を２枚（まい）重（かさ）ねる	empiler deux couvertures de laine
+風邪（かぜ）をひかないことが重要（じゅうよう）	il est important/primordial de ne pas attraper un rhume
+
+将来（しょうらい）お医者（いしゃ）さんになろうと思う	vouloir être médecin plus tard
+名医（めいい）	médecin célèbre
+
+毎日（まいにち）豆腐（とうふ）を食べる	manger du tofu tous les jours
+豆製品（めめせいひん）	produit à base de pois/haricots
+納豆（なっとう）が欠（か）かせない	le nato est indispensable
+
+映画（えいが）の主役（しゅやく）	le rôle principal d'un film
+飼（か）い主（ぬし）	berger
+主要（しゅよう）な役	rôle principal
+
+選手（せんしゅ）が列（れつ）になって入場（にゅうじょう）した	les joueurs se sont mis en ligne et sont entrés
+中央（ちゅうおう）に整列（せいれつ）	s'aligner, se ranger au milieu
+相手国（あいてこく）の大臣（だいじん）が列席（れっせき）している	le premier ministre du pays adverse est présent
+
+大臣（だいじん）に任命（にんめい）される	être nommé premier ministre
+
+ドラマを放映（ほうえい）する	diffuser un drama
+おもちゃを出（だ）しっ放（はな）す	laisser trainer les jouets
+言いたい放題（ほうだい）を言う	parler sans retenue
+彼は留守（るす）です	il est absent
+やりたい放題（ほうだい）できる	pouvoir faire ce que l'on veut sans retenue
+
+結婚式（けっこんしき）	cérémonie de mariage
+神前（しんぜん）結婚（けっこん）の形式（けいしき）で行（おこな）われた	il a été effectué sous la forme d'un mariage Shinto
+
+私の住所（じゅうしょ）	mon adresse
+危険（きけん）な所（ところ）	endroit dangereux
+バスの停留所（ていりゅうじょ）	arrêt de bus
+
+いろいろな職業（しょくぎょう）の人	des personnes de professions différentes
+うちの家業（かぎょう）	l'affaire (le business) d'une famille
+授業（じゅうぎょう）で鉛筆（えんぴつ）を使（つか）う	utiliser un crayon lors d'un cours
+
+短（みじか）い時間（じかん）	temps court
+それぞれ自己紹介（じこしょうかい）する	chacun se présente
+性格（せいかく）を手短（てみじか）に話す	parler de son caractère brièvement
+長所（ちょうしょ）と短所（たんしょ）	qualité et défaut (de qqn)
+
+旅（たび）の目的（もくてき）	la destination (le but) du voyage
+はじめての船旅（ふなたび）	mon premier voyage en bateau
+旅館（りょかん）のお風呂（ふろ）	les bain de l'hôtel
+
+うちの家族（かぞく）	ma famille
+親族（しんぞく）会議（かいぎ）	réunion de famille
+ユダヤ民族（みんぞく）	le peuple juif
+民族（みんぞく）の祭典（さいてん）	fête des nations
+
+服（ふく）	　vêtements
+不服（ふふく）そう	n'a pas l'air content
+幼稚園（ようちえん）の制服（せいふく）	uniforme pour l'école maternelle
 #########
 # 五年生 #
 ########
@@ -1930,3 +2153,113 @@
 物事（ものごと）の本質（ほんしつ）	l'essence des choses
 自分自身の言葉（ことば）を引用（いんよう）する	se citer soi-même
 
+交換（こうかん）留学生（りゅうがくせい）の制度（せいど）	le système d'échange d'élève
+学制（がくせい）	le système scolaire
+年間二人に限界（げんかい）されている	être limité à deux personnes par an
+映画（えいが）を制作（せいさく）する	produire un film
+制作（せいさく）にかかる	se mettre à l'oeuvre
+制作中（せいさくちゅう）である	être à l'oeuvre
+
+広告（こうこく）する	faire de la publicité
+求人（きゅうじん）広告（こうこく）を出す	annoncer une offre d'emploi
+広告（こうこく）から判断（はんだん）する	juger à partir de la publicité
+人の行動（こうどう）を判断（はんだん）する	juger la conduite de qqn
+人の価値（かち）を判断（はんだん）する	juger la valeur de qqn
+評判（ひょうばん）になる	devenir réputé
+評判（ひょうばん）がいい	bonne réputation
+大判（おおばん）の絵本（えほん）	live d'images de grand format
+
+遊園地（ゆうえんち）の招待券（しょうたいけん）	ticket d'invitation d'un parc d'attraction
+入場券（にゅうじょうけん）	billet d'entrée
+割引券（わりびきけん）	ticket de réduction
+
+夢は政治家（せいじか）になる	avoir le rêve de devenir politicien
+政党（せいとう）を結成（けっせい）する	former un parti politique
+友好的（ゆうこうてき）な政策（せいさく）をとる	pratiquer une politique amicale
+
+公共（こうきょう）の敵（てき）	ennemi public
+父（ちち）の敵（かたき）	l'ennemi de son père
+大敵（たいてき）	ennemi redoutable
+匹敵（ひってき）するものがない	être sans égal
+故郷（こきょう）が懐（なつ）かしい	être nostalgique de son pays (natal)
+故郷（こきょう）の人	compatriote
+故人（こじん）の意志（いし）	la volonté du défunt
+交通（こうつう）事故（じこ）	accident de la circulation
+
+武勇伝（ぶゆうでん）を聞かせる	raconter les exploits, la bravoure de qqn
+武士（ぶし）の面目（めんぼく）にかけて	sur son honneur de samouraï
+武士道（ぶしどう）	Bushido, le code du samouraï
+武者（むしゃ）	guerrier
+
+招待（しょうたい）を断（ことわ）る	refuser une proposition
+試合（しあい）への出場（しゅつじょう）	participation à un match
+断念（だんねん）するしかない	il n'y a pas d'autre solution que d'abandonner
+正式（せいしき）な結婚（けっこん）	mariage officiel
+決断（けつだん）する	prendre une décision
+決断（けつだん）に至（いた）る	aboutir à une décision
+
+綱（つな）を張（は）る	tendre une corde
+弓（ゆみ）を張（は）る	bander son arc
+自分の意見をはっきり主張（しゅちょう）する	affirmer son opinion
+自分を主張（しゅちょう）する	s'affirmer
+胸（むね）を張（は）る	bomber le torse
+発言（はつげん）する	prendre la parole
+堂々（どうどう）と意見を述（の）べる	exprimer son opinion avec confiance
+緊張（きんちょう）する	être stressé
+
+輸入品（ゆにゅうひん）	produit d'importation
+飛行機（ひこうき）で空輸（くゆう）されている	être transporté par avion
+品物（しなもの）の輸送（ゆそう）	le transport de marchandises
+野菜（やさい）の新鮮（しんせん）を保（たも）つ	préserver la fraîcheur des légumes
+健康（けんこう）を保（たも）つ	conserver la santé
+
+地球上（ちきゅうじょう）の位置（いち）は軽度（けいど）と緯度（いど）で表（あらわ）せる	la position sur terre est exprimée avec la longitude et la latitude
+東京を経（へ）て	passer par Tokyo
+3ヶ月を経（へ）て	après (avoir passé) trois mois
+南米（なんべい）を通（とお）る	passer par l'Amérique du Sud
+世界（せかい）一周（いっしゅう）旅行（りょこう）を経験（けいけん）する	faire l'expérience d'un tour du monde
+経済（けいざい）を改革（かいかく）する	réformer l'économie
+
+結論（けつろん）で意見（いけん）を総合（そうごう）する	résumer son opinion dans la conclusion
+総理大臣（そうりだいじん）	Premier ministre
+総会（そうかい）に出席（しゅっせき）する	assister à l'assemblée générale
+
+綿（わた）のような雪（ゆき）	neige floconneuse (lit. comme du coton)
+木綿（もめん）のシャツ（しゃつ）	chemise en coton
+綿密（めんみつ）な準備（じゅんび）	préparation minutieuse
+
+紡績（ぼうせき）産業（さんぎょう）	industrie du textile
+ある分野（ぶんや）で功績（こうせき）のある人	personne qui rendu de grands services dans un domaine
+実績（じっせき）が物を言う	ce sont les résultats qui comptent
+
+その子に絶望（ぜつぼう）した	cet enfant me désespère
+絶望的（ぜつぼうてき）	désespérant
+飲（の）み水（みず）が絶（た）える	l'eau potable s'épuise
+希望（きぼう）が絶（た）えた	les espoirs se sont éteints
+絶妙（ぜつみょう）な演技（えんぎ）	jeu d'acteur merveilleux, subtil
+絶景（ぜっけい）	vue magnifique
+
+統計（とうけい）	statistiques
+血統書（けっとうしょ）付（つ）きの犬（いぬ）	un chien avec un certificat de race
+伝統的（でんとうてき）な日本犬（にほんけん）	un chien traditionnel japonais
+
+セーターを編（あ）む	tricoter un sweat-shirt
+手編（てあ）みのマフラー	écharpe tricotée à la main
+長編（ちょうへん）映画（えいが）	long métrage
+長編（ちょうへん）小説（しょうせつ）	roman
+
+チームを組織（そうしき）する	former/composer une équipe
+布（ぬの）を織（お）る	tisser une étoffe
+音楽的（おんがくてき）素質（そしつ）がある	avoir des prédispositions pour la musique
+天性（てんせい）の素質（そしつ）を伸（の）ばす	cultiver des dispositions naturelles
+素直（すなお）に言うと	pour parler franchement
+
+確率論（かくりつろん）	théorie des probabilités
+確率（かくりつ）は１０分の１だ	la probabilité est de 1 pour 10
+率（りつ）を上げる	élever le pourcentage, le taux
+10%の率（りつ）で	avec un taux de 10%
+チームを率（ひき）いる	diriger une équipe
+軍（ぐん）を率（ひき）いる	diriger une armée
+テレビを視聴（しちょう）している	regarder la télévision
+視聴者（しちょうしゃ）	téléspectateur
+視聴率（しちょうりつ）	taux d'audience
