@@ -87,7 +87,6 @@
 手始（てはじ）めは	au début
 試合（しあい）が開始（かいし）される	le match débute
 
-委（い）	confiance (kanji seulement)
 学級（がっきゅう）委員長（いいんちょう）	délégué de classe
 立候補（りっこうほ）する	candidater, se porter candidat
 得票（とくひょう）	le suffrage, résultat des votes
@@ -957,6 +956,182 @@
 服（ふく）	　vêtements
 不服（ふふく）そう	n'a pas l'air content
 幼稚園（ようちえん）の制服（せいふく）	uniforme pour l'école maternelle
+
+滑（すべ）って転（ころ）ぶ	tomber en glissant
+氷（こおり）の上で転（ころ）ぶ	tomber sur la glace
+ボールが道の向（む）こう側（がわ）に転（ころ）がる	la balle a roulé de l'autre côté de la route
+逆転（ぎゃくてん）のチャンス	une chance de renversement
+運転（うんてん）しやすい	facile à manoeuvrer
+列車（れいしゃ）の運転（うんてん）は中止（ちゅうし）となった	le service des trains a été suspendu
+頭（あたま）の回転（かいてん）が早（はや）い	avoir l'esprit vif (lit. le roulement de la tête)
+
+体（からだ）が軽（かる）い	être léger
+身軽（みがる）におどる	danser avec agilité
+軽快（けいかい）な服装（ふくそう）	vêtements décontractés
+軽快（けいかい）な音楽（おんがく）	musique légère
+軽快（けいかい）なリズムで	à un rythme rapide
+
+うちの両親（りょうしん）は共働（ともばたら）きだ	mes parents　travaillent tous les deux
+二つの仕事を両立（りょうりつ）させる	concilier deux boulots
+理論（りろん）と実践（じっせん）は常（つね）に両立（りょうりつ）するとは限（かぎ）らない	la théorie et la pratique ne sont pas toujours compatibles
+常（つね）に早起（はやお）きする	se lever toujours tôt
+いつもそうとは限（かぎ）らない	ce n'est pas toujours ainsi
+彼女たちは両方（りょうほう）ともやって来なかった	ni l'une ni l'autre ne sont venus
+
+もうすぐ三学期（さんがっき）が終（お）わる	la troisième période scolaire se termine bientôt
+半分を終（お）える	finir la moitié
+終業式（しゅうぎょうしき）	cérémonie de la fin du travail
+
+級友（きゅうゆう）のさたし君（くん）	mon copain de classe Satoshi
+空手（からて）の特訓（とっくん）をする	faire un entraînement spécial de karaté
+三級（さんきゅう）の実技（じつぎ）試験（しけん）	examen de compétences pratique de niveau 3
+ぼくの学級（がっきゅう）	ma classe
+
+バスケットボールの練習（れんしゅう）	entraînement de basket
+試合（しあい）に備（そな）える	se préparer pour le match
+作戦（さくせん）をじっくり練（ね）る	polir/affiner sa stratégie avec attention
+目（め）を訓練（くんれん）する	exercer/entraîner l'oeil
+
+木々（きぎ）の緑（みどり）	le vert/la verdure des arbres
+黄緑（きみどり）色（いろ）	couleur jaune-vert
+一番（いちばん）好きな季節（きせつ）は新緑（しんりょく）のころ	ma saison préférée est le moment du feuillage printanier
+
+夜（よる）の帳（とばり）がおりる	le voile du soir tombe
+手帳（てちょう）に記入（きにゅう）する	concigner des notes dans un carnet
+りっぱな日記帳（にっきちょう）	un beau carnet (journal intime)
+預金（よきん）通帳（つうちょう）	carnet de chèques (de compte)
+
+表（おもて）か裏（うら）か	pile ou face ?
+葉書（はがき）の表（おもて）	le recto d'une carte postale
+漢字はいろんな意味（いみ）を表（あらわ）す	les kanjis expriment des sens variés
+漢字を表（ひょう）にする	disposer les kanjis sous forme de diagrammes
+表（ひょう）を作る	dresser une liste
+表現力（ひょうげんりょく）	éloquence
+
+プロ野球（やきゅう）	Baseball pro
+球（たま）をキャッチする	attraper la balle
+地球上（ちきゅうじょう）で一番（いちばん）幸（しあわ）せ者（もの）	le plus heureux sur terre
+
+現代（げんだい）の世代（せだい）	génération actuelle
+行ってからやがて一時間	cela fait bientôt une heure qu'il est sorti
+戦争（せんそう）や貧困（ひんこん）のない世（よ）の中（なか）	monde sans guerre et pauvreté
+二十一（にじゅういっ）世紀（せいき）	21ème siècle
+スポーツの世界（せかい）	le monde du sport
+
+予想（よそう）が当（あた）った	les prévisions étaient exactes
+予感（よかん）が外（はず）れた	mon pressentiment était faux
+風邪（かぜ）を予防（よぼう）する	prévenir un rhume
+明日（あした）の予定（よてい）	le projet/plan de demain
+
+#########
+# 四年生 #
+########
+
+夫（おっと）	(mon) mari
+いろいろ工夫（くふう）する	chercher des moyens (pour faire qqc)
+工夫（くふう）が足りない	manquer d'astuce, d'imagination
+主要（しゅよう）な出演者（しゅつえんしゃ）	acteur principal
+劇（げき）の台本（だいほん）を読む	lire le scénario d'une pièce
+要求（ようきゅう）に答（こた）える	répondre aux exigences
+要求（ようきゅう）を満（み）たす	satisfaire des exigences/réclamations
+不当（ふとう）に要求（ようきゅう）する	en demander trop (lit. injustement, déraisonablement)
+この場面（ばめん）が好き	j'aime cette scène/situation
+練習（れんしゅう）が必要（ひつよう）だ	de l'entraînement est nécessaire
+
+力強（ちからづよい）い	fort, vigoureux
+号令（ごうれい）でポジションにつく	se mettre en position au commandement
+司令部（しれいぶ）	quartier général (lit. département de commandement)
+情報（じょうほう）の確実性（かくじつせい）	authenticité d'une nouvelle
+命令（めいれい）を伝（つた）える	transmettre un ordre
+
+親友（しんゆう）と仲違（なかたが）いする	se brouiller avec son meilleur ami
+仲間内（なかまない）で	entre amis
+悪い仲間（なかま）	mauvaise compagnie
+仲直（なかなお）りする	se réconcilier
+
+位置（いち）が良い	bien positionné
+家具（かぐ）の位置（いち）を変える	changer la position des meubles
+古代（こだい）エジプト	Égypte antique
+知名度（ちめいど）第一位（だいいちい）
+駅まで十分位（くらい）かかります	il faut environ 10 minutes jusqu'à la gare
+王（おう）の位（くらい）	trône
+
+人の一生（いっしょう）を伝（つた）える本（ほん）	livre qui rend compte de la vie d'un homme (transmettre)
+記録（きろく）や聞（き）き伝（つた）え archives et on-dit
+伝記（でんき）を読む	lire une biographie
+
+気温（きおん）が低（ひく）い	la température est basse
+空（そら）が低（ひく）く見える	le ciel a l'air bas
+低気圧（ていきあつ）が近（ちか）づいている	la dépression atmosphérique se rapproche ?
+
+電車が突然（とつぜん）停車（ていしゃ）した	le train s'est soudainement arrêté
+支払（しはら）いを停止（ていし）する	arrêter les paiements
+運転（うんてん）免許（めんきょ）を停止（ていし）する	suspendre un permis de conduire
+停電（ていでん）している	être en panne d'électricité
+
+二つのテーブルを付（つ）ける	joindre deux tables
+家の玄関（げんかん）	l'entrée de la maison
+飾（かざ）り付（つ）けがりっぱにできた	la décoration a été admirablement bien réussie
+街頭（がいとう）でビラを配付（はいふ）する	distribuer des tracts dans la rue
+
+宇宙人（うちゅうじん）の存在（そんざい）を信（しん）じる	croire en l'existence des extra-terrestres
+確信（かくしん）を持（も）つ	avoir la conviction
+学者（がくしゃ）ぶる	se donner des airs de savant
+このことを確信（かくしん）している	je suis convaincu de ceci
+電報（でんぽう）を発信（はっしん）する	expédier un télégramme
+電波（でんぱ）を発信（はっしん）する	envoyer des ondes électriques
+実験（じっけん）する	faire une expérience
+実験的（じっけんてき）に証明（しょうめい）する	démontrer expérimentalement
+
+駅の南側（みなみがわ）	le côté sud de la gare
+利用者（りようしゃ）	utilisateur
+日取（ひど）りを設定（せってい）する	fixer une date
+好評（こうひょう）	bonne réputation
+側面（そくめん）から描（えが）く	dessiner de profil (de côté)
+軍隊（ぐんたい）の側面（そくめん）	le flanc d'une armée
+
+過去（かこ）に例（れい）がない	il n'y a pas d'exemple passé
+例（たと）えば	par exemple
+人生（じんせい）はよく航海（こうかい）に例（たと）えられる	la vie est souvent comparée à un voyage (maritime)
+例年（れいねん）どおり	comme chaque année
+結果（けっか）は予想（よそう）を上回（うわまわ）る	les résultats ont dépassé les prévisions
+
+お祖母さんに小遣（こづか）いを借（か）りる	emprunter un peu d'argent à sa grand-mère
+給料（きゅうりょう）の前借（まえが）りをお願（ねが）い出来ます	puis-je avoir une avance de salaire ?
+この語はフランス語から借用（しゃくよう）したものだ	ce mot est emprunté du français
+
+郵便受（ゆうびんう）け	boîte-aux-lettres
+友達からの便（たよ）り	des nouvelles d'un ami
+電話（でんわ）は便利（べんり）	le téléphone est pratique
+
+公認（こうにん）候補（こうほ）	candidature officielle
+温暖（おんだん）な気候（きこう）	climat doux
+気持（きも）ちの安定（あんてい）	la stabilité des sentiments
+暖冬（だんとう）の兆候（ちょうこう）	le signe　d'un hiver doux 
+
+健康（けんこう）診断（しんだん）	examen de santé
+世界（せかい）保健（ほけん）機構（きこう）	organisation mondiale de la santé
+健全（けんぜん）な精神（せいしん）	esprit sain
+健全（けんぜん）な判断（はんだん）	jugement sain
+三億円（さんおくえん）	trois cent millions de yens
+十億（じゅうおく）	un milliard
+億万（おくまん）長者（ちょうじゃ）	milliardaire
+長さの単位（たんい）	l'unité de mesure de la longueur
+
+家族（かぞく）総出（そうで）働（はたら）く	travailler tous ensemble en famille
+働（はたら）き手（て）	travailleur
+労働（ろうどう）のあと	après le travail (manuel), le labeur
+
+以前（いぜん）のように	comme auparavant
+2000年（ねん）以来（いらい）	depuis 2000
+日曜日（にちようび）以外（いがい）	excepté le dimanche
+意外（いがい）な出来事（できごと）	évènement imprévu
+
+育児（いく）に専念（せんねん）する	s'appliquer à bien élever ses enfants
+研究（けんきゅう）に専心（せんしん）する	s'appliquer à la recherche
+児童（じどう）公園（こうえん）	parc pour enfant
+幼児期（ようじき）	enfance
+
 #########
 # 五年生 #
 ########
@@ -1056,7 +1231,6 @@
 飲酒（いんしゅ）運転（うんてん）	conduite en état d'ivresse
 とんでもない！	quel culot ! ça par exemple !
 
-講（こう）	lecture, club (kanji seulement)
 安全（あんぜん）運転（うんてん）の講習会（こうしゅうかい）	cours pour apprendre à conduire en sécurité
 警察（けいさつ）署長（しょちょう）	commissaire de police
 講義（こうぎ）を聞（き）く	suivre un cours
@@ -1079,7 +1253,6 @@
 過小（かしょう）評価（ひょうか）する	sous-estimer
 過大（かだい）評価（ひょうか）する	sur-estimer
 
-護（ご）	protéger (kanji seulement)
 近所（きんじょ）の川（かわ）	la rivière des alentours
 弱（よわ）い者（もの）を保護（ほご）する	protéger les faibles
 海豹（あざらし）の子	bébé phoque
@@ -1088,7 +1261,6 @@
 動物園（どうぶつえん）	zoo
 病人（びょうにん）の看護（かんご）をする	soigner un malade
 
-識（しき）	connaissance (kanji seulement)
 知識（ちしき）のない人	personne ignorante
 経験（けいけん）によって得（え）た知識（ちしき）	connaissance acquise avec l'expérience
 知識（ちしき）の進歩（しんぽ）	le progrès de la science
@@ -1198,8 +1370,7 @@
 提案（ていあん）する	faire une proposition
 提案（ていあん）を投票（とうひょう）にかける	voter une proposition
 死（し）は生（せい）を前提（ぜんてい）とする	la mort présuppose la vie
-
-往(おう）	voyage (kanji seulement)	
+	
 チームを初優勝（はつゆうしょう）へと導（みちび）く	mener une équipe à sa première victoire
 悪（わる）の道に導（みちび）く	entrainer quelqu'un sur le mauvais chemin
 監督（かんとく）の導（みちび）き	"guidance" du coach
@@ -1233,7 +1404,6 @@
 話を飾（かざ）る	agrémenter/enrichir un récit
 窓を花で飾（かざ）る	orner une fenêtre de fleurs
 
-衛（えい）	défense, protection (kanji seulement)
 月（つき）は地球(ちきゅう）の衛星（えいせい）である
 守衛（しゅえい）がゲートを管理（かんり）している	le gardien garde la porte
 衛生（えいせい）に注意（ちゅうい）する	faire attention à son hygiène
@@ -1333,7 +1503,6 @@
 日本の習慣（しゅうかん）	la coutume japonaise
 家族（かぞく）の習慣（しゅうかん）	l'habitude de la famille
 
-応（おう）	accepter (kanji seulement)
 招待（しょうたい）に応（おう）じる	répondre à une invitation
 挑戦（ちょうせん）に応（おう）じる	relever/accepter un défi
 要求（ようきゅう）に応（おう）じる	répondre à une demande
@@ -1549,7 +1718,6 @@
 祝賀式（しゅくがしき）	cérémonie de félécitations
 賀春（がしゅん）	New Year greeting
 
-資（し）	ressources (kanji seulement)
 資料（しりょう）を集（あつ）める
 お金を提供（ていきょう）する	offrir de l'argent
 資料（しりょう）を提供（ていきょう）する	documenter
@@ -1570,7 +1738,6 @@
 容易（ようい）なことではない	ce n'est pas une chose facile
 容易（ようい）にする	faciliter
 
-属（ぞく）	appartient, affilié (kanji seulement)
 〜に付属（ふぞく）する	dépendre de...
 会社の付属（ふぞく）研究室（けんきゅうしつ）	laboratoire annexé à une entreprise
 日本に所属（しょぞく）する島（しま）	île qui appartient au/dépend du Japon 
@@ -1598,7 +1765,6 @@
 性格（せいかく）	caractère
 体格（たいかく）検査（けんさ）を受（う）ける	passer un examen de condition physique
 
-検（けん）	investigation (kanji seulement)
 検問（けんもん）で車を止（と）められる	se faire à arrêter la voiture pour contrôle
 警官（けいかん）は車を１台１台検問（けんもん）した	le policier arrêta les voitures unes par unes
 検挙（けんきょ）される人は多い	les gens qui se font arrêter sont nombreux
@@ -1751,8 +1917,6 @@
 安易（あんい）な方法（ほうほう）	solution facile
 問題を解決（かいけつ）する	résoudre un problème
 
-容（よう）	contenir (kanji seulement)
-
 親（おや）バカ	fond parents
 
 ピアノを演奏（えんそう）する	jouer du piano
@@ -1865,7 +2029,6 @@
 
 不動産（ふどうさん）	bien immobilier
 
-準（じゅん）	correspondre à (kanji seulement)
 準備（じゅんび）出来ている	être prêt
 優勝（ゆうしょう）を照準（しょうじゅん）を合（あ）わせる	viser la victoire
 準決勝（じゅんけっしょう）	demi-finales
@@ -2076,7 +2239,6 @@
 墓参（はかまい）りに行く	visiter une tombe
 墓地（ぼち）	cimetière
 
-圧（あつ）	pression (kanji seulement)
 圧力（あつりょく）を加（くわ）える	exercer de la pression
 責任（せきにん）の重（おも）さに圧倒（あっとう）される	être écrasé par le poids d'une charge
 血圧（けつあつ）が高い	avoir de la tension
@@ -2137,7 +2299,6 @@
 罪（つみ）に落（お）ちる	tomber dans le pêché
 重罪（じゅうざい）	crime (lit. lourd pêché)
 
-刊（かん）	graver, publier (kanji seulement)
 朝刊（ちょうかん）	journal du matin
 休刊日（きゅうかんび）	le jour de congé d'un journal
 通勤（つうきん）時間（じかん）はどの位（くらい）ですか	combien de temps vous faut-il pour aller au travail
@@ -2213,7 +2374,7 @@
 野菜（やさい）の新鮮（しんせん）を保（たも）つ	préserver la fraîcheur des légumes
 健康（けんこう）を保（たも）つ	conserver la santé
 
-地球上（ちきゅうじょう）の位置（いち）は軽度（けいど）と緯度（いど）で表（あらわ）せる	la position sur terre est exprimée avec la longitude et la latitude
+地球上（ちきゅうじょう）の位置（いち）は経度（けいど）と緯度（いど）で表（あらわ）せる	la position sur terre est exprimée avec la longitude et la latitude
 東京を経（へ）て	passer par Tokyo
 3ヶ月を経（へ）て	après (avoir passé) trois mois
 南米（なんべい）を通（とお）る	passer par l'Amérique du Sud
@@ -2263,3 +2424,73 @@
 テレビを視聴（しちょう）している	regarder la télévision
 視聴者（しちょうしゃ）	téléspectateur
 視聴率（しちょうりつ）	taux d'audience
+
+在宅勤務（ざいたくきんむ）	télé-travail (travail à la maison)
+彼は銀行に勤務（きんむ）している	il travaille dans une banque
+先進（せんしん）技術（ぎじゅつ）	technique avancée
+前例（ぜんれい）のない事件（じけん）	un évènement sans précédent/antécédant
+奨学金（しょうがくきん）のおかげで留学（りゅうがく）出来る	pouvoir étudier à l'étranger grâce à une bourse
+納期（のうき）	jour de livraison, jour de paiement
+入場料（にゅうじょうりょう）	frais d'admission/entrée
+コンピューター業界（ぎょうかい）	industrie de l'ordinateur
+良心（りょうしん）の呵責（かしゃく）に悩（なや）む	être tourmenté par des remords (lit. reproches de la conscience)
+
+学士（がくし）	avoir une licence
+学士号（がくしごう）	licence
+法学（ほうがく）修士（しゅうし）	maîtrise en droit
+理学（りがく）博士（はくし/はかせ）	docteur en sciences
+博士号（はくしごう）を取（と）る	passer son doctorat
+
+常備軍（じょうびぐん）	armée permanente
+飲料水（いんりょうすい）を常備（じょうび）する	conserver/stocker de l'eau potable (par ex, en cas de catastrophe)
+毎日朝の散歩を常（つね）とする	avoir pour habitude de se promener tous les matins
+常（つね）に注意（ちゅうい）する	faire toujours attention
+固定（こてい）観念（かんねん）	idée fixe, stéréotype
+書棚（しょだな）は壁（かべ）に固定（こてい）したほうがいい	il vaut mieux fixer la bibliothèque contre le mur
+それは常識（じょうしき）だよ	c'est du bon sens !
+常識（じょうしき）のある人	personne qui a du bon sens
+常識（じょうしき）を欠（か）く	manquer de bon sens
+
+この布（ぬの）はすぐ破（やぶ）ける	cette étoffe se déchire facilement
+余分（よぶん）な毛布（もうふ）が必要（ひつよう）	avoir besoin d'une couverture de plus
+資源（しげん）の分布（ぶんぷ）	répartition des richesses/ressources
+資源（しげん）を保有（ほゆう）している	disposer de ressources
+この布地（ぬのじ）は長持ち（ながも）する	ce vêtement dure bien
+天気は長持（ながも）ちしない	le temps ne va pas durer
+長持（ながも）ちのする建物	une construction durable
+会議（かいぎ）の議題（ぎだい）が配布（はいふ）された	l'ordre du jour de la réunion a été distribué
+
+複眼（ふくがん）	yeux composés/à facettes (insectes)
+単眼（たんがん）	ocelle, oeil simple (insectes)
+複数（ふくすう）外国語（がいこくご）によるコミュニケーション	communication en plusieurs langues
+名詞（めいし）を複数（ふくすう）にする	mettre un nom au pluriel
+名詞（めいし）を複数（ふくすう）で用（もち）いる	employer un nom au pluriel
+複数（ふくすう）の彫刻（ちょうこく）	plusieurs sculptures
+複雑（ふくざつ）な問題（もんだい）	un problème compliqué
+
+フランス製（せい）の〜	fabriqué en France
+新製品（しんせいひん）が手に入（はい）った	obtenir un nouveau produit
+注文（ちゅうもん）が殺到（さっとう）して、製造（せいぞう）が追（お）いつかない	les commandes affluent et la production ne suit pas
+テレビを製造（せいぞう）している会社	entreprise qui fabrique des télévisions
+日本製（にほんせい）のゲーム機（き）	console de jeux fabriquée au Japon
+
+何もかも知る	savoir tout sur tout
+乱雑（らんざつ）な部屋（へや）	chambre désordonnée
+散（ち）らかっている寝室（しんしつ）	chambre désordonnée
+雑誌（ざっし）を刊行（かんこう）する	publier une revue
+雑（ざつ）な仕事	travail grossier
+雑（ざつ）に	grossièrement
+雑巾（ぞうきん）で机（つくえ）をふく	passer un coup de torchon sur la table
+雨が上（あ）がり、太陽（たいよう）が現（あらわ）れる	la pluie se termine et le soleil apparaît/se montre
+遅（おそ）かれ早（はや）かれ真理（しんり）は現（あらわ）れる	tôt ou tard la vérité fait surface (émerge)
+会話の中によく現（あらわ）れる言葉（ことば）	un mot qui revient souvent dans la conversation
+美（うつく）しい虹（にじ）が姿（すがた）を現（あらわ）す	un magnifique arc-en-ciel s'est montré (lit. a montré sa silouhette)
+驚（おどろ）きを現（あらわ）す	exprimer/manifester de l'étonnement
+新しい世（よ）の中（なか）の出現（しゅつげん）に期待（きたい）をかける	espérer l'émergence/avènement d'un monde nouveau
+美しい光景（こうけい）	un spectacle, une scène magnifique
+現実（げんじつ）とは思えないほど美しい	splendide au point que l'on ne peut penser que c'est réel
+二度と再（ふたた）び彼女に会うことはないだろう	je ne la reverrai plus jamais
+人に再（ふたた）び会（あ）える	revoir quelqu'un
+再（ふたた）び目を閉（と）じる	fermer les yeux à nouveau
+音を再生（さいせい）する	reproduire un son
+
