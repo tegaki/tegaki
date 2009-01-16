@@ -118,7 +118,9 @@
                 return writing;
             }
 
-            WRITING = "<strokes>\n";
+            WRITING = "<width>1000</width>\n";
+            WRITING += "<height>1000</height>\n";
+            WRITING += "<strokes>\n";
             WRITING += "  <stroke>\n";
             WRITING += "    <point x=\"2\" y=\"4\" timestamp=\"0\" />\n";
             WRITING += "    <point x=\"4\" y=\"5\" timestamp=\"10\" />\n";
@@ -139,6 +141,8 @@
             CHAR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
             CHAR += "<character>\n";
             CHAR += "  <utf8>漢</utf8>\n";
+            CHAR += "  <width>1000</width>\n";
+            CHAR += "  <height>1000</height>\n";
             CHAR += "  <strokes>\n";
             CHAR += "    <stroke>\n";
             CHAR += "      <point x=\"2\" y=\"4\" timestamp=\"0\" />\n";

@@ -16,6 +16,9 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+DEFAULT_WIDTH = 1000;
+DEFAULT_HEIGHT = 1000;
+
 /* Point */
 
 var Point = function(x, y, pressure, xtilt, ytilt, timestamp) {
@@ -149,6 +152,8 @@ Stroke.prototype.smooth = function() {
 
 var Writing = function() {
     this.strokes = [];
+    this.width = DEFAULT_WIDTH;
+    this.height = DEFAULT_HEIGHT;
 }
 
 Writing.prototype.copy = function(writing) {
@@ -203,7 +208,10 @@ Writing.prototype.clear = function() {
 }
 
 Writing.prototype.toXML = function() {
-    var s = "<strokes>\n";
+    var s = "<width>" + this.width + "</width>\n"
+    s += "<height>" + this.height + "</height>\n"
+
+    s += "<strokes>\n";
 
     for (var i = 0; i < this.strokes.length; i++) {
         var lines = this.strokes[i].toXML().split("\n");
