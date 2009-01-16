@@ -29,7 +29,7 @@ class Canvas(gtk.Widget):
     """
     A character drawing canvas.
 
-    A port of Takuro Ashie's TomoeCanvas to pygtk.
+    A port of Takuro Ashie's TomoeCanvas to pygtk + additional features.
     Also based on a tutorial by Mark Mruss.
     """
 
@@ -39,12 +39,10 @@ class Canvas(gtk.Widget):
 
     DEFAULT_REPLAY_SPEED = 25 # msec
 
-    __gsignals__ = dict(stroke_added=(gobject.SIGNAL_RUN_LAST,
-                                      gobject.TYPE_NONE,
-                                      ()),
-                        drawing_stopped=(gobject.SIGNAL_RUN_LAST,
-                                         gobject.TYPE_NONE,
-                                         ()))
+    __gsignals__ = {
+        "stroke_added" :     (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
+        "drawing_stopped" :  (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+    }
     
     def __init__(self):
         gtk.Widget.__init__(self)
@@ -705,7 +703,7 @@ if __name__ == "__main__":
     else:
         def on_drawing_stopped(widget):
             print "drawing stopped!"
-            print widget.get_writing()
+            print widget.get_writing().to_xml()
                              
     canvas.set_drawing_stopped_time(1000)
     canvas.connect("drawing_stopped", on_drawing_stopped)
