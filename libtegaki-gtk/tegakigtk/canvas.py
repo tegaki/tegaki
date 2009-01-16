@@ -47,24 +47,24 @@ class Canvas(gtk.Widget):
     def __init__(self):
         gtk.Widget.__init__(self)
         
-        self.width = self.DEFAULT_WIDTH
-        self.height = self.DEFAULT_HEIGHT
+        self._width = self.DEFAULT_WIDTH
+        self._height = self.DEFAULT_HEIGHT
 
-        self.drawing = False
-        self.pixmap = None
+        self._drawing = False
+        self._pixmap = None
 
-        self.writing = Writing()
+        self._writing = Writing()
 
-        self.locked = False
+        self._locked = False
 
         self._drawing_stopped_time = 0
         self._drawing_stopped_id = 0
 
-        self.handwriting_line_gc = None
-        self.annotation_gc = None
-        self.axis_gc = None
-        self.stroke_gc = None
-        self.background_writing_gc = None
+        self._handwriting_line_gc = None
+        self._annotation_gc = None
+        self._axis_gc = None
+        self._stroke_gc = None
+        self._background_writing_gc = None
 
         self._background_character = None
         self._background_writing = None
@@ -150,15 +150,15 @@ class Canvas(gtk.Widget):
         could actually be allocated."""
 
         self.allocation = allocation
-        self.width = self.allocation.width
-        self.height = self.allocation.height        
+        self._width = self.allocation.width
+        self._height = self.allocation.height        
  
         if self.flags() & gtk.REALIZED:
             self.window.move_resize(*allocation)
             
-            self.pixmap = gdk.Pixmap(self.window,
-                                     self.width,
-                                     self.height)
+            self._pixmap = gdk.Pixmap(self.window,
+                                      self._width,
+                                      self._height)
 
             self.refresh()
 
@@ -169,7 +169,7 @@ class Canvas(gtk.Widget):
         retval = False
         
         self.window.draw_drawable(self.style.fg_gc[self.state],
-                                  self.pixmap,
+                                  self._pixmap,
                                   event.area.x, event.area.y,
                                   event.area.x, event.area.y,
                                   event.area.width, event.area.height)
@@ -179,7 +179,7 @@ class Canvas(gtk.Widget):
     def motion_notify_event(self, widget, event):
         retval = False
 
-        if self.locked or not self.drawing:
+        if self._locked or not self._drawing:
             return retval
 
         if event.is_hint:
@@ -206,7 +206,7 @@ class Canvas(gtk.Widget):
     def do_button_press_event(self, event):
         retval = False
 
-        if self.locked:
+        if self._locked:
             return retval
 
         if self._drawing_stopped_id > 0:
@@ -214,7 +214,7 @@ class Canvas(gtk.Widget):
             self._drawing_stopped_id = 0
 
         if event.button == 1:
-            self.drawing = True
+            self._drawing = True
 
             x, y = self._internal_coordinates(event.x, event.y)
 
@@ -222,14 +222,14 @@ class Canvas(gtk.Widget):
             point.x = x
             point.y = y
 
-            if self.writing.get_n_strokes() == 0:
+            if self._writing.get_n_strokes() == 0:
                 self._first_point_time = event.time
                 point.timestamp = 0
             else:
                 if self._first_point_time is None:
                     # in the case we add strokes to an imported character
                     self._first_point_time = event.time - \
-                                             self.writing.get_duration() - 50
+                                             self._writing.get_duration() - 50
                                          
                 point.timestamp = event.time - self._first_point_time
                 
@@ -237,17 +237,17 @@ class Canvas(gtk.Widget):
             #point.xtilt = xtilt
             #point.ytilt = ytilt
             
-            self.writing.move_to_point(point)
+            self._writing.move_to_point(point)
 
         return retval
 
     def do_button_release_event(self, event):
         retval = False
 
-        if self.locked or not self.drawing:
+        if self._locked or not self._drawing:
             return retval
 
-        self.drawing = False
+        self._drawing = False
 
         self.refresh(force_draw=True)
 
@@ -282,52 +282,52 @@ class Canvas(gtk.Widget):
 
     def _init_gc(self):
                                                   
-        if not self.handwriting_line_gc:
+        if not self._handwriting_line_gc:
             color = gdk.Color(red=0x0000, blue=0x0000, green=0x0000)
-            self.handwriting_line_gc = gdk.GC(self.window)
-            self._gc_set_foreground(self.handwriting_line_gc, color)
-            self.handwriting_line_gc.set_line_attributes(4,
-                                                        gdk.LINE_SOLID,
-                                                        gdk.CAP_ROUND,
-                                                        gdk.JOIN_ROUND)
+            self._handwriting_line_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self._handwriting_line_gc, color)
+            self._handwriting_line_gc.set_line_attributes(4,
+                                                         gdk.LINE_SOLID,
+                                                         gdk.CAP_ROUND,
+                                                         gdk.JOIN_ROUND)
 
-        if not self.stroke_gc:
+        if not self._stroke_gc:
             color = gdk.Color(red=0xff00, blue=0x0000, green=0x0000)
-            self.stroke_gc = gdk.GC(self.window)
-            self._gc_set_foreground(self.stroke_gc, color)
-            self.stroke_gc.set_line_attributes(4,
-                                               gdk.LINE_SOLID,
-                                               gdk.CAP_ROUND,
-                                               gdk.JOIN_ROUND)
+            self._stroke_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self._stroke_gc, color)
+            self._stroke_gc.set_line_attributes(4,
+                                                gdk.LINE_SOLID,
+                                                gdk.CAP_ROUND,
+                                                gdk.JOIN_ROUND)
 
-        if not self.background_writing_gc:
+        if not self._background_writing_gc:
             color = gdk.Color(red=0xcccc, blue=0xcccc, green=0xcccc)
-            self.background_writing_gc = gdk.GC(self.window)
-            self._gc_set_foreground(self.background_writing_gc, color)
-            self.background_writing_gc.set_line_attributes(4,
-                                                           gdk.LINE_SOLID,
-                                                           gdk.CAP_ROUND,
-                                                           gdk.JOIN_ROUND)
-        if not self.annotation_gc:
+            self._background_writing_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self._background_writing_gc, color)
+            self._background_writing_gc.set_line_attributes(4,
+                                                            gdk.LINE_SOLID,
+                                                            gdk.CAP_ROUND,
+                                                            gdk.JOIN_ROUND)
+        if not self._annotation_gc:
             color = gdk.Color(red=0x8000, blue=0x0000, green=0x0000)
-            self.annotation_gc = gdk.GC(self.window)
-            self._gc_set_foreground(self.annotation_gc, color)
+            self._annotation_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self._annotation_gc, color)
 
-        if not self.axis_gc:
+        if not self._axis_gc:
             color = gdk.Color(red=0x8000, blue=0x8000, green=0x8000)
-            self.axis_gc = gdk.GC(self.window)
-            self._gc_set_foreground(self.axis_gc, color)
-            self.axis_gc.set_line_attributes(1,
-                                            gdk.LINE_ON_OFF_DASH,
-                                            gdk.CAP_BUTT,
-                                            gdk.JOIN_ROUND)
+            self._axis_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self._axis_gc, color)
+            self._axis_gc.set_line_attributes(1,
+                                             gdk.LINE_ON_OFF_DASH,
+                                             gdk.CAP_BUTT,
+                                             gdk.JOIN_ROUND)
 
     def _internal_coordinates(self, x, y):
         """
         Converts window coordinates to internal coordinates.
         """
-        sx = float(Writing.WIDTH) / self.width
-        sy = float(Writing.HEIGHT) / self.height
+        sx = float(Writing.WIDTH) / self._width
+        sy = float(Writing.HEIGHT) / self._height
         
         return (int(x * sx), int(y * sy))
     
@@ -335,8 +335,8 @@ class Canvas(gtk.Widget):
         """
         Converts internal coordinates to window coordinates.
         """
-        sx = float(self.width) / Writing.WIDTH
-        sy = float(self.height) / Writing.WIDTH
+        sx = float(self._width) / Writing.WIDTH
+        sy = float(self._height) / Writing.WIDTH
         
         return (int(x * sx), int(y * sy))
 
@@ -345,15 +345,15 @@ class Canvas(gtk.Widget):
         
         p2 = (point.x, point.y)
         
-        strokes = self.writing.get_strokes()
+        strokes = self._writing.get_strokes()
 
         last_stroke = strokes[-1]
 
         p1 = last_stroke[-1]
 
-        self._draw_line(p1, p2, self.handwriting_line_gc, force_draw=True)
+        self._draw_line(p1, p2, self._handwriting_line_gc, force_draw=True)
 
-        self.writing.line_to_point(point)
+        self._writing.line_to_point(point)
         
     def _draw_stroke(self, stroke, index, gc, draw_annotation=True):
         l = len(stroke)
@@ -378,7 +378,7 @@ class Canvas(gtk.Widget):
         p1 = self._window_coordinates(*p1)
         p2 = self._window_coordinates(*p2)
         
-        self.pixmap.draw_line(line_gc, p1[0], p1[1], p2[0], p2[1])
+        self._pixmap.draw_line(line_gc, p1[0], p1[1], p2[0], p2[1])
 
         if force_draw:
             x = min(p1[0], p2[0]) - 2
@@ -419,26 +419,26 @@ class Canvas(gtk.Widget):
 
         x, y = int(x), int(y)
 
-        self.pixmap.draw_layout(self.annotation_gc, x, y, layout)
+        self._pixmap.draw_layout(self._annotation_gc, x, y, layout)
 
         if force_draw:
             self.queue_draw_area(x-2, y-2, width+4, height+4)
 
     def _draw_axis(self):
-        self.pixmap.draw_line(self.axis_gc,
-                              self.width / 2, 0,
-                              self.width / 2, self.height)
+        self._pixmap.draw_line(self._axis_gc,
+                               self._width / 2, 0,
+                               self._width / 2, self._height)
 
-        self.pixmap.draw_line(self.axis_gc,
-                              0, self.height / 2,
-                              self.width, self.height / 2)
+        self._pixmap.draw_line(self._axis_gc,
+                               0, self._height / 2,
+                               self._width, self._height / 2)
 
     def _draw_background(self):
-        self.pixmap.draw_rectangle(self.style.white_gc,
-                                   True,
-                                   0, 0,
-                                   self.allocation.width,
-                                   self.allocation.height)
+        self._pixmap.draw_rectangle(self.style.white_gc,
+                                    True,
+                                    0, 0,
+                                    self.allocation.width,
+                                    self.allocation.height)
 
         self._draw_axis()
 
@@ -451,21 +451,21 @@ class Canvas(gtk.Widget):
         if self._background_writing:
             strokes = self._background_writing.get_strokes(full=True)
 
-            start = self.writing.get_n_strokes() + 1
+            start = self._writing.get_n_strokes() + 1
             
             for i in range(start, len(strokes)):
                 self._draw_stroke(strokes[i],
                                   i,
-                                  self.background_writing_gc,
+                                  self._background_writing_gc,
                                   draw_annotation=False)
 
     def _draw_background_writing_stroke(self):
-        if self._background_writing and self.writing.get_n_strokes() < \
+        if self._background_writing and self._writing.get_n_strokes() < \
            self._background_writing.get_n_strokes():
 
             time.sleep(0.5)
 
-            l = self.writing.get_n_strokes()
+            l = self._writing.get_n_strokes()
 
             self._strokes = self._background_writing.get_strokes(full=True)
             self._strokes = self._strokes[l:l+1]
@@ -482,11 +482,11 @@ class Canvas(gtk.Widget):
 
     def _redraw(self):
         self.window.draw_drawable(self.style.fg_gc[self.state],
-                                    self.pixmap,
-                                    0, 0,
-                                    0, 0,
-                                    self.allocation.width,
-                                    self.allocation.height)
+                                  self._pixmap,
+                                  0, 0,
+                                  0, 0,
+                                  self.allocation.width,
+                                  self.allocation.height)
 
     def _get_speed(self, index):
         if self._speed:
@@ -500,7 +500,7 @@ class Canvas(gtk.Widget):
         return speed       
 
     def _on_animate(self):
-        self.locked = True
+        self._locked = True
         
         if self._curr_stroke > 0 and self._curr_point == 1 and \
            not self._speed:            
@@ -514,7 +514,7 @@ class Canvas(gtk.Widget):
         p2 = self._strokes[self._curr_stroke][self._curr_point]
         p2 = (p2.x, p2.y)
 
-        self._draw_line(p1, p2, self.stroke_gc, force_draw=True)
+        self._draw_line(p1, p2, self._stroke_gc, force_draw=True)
 
         if len(self._strokes[self._curr_stroke]) == self._curr_point + 1:
             # if we reach the stroke last point
@@ -533,7 +533,7 @@ class Canvas(gtk.Widget):
                 gobject.timeout_add(speed, self._on_animate)
             else:
                 # last stroke and last point was reached
-                self.locked = False
+                self._locked = False
                 
             if self._refresh_writing:
                 self.refresh(n_strokes=self._curr_stroke, force_draw=True)
@@ -545,7 +545,7 @@ class Canvas(gtk.Widget):
         return True
 
     def _refresh(self, writing, n_strokes=None, force_draw=False):
-        if self.flags() & gtk.REALIZED and self.pixmap:
+        if self.flags() & gtk.REALIZED and self._pixmap:
             self._draw_background()
 
             self._draw_background_character()
@@ -557,7 +557,7 @@ class Canvas(gtk.Widget):
                 n_strokes = len(strokes)
 
             for i in range(n_strokes):
-                self._draw_stroke(strokes[i], i, self.handwriting_line_gc)
+                self._draw_stroke(strokes[i], i, self._handwriting_line_gc)
 
             if force_draw:
                 self._redraw()
@@ -571,8 +571,8 @@ class Canvas(gtk.Widget):
         self._drawing_stopped_time = time_msec
 
     def refresh(self, n_strokes=None, force_draw=False):
-        if self.writing:
-            self._refresh(self.writing,
+        if self._writing:
+            self._refresh(self._writing,
                          n_strokes=n_strokes,
                          force_draw=force_draw)
 
@@ -587,7 +587,7 @@ class Canvas(gtk.Widget):
         self._draw_background()
         self._redraw()
 
-        self._strokes = self.writing.get_strokes(full=True)
+        self._strokes = self._writing.get_strokes(full=True)
 
         if len(self._strokes) == 0:
             return
@@ -608,9 +608,9 @@ class Canvas(gtk.Widget):
             xratio = float(writing_width) / Writing.WIDTH
             yratio = float(writing_height) / Writing.HEIGHT
 
-            return self.writing.resize(xratio, yratio)
+            return self._writing.resize(xratio, yratio)
         else:
-            return self.writing
+            return self._writing
 
     def set_writing(self, writing, writing_width=None, writing_height=None):
 
@@ -619,27 +619,27 @@ class Canvas(gtk.Widget):
             xratio = float(Writing.WIDTH) / writing_width
             yratio = float(Writing.HEIGHT) / writing_height
            
-            self.writing = self.writing.resize(xratio, yratio)
+            self._writing = self._writing.resize(xratio, yratio)
         else:
-            self.writing = writing
+            self._writing = writing
 
         
         self.refresh(force_draw=True)
 
     def clear(self):
-        self.writing.clear()
+        self._writing.clear()
 
         self.refresh(force_draw=True)
 
     def revert_stroke(self):
-        n = self.writing.get_n_strokes()
+        n = self._writing.get_n_strokes()
 
         if n > 0:
-            self.writing.remove_last_stroke()
+            self._writing.remove_last_stroke()
             self.refresh(force_draw=True)
 
     def normalize(self):
-        self.writing = self.writing.normalize()
+        self._writing = self._writing.normalize()
 
         self.refresh(force_draw=True)
 
