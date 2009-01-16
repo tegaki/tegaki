@@ -126,16 +126,16 @@ class Writing(object):
     PROPORTION_MAX = 5.0
 
     def __init__(self):
-        self.width = Writing.WIDTH
-        self.height = Writing.HEIGHT
+        self._width = Writing.WIDTH
+        self._height = Writing.HEIGHT
         self.clear()
 
     def get_duration(self):
         if self.get_n_strokes() > 0:
-            if self.strokes[0][0].timestamp is not None and \
-               self.strokes[-1][-1].timestamp is not None:
-                return self.strokes[-1][-1].timestamp - \
-                       self.strokes[0][0].timestamp
+            if self._strokes[0][0].timestamp is not None and \
+               self._strokes[-1][-1].timestamp is not None:
+                return self._strokes[-1][-1].timestamp - \
+                       self._strokes[0][0].timestamp
         return None
 
     def move_to(self, x, y):
@@ -161,29 +161,29 @@ class Writing(object):
         self.append_stroke(stroke)
         
     def line_to_point(self, point):
-        self.strokes[-1].append(point)
+        self._strokes[-1].append(point)
 
     def get_n_strokes(self):
-        return len(self.strokes)
+        return len(self._strokes)
 
     def get_strokes(self, full=False):
         if not full:
             # For compatibility
-            return [[(int(p.x), int(p.y)) for p in s] for s in self.strokes]
+            return [[(int(p.x), int(p.y)) for p in s] for s in self._strokes]
         else:
-            return self.strokes
+            return self._strokes
 
     def append_stroke(self, stroke):
-        self.strokes.append(stroke)
+        self._strokes.append(stroke)
 
     def remove_last_stroke(self):
         if self.get_n_strokes() > 0:
-            del self.strokes[-1]
+            del self._strokes[-1]
 
     def resize(self, xrate, yrate):
         new_writing = Writing()
 
-        for stroke in self.strokes:
+        for stroke in self._strokes:
             point = stroke[0].resize(xrate, yrate)
             new_writing.move_to_point(point)
             
@@ -196,7 +196,7 @@ class Writing(object):
     def move_rel(self, dx, dy):
         new_writing = Writing()
 
-        for stroke in self.strokes:
+        for stroke in self._strokes:
             point = stroke[0].move_rel(dx, dy)
             new_writing.move_to_point(point)
             
@@ -210,7 +210,7 @@ class Writing(object):
         xmin, ymin = 4294967296, 4294967296 # 2^32
         xmax, ymax = 0, 0
         
-        for stroke in self.strokes:
+        for stroke in self._strokes:
             for point in stroke:
                 xmin = min(xmin, point.x)
                 ymin = min(ymin, point.y)
@@ -228,8 +228,8 @@ class Writing(object):
         if height == 0:
             height = 1
 
-        xrate = self.width * Writing.PROPORTION / width
-        yrate = self.height * Writing.PROPORTION / height
+        xrate = self._width * Writing.PROPORTION / width
+        yrate = self._height * Writing.PROPORTION / height
 
         # This is to account for very thin strokes like "ichi"
         if xrate > Writing.PROPORTION_MAX:
@@ -242,25 +242,25 @@ class Writing(object):
 
         x, y, width, height = writing.size()
 
-        dx = (self.width - width) / 2 - x
-        dy = (self.height - height) / 2 - y
+        dx = (self._width - width) / 2 - x
+        dy = (self._height - height) / 2 - y
 
         return writing.move_rel(dx, dy)
 
     def clear(self):
-        self.strokes = []
+        self._strokes = []
 
     def get_width(self):
-        return self.width
+        return self._width
     
     def set_width(self, width):
-        self.width = width
+        self._width = width
 
     def get_height(self):
-        return self.height
+        return self._height
 
     def set_height(self, height):
-        self.height = height
+        self._height = height
 
     def to_xml(self):
         s = "<width>%d</width>\n" % self.get_width()
@@ -268,7 +268,7 @@ class Writing(object):
 
         s += "<strokes>\n"
 
-        for stroke in self.strokes:
+        for stroke in self._strokes:
             for line in stroke.to_xml().split("\n"):
                 s += "  %s\n" % line
 
@@ -281,7 +281,7 @@ class Writing(object):
         s += "\"height\" : %d, " % self.get_height()
         s += "\"strokes\" : ["
 
-        s += ", ".join([stroke.to_json() for stroke in self.strokes])
+        s += ", ".join([stroke.to_json() for stroke in self._strokes])
 
         s += "]}"
 
@@ -291,25 +291,25 @@ class Writing(object):
         return str(self.get_strokes(full=True))
 
     def __eq__(self, writing):
-        return self.strokes == writing.get_strokes(full=True)
+        return self._strokes == writing.get_strokes(full=True)
 
 class Character(object):
 
     def __init__(self):
-        self.writing = Writing()
-        self.utf8 = None
+        self._writing = Writing()
+        self._utf8 = None
 
     def get_utf8(self):
-        return self.utf8
+        return self._utf8
         
     def set_utf8(self, utf8):
-        self.utf8 = utf8
+        self._utf8 = utf8
 
     def get_writing(self):
-        return self.writing
+        return self._writing
 
     def set_writing(self, writing):
-        self.writing = writing
+        self._writing = writing
 
     def read(self, file, gzip=False, bz2=False, compresslevel=9):
         parser = self._get_parser()
@@ -356,9 +356,9 @@ class Character(object):
         s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         
         s += "<character>\n"
-        s += "  <utf8>%s</utf8>\n" % self.utf8
+        s += "  <utf8>%s</utf8>\n" % self._utf8
 
-        for line in self.writing.to_xml().split("\n"):
+        for line in self._writing.to_xml().split("\n"):
             s += "  %s\n" % line
         
         s += "</character>"
@@ -368,8 +368,8 @@ class Character(object):
     def to_json(self):
         s = "{"
 
-        attrs = ["\"utf8\" : \"%s\"" % self.utf8,
-                 "\"writing\" : " + self.writing.to_json()]
+        attrs = ["\"utf8\" : \"%s\"" % self._utf8,
+                 "\"writing\" : " + self._writing.to_json()]
 
         s += ", ".join(attrs)
 
@@ -378,8 +378,8 @@ class Character(object):
         return s
 
     def __eq__(self, char):
-        return self.utf8 == char.get_utf8() and \
-               self.writing == char.get_writing()
+        return self._utf8 == char.get_utf8() and \
+               self._writing == char.get_writing()
         
     # Private...    
 
@@ -408,18 +408,18 @@ class Character(object):
 
     def _end_element(self, name):
         if name == "stroke":
-            self.writing.append_stroke(self._stroke)
+            self._writing.append_stroke(self._stroke)
             self._stroke = None
 
         self._tag = None
 
     def _char_data(self, data):
         if self._tag == "utf8":
-            self.utf8 = data.encode("UTF-8")
+            self._utf8 = data.encode("UTF-8")
         elif self._tag == "width":
-            self.writing.set_width(int(data))
+            self._writing.set_width(int(data))
         elif self._tag == "height":
-            self.writing.set_height(int(data))
+            self._writing.set_height(int(data))
 
     def _get_parser(self):
         parser = xml.parsers.expat.ParserCreate(encoding="UTF-8")
