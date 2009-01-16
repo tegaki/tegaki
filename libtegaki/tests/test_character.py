@@ -244,7 +244,9 @@ u'pressure': 0, u'x': 4}]}
     def testWritingToXML(self):
         writing = self._getWriting()
 
-        expected = """<strokes>
+        expected = """<width>1000</width>
+<height>1000</height>
+<strokes>
   <stroke>
     <point x="1" y="2" timestamp="3" />
     <point x="4" y="5" pressure="0.1" />
@@ -256,8 +258,8 @@ u'pressure': 0, u'x': 4}]}
     def testWritingToJSON(self):
         writing = self._getWriting()
 
-        expected = {u'strokes': [{u'points': [{u'y': 2, u'timestamp': 3, u'x':
-1}, {u'y': 5, u'pressure': 0, u'x': 4}]}]}
+        expected = {u'width': 1000, u'height': 1000, u'strokes': [{u'points':
+[{u'y': 2, u'timestamp': 3, u'x': 1}, {u'y': 5, u'pressure': 0, u'x': 4}]}]}
 
         self.assertEquals(minjson.read(writing.to_json()), expected)
 
@@ -284,8 +286,10 @@ u'pressure': 0, u'x': 4}]}
     def testCharacterToJSON(self):
         char = self._getCharacter()
 
-        expected = {u'utf8': u'A', u'writing': {u'strokes': [{u'points': [{u'y':
-2, u'timestamp': 3, u'x': 1}, {u'y': 5, u'pressure': 0, u'x': 4}]}]}}
+        expected = {u'utf8': u'A', u'writing': {u'width' : 1000, 
+                    u'height': 1000, 'strokes': [{u'points': [{u'y':
+                    2, u'timestamp': 3, u'x': 1}, 
+                    {u'y': 5, u'pressure': 0, u'x': 4}]}]}}
 
         self.assertEquals(minjson.read(char.to_json()), expected)
 

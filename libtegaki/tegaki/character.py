@@ -115,6 +115,10 @@ class Stroke(list):
 
 class Writing(object):
 
+    # Default width and height of the canvas
+    # If the canvas used to create the Writing object
+    # has a different width or height, then
+    # the methods set_width and set_height need to be used
     WIDTH = 1000
     HEIGHT = 1000
 
@@ -243,9 +247,26 @@ class Writing(object):
 
     def clear(self):
         self.strokes = []
+        self.width = Writing.WIDTH
+        self.height = Writing.HEIGHT
+
+    def get_width(self):
+        return self.width
+    
+    def set_width(self, width):
+        self.width = width
+
+    def get_height(self):
+        return self.height
+
+    def set_height(self, height):
+        self.height = height
 
     def to_xml(self):
-        s = "<strokes>\n"
+        s = "<width>%d</width>\n" % self.get_width()
+        s += "<height>%d</height>\n" % self.get_height()
+
+        s += "<strokes>\n"
 
         for stroke in self.strokes:
             for line in stroke.to_xml().split("\n"):
@@ -256,7 +277,9 @@ class Writing(object):
         return s
 
     def to_json(self):
-        s = "{\"strokes\" : ["
+        s = "{ \"width\" : %d, " % self.get_width()
+        s += "\"height\" : %d, " % self.get_height()
+        s += "\"strokes\" : ["
 
         s += ", ".join([stroke.to_json() for stroke in self.strokes])
 
@@ -393,6 +416,10 @@ class Character(object):
     def _char_data(self, data):
         if self._tag == "utf8":
             self.utf8 = data.encode("UTF-8")
+        elif self._tag == "width":
+            self.writing.set_width(int(data))
+        elif self._tag == "height":
+            self.writing.set_height(int(data))
 
     def _get_parser(self):
         parser = xml.parsers.expat.ParserCreate(encoding="UTF-8")
