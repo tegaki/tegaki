@@ -126,6 +126,8 @@ class Writing(object):
     PROPORTION_MAX = 5.0
 
     def __init__(self):
+        self.width = Writing.WIDTH
+        self.height = Writing.HEIGHT
         self.clear()
 
     def get_duration(self):
@@ -226,8 +228,8 @@ class Writing(object):
         if height == 0:
             height = 1
 
-        xrate = Writing.WIDTH * Writing.PROPORTION / width
-        yrate = Writing.HEIGHT * Writing.PROPORTION / height
+        xrate = self.width * Writing.PROPORTION / width
+        yrate = self.height * Writing.PROPORTION / height
 
         # This is to account for very thin strokes like "ichi"
         if xrate > Writing.PROPORTION_MAX:
@@ -240,15 +242,13 @@ class Writing(object):
 
         x, y, width, height = writing.size()
 
-        dx = (Writing.WIDTH - width) / 2 - x
-        dy = (Writing.HEIGHT - height) / 2 - y
+        dx = (self.width - width) / 2 - x
+        dy = (self.height - height) / 2 - y
 
         return writing.move_rel(dx, dy)
 
     def clear(self):
         self.strokes = []
-        self.width = Writing.WIDTH
-        self.height = Writing.HEIGHT
 
     def get_width(self):
         return self.width
@@ -401,7 +401,7 @@ class Character(object):
                         value = int(value)
                 else:
                     value = None
-                    
+
                 setattr(point, key, value)
 
             self._stroke.append_point(point)
