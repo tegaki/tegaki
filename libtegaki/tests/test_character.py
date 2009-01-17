@@ -351,3 +351,67 @@ u'pressure': 0, u'x': 4}]}
         writing.append_stroke(stroke2)
         
         self.assertEquals(writing.get_duration(), 10)
+
+    def testPointEquality(self):
+        p1 = Point(x=2, y=3)
+        p2 = Point(x=2, y=3)
+        p3 = Point(x=2, y=4)
+
+        self.assertTrue(p1 == p2)
+        self.assertFalse(p1 == p3)
+
+    def testStrokeEquality(self):
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+
+        s2 = Stroke()
+        s2.append_point(Point(x=2, y=3))
+        s2.append_point(Point(x=3, y=4))
+
+        s3 = Stroke()
+        s3.append_point(Point(x=2, y=3))
+        s3.append_point(Point(x=4, y=5))
+
+        self.assertTrue(s1 == s2)
+        self.assertFalse(s1 == s3)
+
+    def testWritingEquality(self):
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+
+        s2 = Stroke()
+        s2.append_point(Point(x=2, y=3))
+        s2.append_point(Point(x=3, y=4))
+
+        w1 = Writing()
+        w1.append_stroke(s1)
+        w1.append_stroke(s2)
+
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+
+        s2 = Stroke()
+        s2.append_point(Point(x=2, y=3))
+        s2.append_point(Point(x=3, y=4))
+
+        w2 = Writing()
+        w2.append_stroke(s1)
+        w2.append_stroke(s2)
+
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+
+        s2 = Stroke()
+        s2.append_point(Point(x=2, y=3))
+        s2.append_point(Point(x=3, y=5))
+
+        w3 = Writing()
+        w3.append_stroke(s1)
+        w3.append_stroke(s2)
+
+        self.assertTrue(w1 == w2)
+        self.assertFalse(w1 == w3)

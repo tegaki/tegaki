@@ -80,6 +80,16 @@ class Point(dict):
 
         return "{ %s }" % ", ".join(attrs)
 
+    def __eq__(self, othr):
+        for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
+            if self[key] != othr[key]:
+                return False
+
+        return True
+
+    def __ne__(self, othr):
+        return not(self == othr)
+
 class Stroke(list):
 
     def __init__(self):
@@ -111,7 +121,20 @@ class Stroke(list):
         
         s += "]}"
 
-        return s        
+        return s  
+
+    def __eq__(self, othr):
+        if len(self) != len(othr):
+            return False
+
+        for i in range(len(self)):
+            if self[i] != othr[i]:
+                return False
+
+        return True
+
+    def __ne__(self, othr):
+        return not(self == othr)
 
 class Writing(object):
 
@@ -129,6 +152,9 @@ class Writing(object):
         self._width = Writing.WIDTH
         self._height = Writing.HEIGHT
         self.clear()
+
+    def clear(self):
+        self._strokes = []
 
     def get_duration(self):
         if self.get_n_strokes() > 0:
@@ -247,9 +273,6 @@ class Writing(object):
 
         return writing.move_rel(dx, dy)
 
-    def clear(self):
-        self._strokes = []
-
     def get_width(self):
         return self._width
     
@@ -290,8 +313,26 @@ class Writing(object):
     def __str__(self):
         return str(self.get_strokes(full=True))
 
-    def __eq__(self, writing):
-        return self._strokes == writing.get_strokes(full=True)
+    def __eq__(self, othr):
+        if self.get_n_strokes() != othr.get_n_strokes():
+            return False
+
+        if self.get_width() != othr.get_width():
+            return False
+
+        if self.get_height() != othr.get_height():
+            return False
+
+        othr_strokes = othr.get_strokes(full=True)
+
+        for i in range(len(self._strokes)):
+            if self._strokes[i] != othr_strokes[i]:
+                return False
+        
+        return True
+
+    def __ne__(self, othr):
+        return not(self == othr)
 
 class Character(object):
 
@@ -380,6 +421,9 @@ class Character(object):
     def __eq__(self, char):
         return self._utf8 == char.get_utf8() and \
                self._writing == char.get_writing()
+
+    def __ne__(self, othr):
+        return not(self == othr)
         
     # Private...    
 
