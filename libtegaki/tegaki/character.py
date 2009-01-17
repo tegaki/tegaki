@@ -23,6 +23,8 @@ import bz2 as bz2m
 
 class Point(dict):
 
+    KEYS = ("x", "y", "pressure", "xtilt", "ytilt", "timestamp")
+
     def __init__(self, x=None, y=None,
                        pressure=None, xtilt=None, ytilt=None,
                        timestamp=None):
@@ -65,7 +67,7 @@ class Point(dict):
     def to_xml(self):
         attrs = []
 
-        for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
+        for key in self.KEYS:
             if self[key] is not None:
                 attrs.append("%s=\"%s\"" % (key, str(self[key])))
 
@@ -74,14 +76,14 @@ class Point(dict):
     def to_json(self):
         attrs = []
 
-        for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
+        for key in self.KEYS:
             if self[key] is not None:
                 attrs.append("\"%s\" : %d" % (key, int(self[key])))
 
         return "{ %s }" % ", ".join(attrs)
 
     def __eq__(self, othr):
-        for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
+        for key in self.KEYS:
             if self[key] != othr[key]:
                 return False
 
@@ -89,6 +91,9 @@ class Point(dict):
 
     def __ne__(self, othr):
         return not(self == othr)
+
+    def copy(self):
+        return Point(**self)
 
 class Stroke(list):
 
@@ -135,6 +140,12 @@ class Stroke(list):
 
     def __ne__(self, othr):
         return not(self == othr)
+
+    def copy(self):
+        c = Stroke()
+        for point in self:
+            c.append_point(point.copy())
+        return c
 
 class Writing(object):
 
@@ -334,6 +345,16 @@ class Writing(object):
     def __ne__(self, othr):
         return not(self == othr)
 
+    def copy(self):
+        c = Writing()
+        c.set_width(self.get_width())
+        c.set_height(self.get_height())
+        
+        for stroke in self._strokes:
+            c.append_stroke(stroke.copy())
+
+        return c
+
 class Character(object):
 
     def __init__(self):
@@ -424,6 +445,12 @@ class Character(object):
 
     def __ne__(self, othr):
         return not(self == othr)
+
+    def copy(self):
+        c = Characters()
+        c.set_utf8(self.get_utf8())
+        c.set_writing(self.get_writing().copy())
+        return c
         
     # Private...    
 

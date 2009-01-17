@@ -360,6 +360,12 @@ u'pressure': 0, u'x': 4}]}
         self.assertTrue(p1 == p2)
         self.assertFalse(p1 == p3)
 
+    def testPointCopy(self):
+        p1 = Point(x=2, y=3)
+        p2 = p1.copy()
+
+        self.assertTrue(p1 == p2)
+
     def testStrokeEquality(self):
         s1 = Stroke()
         s1.append_point(Point(x=2, y=3))
@@ -375,6 +381,15 @@ u'pressure': 0, u'x': 4}]}
 
         self.assertTrue(s1 == s2)
         self.assertFalse(s1 == s3)
+
+    def testStrokeCopy(self):
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+
+        s2 = s1.copy()
+
+        self.assertTrue(s1 == s2)
 
     def testWritingEquality(self):
         s1 = Stroke()
@@ -415,3 +430,21 @@ u'pressure': 0, u'x': 4}]}
 
         self.assertTrue(w1 == w2)
         self.assertFalse(w1 == w3)
+
+    def testWritingCopy(self):
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+
+        s2 = Stroke()
+        s2.append_point(Point(x=2, y=3))
+        s2.append_point(Point(x=3, y=4))
+
+        w1 = Writing()
+        w1.append_stroke(s1)
+        w1.append_stroke(s2)
+
+        w2 = w1.copy()
+
+        self.assertTrue(w1 == w2)
+
