@@ -436,6 +436,8 @@ class CharTable(gtk.Widget):
 
     def clear(self):
         self.set_characters([])
+        self._selected = -1
+        self._prelighted = -1
 
     def set_layout(self, layout):
         self._layout = layout
