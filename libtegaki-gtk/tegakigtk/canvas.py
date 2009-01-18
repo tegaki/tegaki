@@ -666,12 +666,13 @@ class Canvas(gtk.Widget):
         self.refresh(force_draw=True)
 
     def set_background_color(self, r, g, b):
-        self._background_color = gdk.Color(red=r, green=g, blue=b)
+        self._background_color = (r, g, b)
         
         if self._background_gc:
             # This part can only be called after the widget is visible
+            color = gdk.Color(red=r, green=g, blue=b)
             self._background_gc = gdk.GC(self.window)
-            self._gc_set_foreground(self._background_gc, self._background_color)
+            self._gc_set_foreground(self._background_gc, color)
             self.refresh(force_draw=True)
         
 gobject.type_register(Canvas)
