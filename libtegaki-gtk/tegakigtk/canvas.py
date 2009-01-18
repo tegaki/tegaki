@@ -326,8 +326,9 @@ class Canvas(gtk.Widget):
                                              gdk.JOIN_ROUND)
 
         if not self._background_gc:
+            color = gdk.Color(*self._background_color)
             self._background_gc = gdk.GC(self.window)
-            self._gc_set_foreground(self._background_gc, self._background_color)
+            self._gc_set_foreground(self._background_gc, color)
 
     def _internal_coordinates(self, x, y):
         """
