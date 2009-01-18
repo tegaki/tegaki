@@ -51,8 +51,8 @@ class CharTable(gtk.Widget):
         self._pixmap = None
 
         self._padding = 2
-        self._selected = -1
-        self._prelighted = -1
+        self._selected = None
+        self._prelighted = None
         self._layout = self.LAYOUT_SINGLE_HORIZONTAL
 
         self._h_adj = None
@@ -434,10 +434,14 @@ class CharTable(gtk.Widget):
     def get_selected(self):
         return self._selected
 
+    def unselect(self):
+        self._selected = None
+        self.draw()
+
     def clear(self):
+        self._selected = None
+        self._prelighted = None
         self.set_characters([])
-        self._selected = -1
-        self._prelighted = -1
 
     def set_layout(self, layout):
         self._layout = layout
