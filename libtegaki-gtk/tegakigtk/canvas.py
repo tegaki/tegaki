@@ -65,6 +65,9 @@ class Canvas(gtk.Widget):
         self._axis_gc = None
         self._stroke_gc = None
         self._background_writing_gc = None
+        self._background_gc = None
+
+        self._background_color = (0xFFFF, 0xFFFF, 0xFFFF)
 
         self._background_character = None
         self._background_writing = None
@@ -322,6 +325,10 @@ class Canvas(gtk.Widget):
                                              gdk.CAP_BUTT,
                                              gdk.JOIN_ROUND)
 
+        if not self._background_gc:
+            self._background_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self._background_gc, self._background_color)
+
     def _internal_coordinates(self, x, y):
         """
         Converts window coordinates to internal coordinates.
@@ -434,7 +441,7 @@ class Canvas(gtk.Widget):
                                self._width, self._height / 2)
 
     def _draw_background(self):
-        self._pixmap.draw_rectangle(self.style.white_gc,
+        self._pixmap.draw_rectangle(self._background_gc,
                                     True,
                                     0, 0,
                                     self.allocation.width,
@@ -656,6 +663,15 @@ class Canvas(gtk.Widget):
         time.sleep(0.5)
         self._draw_background_writing_stroke()
         self.refresh(force_draw=True)
+
+    def set_background_color(self, r, g, b):
+        self._background_color = gdk.Color(red=r, green=g, blue=b)
+        
+        if self._background_gc:
+            # This part can only be called after the widget is visible
+            self._background_gc = gdk.GC(self.window)
+            self._gc_set_foreground(self._background_gc, self._background_color)
+            self.refresh(force_draw=True)
         
 gobject.type_register(Canvas)
         
