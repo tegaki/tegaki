@@ -45,7 +45,7 @@ class RecognizerWidget(gtk.HBox):
 
     __gsignals__ = {
         "writing-completed" :     (gobject.SIGNAL_RUN_LAST, 
-                                   gobject.TYPE_NONE,
+                                   gobject.TYPE_PYOBJECT,
                                    [gobject.TYPE_PYOBJECT]),
 
         "commit-string" :         (gobject.SIGNAL_RUN_LAST, 
@@ -55,6 +55,9 @@ class RecognizerWidget(gtk.HBox):
 
     MODE_ONE_CANVAS = 0
     MODE_TWO_CANVAS = 1
+
+    OTHER_CANVAS_COLOR = (0xFFFF, 0xFFFF, 0xFFFF) 
+    CURR_CANVAS_COLOR =  map(lambda x: x * 256, (255, 235, 235))
 
     def __init__(self, mode=MODE_TWO_CANVAS):
         gtk.HBox.__init__(self)
@@ -73,21 +76,21 @@ class RecognizerWidget(gtk.HBox):
         if self._canvas2:
             self._canvas2.clear()
         
-        self._focused_canvas = None
+        self._set_canvas_focus("_canvas1")
         self._last_completed_canvas = None
 
     def delete_character(self):
         try:
             self._characters.pop()
+            self._writings.pop()
             self._chartable.set_characters(self.get_selected_characters())
-
-            if self._last_completed_canvas:
-                getattr(self, self._last_completed_canvas).clear()
+            self._chartable.unselect()
         except IndexError:
             pass
 
     def clear_characters(self):
         self._characters = []
+        self._writings = []
         self._chartable.clear() 
 
     def clear_all(self):
@@ -98,6 +101,14 @@ class RecognizerWidget(gtk.HBox):
         if len(candidate_list) > 0:
             self._characters.append(CandidateList(candidate_list))
             self._chartable.set_characters(self.get_selected_characters())
+
+    def replace_character(self, index, candidate_list):
+        if len(candidate_list) > 0:
+            try:
+                self._characters[index] = CandidateList(candidate_list)
+                self._chartable.set_characters(self.get_selected_characters())
+            except IndexError:
+                pass
         
 
     def get_selected_characters(self):
@@ -112,6 +123,9 @@ class RecognizerWidget(gtk.HBox):
         if self._focused_canvas:
             getattr(self, self._focused_canvas).revert_stroke()
 
+            if self._chartable.get_selected():
+                self._writing_completed(self._focused_canvas, unselect=False)
+
     def _create_candidate_popup(self, characters):
         # FIXME: real popup windows are faster and don't appear
         # in the window manager but they don't respond to the focus-out event.
@@ -125,7 +139,7 @@ class RecognizerWidget(gtk.HBox):
         candidate_table = CharTable()
         candidate_table.set_layout(CharTable.LAYOUT_HORIZONTAL)
         candidate_table.set_characters(characters)
-        candidate_table.set_size_request(100, 100)
+        candidate_table.set_size_request(100, 110)
         frame.add(candidate_table)
         self._candidate_popup.add(frame)
 
@@ -150,6 +164,7 @@ class RecognizerWidget(gtk.HBox):
         self._chartable.set_characters(self.get_selected_characters())
         self._candidate_popup.destroy()
         self._candidate_popup = None
+        self._chartable.unselect()
 
     def _create_ui(self):
         self._create_canvasbox()
@@ -174,8 +189,6 @@ class RecognizerWidget(gtk.HBox):
         self.connect("destroy", self._on_destroy)
 
     def _create_canvasbox(self):
-        
-
         self._canvas1 = Canvas()
         self._canvas1.set_size_request(250, 250)
 
@@ -258,13 +271,50 @@ class RecognizerWidget(gtk.HBox):
         self._toolbar.pack_start(gtk.HSeparator(), expand=False)
         self._toolbar.pack_start(self._prefs_button, expand=False)
 
-    def _on_canvas_button_press(self, widget, event, curr_canv):
-        if curr_canv == "_canvas1":
+    def _writing_completed(self, canvas, unselect=True):
+            writing = getattr(self, canvas).get_writing()
+
+            if writing.get_n_strokes() == 0:
+                return
+
+            writing = writing.copy()
+            candidates = self.emit("writing-completed", writing)
+    
+            self._last_completed_canvas = canvas     
+
+            if candidates:
+                sel_char = self._chartable.get_selected()
+
+                if sel_char is not None:
+                    self.replace_character(sel_char, candidates)
+                    self._writings[sel_char] = writing
+
+                    if unselect:
+                        self._chartable.unselect()
+                else:
+                    self.add_character(candidates)
+                    self._writings.append(writing)
+
+    def _other_canvas(self, canvas):
+        if canvas == "_canvas1":
             othr_canv = "_canvas2"
-        elif curr_canv == "_canvas2":
-            othr_canv = "_canvas1"
         else:
-            return
+            othr_canv = "_canvas1"
+        return othr_canv
+    
+    def _set_canvas_focus(self, curr_canv):
+        othr_canv = self._other_canvas(curr_canv)
+        self._focused_canvas = curr_canv
+
+        # set background color
+        if self._canvas2:
+            for canvas, color in ((curr_canv, self.CURR_CANVAS_COLOR),
+                                  (othr_canv, self.OTHER_CANVAS_COLOR)):
+
+                getattr(self, canvas).set_background_color(*color)
+
+    def _on_canvas_button_press(self, widget, event, curr_canv):
+        othr_canv = self._other_canvas(curr_canv)
 
         if self._focused_canvas == othr_canv:
             getattr(self, curr_canv).clear()
@@ -272,26 +322,18 @@ class RecognizerWidget(gtk.HBox):
             if getattr(self, othr_canv).get_writing().get_n_strokes() > 0 and \
                self._last_completed_canvas != othr_canv:
 
-                self.emit("writing-completed", 
-                          getattr(self, othr_canv).get_writing())
+                self._writing_completed(othr_canv)
 
-                self._last_completed_canvas = othr_canv
-
-        self._focused_canvas = curr_canv
-   
-
+        self._set_canvas_focus(curr_canv)
+  
     def _on_canvas_drawing_stopped(self, widget, curr_canv):
         if self._focused_canvas == curr_canv:
-            self.emit("writing-completed", 
-                      getattr(self, curr_canv).get_writing())
-            self._last_completed_canvas = curr_canv
+            self._writing_completed(curr_canv)
 
 
     def _on_find(self, button):
         if self._focused_canvas:
-            self.emit("writing-completed", 
-                      getattr(self, self._focused_canvas).get_writing())
-            self._last_completed_canvas = self._focused_canvas            
+            self._writing_completed(self._focused_canvas)         
 
     def _on_undo(self, button):
         self.revert_stroke()
@@ -313,11 +355,22 @@ class RecognizerWidget(gtk.HBox):
 
     def _on_character_selected(self, chartable, event):
         selected = self._chartable.get_selected()
-        candidates = self._characters[selected][0:9]
-        self._create_candidate_popup(candidates)
-        self._candidate_popup.move(int(event.x_root), int(event.y_root) + \
-                                   int(self._chartable.allocation.height/2))
-        self._candidate_popup.show_all()   
+
+        if event.button == 3: # right click
+            candidates = self._characters[selected]
+            self._create_candidate_popup(candidates)
+            self._candidate_popup.move(int(event.x_root), int(event.y_root) + \
+                                       int(self._chartable.allocation.height/3))
+            self._candidate_popup.show_all() 
+        
+        elif event.button == 1: # left click
+            sel_writing = self._writings[selected]
+            
+            if self._canvas2:
+                self._canvas2.clear()
+
+            self._canvas1.set_writing(sel_writing)
+            self._set_canvas_focus("_canvas1")
 
     def _on_destroy(self, event):
         self._hide_popup()
@@ -347,10 +400,11 @@ if __name__ == "__main__":
     from tegaki.recognizer import ZinniaRecognizer
 
     recognizer = ZinniaRecognizer()
+    recognizer.set_model("handwriting-ja")
 
     def on_writing_completed(rw, writing):
-        res = recognizer.recognize("handwriting-ja", writing, 9)
-        rw.add_character([char for char, prob in res])
+        candidates = recognizer.recognize(writing, 10)
+        return [char for char, prob in candidates]
 
     def on_commit_string(rw, string):
         print string
