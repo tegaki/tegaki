@@ -36,7 +36,13 @@ class Recognizer:
         except NameError:
             pass
 
-        return recognizers            
+        return recognizers   
+
+    def get_model(self):
+        return self._model
+
+    def set_model(self, model):
+        self._model = model
 
     def get_available_models(self):
         return self._available_models.keys()
@@ -57,6 +63,7 @@ try:
             Recognizer.__init__(self)
             self._find_system_models()
             self._find_personal_models()
+            self._recognizer = zinnia.Recognizer()
 
         def _find_system_models(self):
             self._available_models = {}
@@ -77,12 +84,14 @@ try:
             # FIXME: search in for ex $HOME/.zinnia/models/
             pass
 
-        def recognize(self, model, writing, n=10):
-            s = zinnia.Character()
-            r = zinnia.Recognizer()
+        def set_model(self, model):
+            Recognizer.set_model(self, model)
 
-            if not r.open(self._available_models[model]):
+            if not self._recognizer.open(self._available_models[model]):
                 raise RecognizerError, "Could not open model"
+
+        def recognize(self, writing, n=10):
+            s = zinnia.Character()
 
             s.set_width(writing.get_width())
             s.set_height(writing.get_height())
@@ -94,7 +103,7 @@ try:
                 for x, y in stroke:
                     s.add(i, x, y)
 
-            result = r.classify(s, n)
+            result = self._recognizer.classify(s, n)
             size = result.size()
 
             return [(result.value(i), result.score(i)) \
@@ -127,4 +136,6 @@ if __name__ == "__main__":
     if not model in models:
         raise "Not an available model"
 
-    print recognizer.recognize(model, writing)
+    recognizer.set_model(model)
+
+    print recognizer.recognize(writing)
