@@ -23,6 +23,8 @@ import gobject
 from canvas import Canvas
 from chartable import CharTable
 
+from tegaki.recognizer import Recognizer
+
 class CandidateList(list):
     def __init__(self, initial_candidates=[]):
         self.extend(initial_candidates)
@@ -44,9 +46,6 @@ class CandidateList(list):
 class RecognizerWidget(gtk.HBox):
 
     __gsignals__ = {
-        "writing-completed" :     (gobject.SIGNAL_RUN_LAST, 
-                                   gobject.TYPE_PYOBJECT,
-                                   [gobject.TYPE_PYOBJECT]),
 
         "commit-string" :         (gobject.SIGNAL_RUN_LAST, 
                                    gobject.TYPE_NONE,
@@ -66,9 +65,13 @@ class RecognizerWidget(gtk.HBox):
 
         self._mode = mode
 
+        self._recognizer = None
+
         self._create_ui()
         self.clear_canvas()
         self.clear_characters()
+
+        self._activate_first_model()
 
     def clear_canvas(self):
         self._canvas1.clear()
@@ -260,6 +263,9 @@ class RecognizerWidget(gtk.HBox):
         self._prefs_button.set_image(image)
         self._prefs_button.connect("clicked", self._on_prefs)
 
+        self._models_button = gtk.Button("Models")
+        self._models_button.connect("button-press-event", self.on_models)
+
         self._toolbar = gtk.VBox(spacing=2)
         self._toolbar.pack_start(self._commit_button, expand=False)
         self._toolbar.pack_start(self._del_button, expand=False)
@@ -269,7 +275,40 @@ class RecognizerWidget(gtk.HBox):
         self._toolbar.pack_start(self._undo_button, expand=False)
         self._toolbar.pack_start(self._clear_button, expand=False)
         self._toolbar.pack_start(gtk.HSeparator(), expand=False)
+        self._toolbar.pack_start(self._models_button, expand=False)
         self._toolbar.pack_start(self._prefs_button, expand=False)
+
+    def _create_model_menu(self):
+        menu = gtk.Menu()
+
+        for r_name, klass in Recognizer.get_available_recognizers().items():
+            recognizer = klass()
+
+            i = 1
+            for model_name, meta in klass.get_available_models().items():
+                item = gtk.MenuItem("%d. %s (%s)" % (i, model_name, r_name))
+                item.connect("activate", 
+                             self._on_activate_model, 
+                             r_name,
+                             meta)
+                menu.append(item)
+                i += 1
+
+        return menu
+
+    def _activate_first_model(self):
+        r_name, klass = Recognizer.get_available_recognizers().items()[0]
+        model_name, meta = klass.get_available_models().items()[0]
+        self._set_recognizer(r_name, meta)
+
+    def _on_activate_model(self, item, recognizer_name, meta):
+        self._set_recognizer(recognizer_name, meta) 
+
+    def _set_recognizer(self, recognizer_name, meta):
+        klass = Recognizer.get_available_recognizers()[recognizer_name]
+        self._recognizer = klass()
+        self._recognizer.set_model(meta["name"])
+        self._models_button.set_label(meta["shortname"])
 
     def _writing_completed(self, canvas, unselect=True):
             writing = getattr(self, canvas).get_writing()
@@ -278,7 +317,8 @@ class RecognizerWidget(gtk.HBox):
                 return
 
             writing = writing.copy()
-            candidates = self.emit("writing-completed", writing)
+            candidates = self._recognizer.recognize(writing)
+            candidates = [char for char, prob in candidates]
     
             self._last_completed_canvas = canvas     
 
@@ -330,6 +370,10 @@ class RecognizerWidget(gtk.HBox):
         if self._focused_canvas == curr_canv:
             self._writing_completed(curr_canv)
 
+    def on_models(self, button, event):
+        menu = self._create_model_menu()
+        menu.show_all()
+        menu.popup(None, None, None, event.button, event.time)
 
     def _on_find(self, button):
         if self._focused_canvas:
@@ -397,19 +441,9 @@ if __name__ == "__main__":
 
     recognizer_widget.set_drawing_stopped_time(msec)
 
-    from tegaki.recognizer import ZinniaRecognizer
-
-    recognizer = ZinniaRecognizer()
-    recognizer.set_model("handwriting-ja")
-
-    def on_writing_completed(rw, writing):
-        candidates = recognizer.recognize(writing, 10)
-        return [char for char, prob in candidates]
-
     def on_commit_string(rw, string):
         print string
 
-    recognizer_widget.connect("writing-completed", on_writing_completed)
     recognizer_widget.connect("commit-string", on_commit_string)
 
     window.add(recognizer_widget)
