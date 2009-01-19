@@ -44,9 +44,6 @@ class Recognizer:
     def set_model(self, model):
         self._model = model
 
-    def get_available_models(self):
-        return self._available_models.keys()
-
     # To be implemented by child class
     def recognize(self, model, writing, n=10):
         """
@@ -61,33 +58,71 @@ try:
 
         def __init__(self):
             Recognizer.__init__(self)
-            self._find_system_models()
-            self._find_personal_models()
             self._recognizer = zinnia.Recognizer()
 
-        def _find_system_models(self):
-            self._available_models = {}
+        @classmethod
+        def get_available_models(cls):
+            if "available_models" in cls.__dict__:
+                return cls.available_models
+            else:
+                cls.__dict__["available_models"] = \
+                                       ZinniaRecognizer._get_available_models()
+                return cls.__dict__["available_models"]
 
-            for directory in ("/usr/local/lib/zinnia/model/tomoe/",
-                              "/usr/lib/zinnia/model/tomoe/",
-                              "/usr/local/share/tomoe/recognizer/",
-                              "/usr/share/tomoe/recognizer/"):
+        @staticmethod
+        def _get_available_models():
+            available_models = {}
 
-                if os.path.exists(directory):
-                    models = glob.glob(os.path.join(directory, "*.model"))
+            pers_dir = os.path.join(os.environ['HOME'], ".tegaki", "models",
+                                    "zinnia")
 
-                    for model in models:
-                        name = os.path.basename(model).replace(".model", "")
-                        self._available_models[name] = model
+            # FIXME: use $prefix defined in setup
+            for directory in ("/usr/local/share/tegaki/models/zinnia/",
+                              "/usr/share/tegaki/models/zinnia/",
+                              pers_dir):
 
-        def _find_personal_models(self):
-            # FIXME: search in for ex $HOME/.zinnia/models/
-            pass
+                if not os.path.exists(directory):
+                    continue
 
-        def set_model(self, model):
-            Recognizer.set_model(self, model)
+                models = glob.glob(os.path.join(directory, "*.model"))
 
-            if not self._recognizer.open(self._available_models[model]):
+                for model in models:
+                    meta = model.replace(".model", ".meta")
+
+                    if not os.path.exists(meta):
+                        continue
+
+                    meta = ZinniaRecognizer._read_meta_file(meta)
+
+                    if not meta.has_key("name") or \
+                       not meta.has_key("shortname"):
+                        continue
+
+                    meta["model"] = model
+
+                    available_models[meta["name"]] = meta
+
+            return available_models
+
+        @staticmethod
+        def _read_meta_file( meta_file):
+            f = open(meta_file)
+            ret = {}
+            for line in f.readlines():
+                key, value = [s.strip() for s in line.strip().split("=")]
+                ret[key] = value
+            f.close()
+            return ret
+
+        def set_model(self, model_name):
+            if not model_name in ZinniaRecognizer.get_available_models():
+                raise RecognizerError, "Model does not exist"
+
+            Recognizer.set_model(self, model_name)
+
+            model = ZinniaRecognizer.get_available_models()[model_name]["model"]
+
+            if not self._recognizer.open(model):
                 raise RecognizerError, "Could not open model"
 
         def recognize(self, writing, n=10):
@@ -128,9 +163,10 @@ if __name__ == "__main__":
     if not recognizer in recognizers:
         raise "Not an available recognizer"
 
-    recognizer = recognizers[recognizer]()
+    recognizer_klass = recognizers[recognizer]
+    recognizer = recognizer_klass()
 
-    models = recognizer.get_available_models()
+    models = recognizer_klass.get_available_models()
     print "Available models", models
 
     if not model in models:
