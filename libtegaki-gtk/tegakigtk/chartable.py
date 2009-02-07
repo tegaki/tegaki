@@ -58,7 +58,7 @@ class CharTable(gtk.Widget):
         self._h_adj = None
         self._v_adj = None
 
-        self._layouts = []
+        self.clear()
 
         self.connect("motion_notify_event", self.motion_notify_event)
         
@@ -430,6 +430,10 @@ class CharTable(gtk.Widget):
         for character in characters:
             self._layouts.append(self.create_pango_layout(character))
         self.draw()
+        self._characters = characters
+
+    def get_characters(self):
+        return self._characters
 
     def get_selected(self):
         return self._selected
