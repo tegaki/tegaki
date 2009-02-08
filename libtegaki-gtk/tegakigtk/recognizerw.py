@@ -331,13 +331,22 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
 
         writing = writing.copy()
         candidates = self._recognizer.recognize(writing)
-        candidates = [char for char, prob in candidates]
-
-        self._last_completed_canvas = canvas     
-
+        candidates = [char for char, prob in candidates]     
+        
         if candidates:
-            self.add_character(CandidateList(candidates))
-            self._writings.append(writing)
+            candidate_list = CandidateList(candidates)
+
+            if self._search_on_stroke and canvas == self._last_completed_canvas:
+                # update the current character if search on stroke activated
+                last = len(self.get_characters()) - 1
+                self.replace_character(last, candidate_list)
+                self._writings[last] = writing
+            else:
+                # append character otherwise
+                self.add_character(candidate_list)
+                self._writings.append(writing)
+
+        self._last_completed_canvas = canvas
 
     def _other_canvas(self, canvas):
         if canvas == "_canvas1":
@@ -363,7 +372,8 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
             getattr(self, curr_canv).clear()
 
             if getattr(self, othr_canv).get_writing().get_n_strokes() > 0 and \
-               self._last_completed_canvas != othr_canv:
+               self._last_completed_canvas != othr_canv and \
+               not self._search_on_stroke:
 
                 self._find(othr_canv)
 
@@ -374,7 +384,8 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
             self._find(curr_canv)
 
     def _on_canvas_stroke_added(self, widget, curr_canv):
-        pass
+        if self._search_on_stroke:
+            self._find(curr_canv)
 
     def _on_commit(self, button):
         chars = self.get_selected_characters()
