@@ -16,6 +16,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import os
+from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError
+
 import gtk
 from gtk import gdk
 import gobject
@@ -38,13 +41,27 @@ class RecognizerWidgetBase(gtk.HBox):
         gtk.HBox.__init__(self)
 
         self._recognizer = None
-        self._search_on_stroke = False
+        self._search_on_stroke = True
 
         self._create_ui()
         self.clear_canvas()
         self.clear_characters()
 
-        self._activate_first_model()
+        self._load_preferences()
+
+    def _load_preferences(self):
+        pm = PreferenceManager()
+        pm.load()
+        self.set_drawing_stopped_time(pm["GENERAL"]["DRAWING_STOPPED_TIME"])
+        self.set_search_on_stroke(pm["GENERAL"]["SEARCH_ON_STROKE"])
+        self.set_selected_model(pm["GENERAL"]["SELECTED_MODEL"])
+
+    def _save_preferences(self):
+        pm = PreferenceManager()
+        pm["GENERAL"]["DRAWING_STOPPED_TIME"] = self.get_drawing_stopped_time()
+        pm["GENERAL"]["SEARCH_ON_STROKE"] = self.get_search_on_stroke()
+        pm["GENERAL"]["SELECTED_MODEL"] = self.get_selected_model()
+        pm.save()
 
     def _create_toolbar_separator(self):
         self._toolbar.pack_start(gtk.HSeparator(), expand=False)
@@ -86,23 +103,19 @@ class RecognizerWidgetBase(gtk.HBox):
     def _create_model_menu(self):
         menu = gtk.Menu()
 
-        i = 0
-        for r_name, klass in Recognizer.get_available_recognizers().items():
-            recognizer = klass()
+        all_models = Recognizer.get_all_available_models()
 
-            for model_name, meta in klass.get_available_models().items():
-                item = gtk.MenuItem("%d. %s (%s)" % (i+1, model_name, r_name))
-                item.connect("activate", 
-                             self._on_activate_model, 
-                             r_name,
-                             meta)
-                menu.append(item)
-                i += 1
-
-        if i == 0:
+        if len(all_models) == 0:
             return None
-        else:
-            return menu
+
+        i = 0
+        for r_name, model_name, meta in all_models:
+            item = gtk.MenuItem("%d. %s (%s)" % (i+1, model_name, r_name))
+            item.connect("activate", self._on_activate_model, i)
+            menu.append(item)
+            i += 1
+
+        return menu
 
     def _create_canvas(self, canvas_name):
         canvas = Canvas()
@@ -135,21 +148,6 @@ class RecognizerWidgetBase(gtk.HBox):
         self._chartable.connect("character-selected", 
                                 self._on_character_selected)
 
-    def _activate_first_model(self):
-        try:
-            r_name, klass = Recognizer.get_available_recognizers().items()[0]
-            model_name, meta = klass.get_available_models().items()[0]
-            self._set_recognizer(r_name, meta)
-            self._ready = True
-        except IndexError:
-            self._ready = False
-
-    def _set_recognizer(self, recognizer_name, meta):
-        klass = Recognizer.get_available_recognizers()[recognizer_name]
-        self._recognizer = klass()
-        self._recognizer.set_model(meta["name"])
-        self._models_button.set_label(meta["shortname"])
-
     def _on_models(self, button, event):
         menu = self._create_model_menu()
         if menu:
@@ -159,8 +157,9 @@ class RecognizerWidgetBase(gtk.HBox):
             parent = self.get_toplevel()
             dialog = ErrorDialog(parent, "No models installed!").run()
 
-    def _on_activate_model(self, item, recognizer_name, meta):
-        self._set_recognizer(recognizer_name, meta) 
+    def _on_activate_model(self, item, i):
+        self.set_selected_model(i)
+        self._save_preferences()
 
     def _on_find(self, button):
         self.find()
@@ -169,7 +168,28 @@ class RecognizerWidgetBase(gtk.HBox):
         self.revert_stroke()
 
     def _on_prefs(self, button):
-        pass
+        parent = self.get_toplevel()
+        if not parent.flags() & gtk.TOPLEVEL:
+            parent = None
+        pref_dialog = PreferenceDialog(parent)
+
+        pref_dialog.connect("response", self._on_pref_validate)
+
+        pref_dialog.set_search_on_stroke(self.get_search_on_stroke())
+        pref_dialog.set_drawing_stopped_time(self.get_drawing_stopped_time())
+
+        pref_dialog.run()
+
+    def _on_pref_validate(self, dialog, response):
+        if response == gtk.RESPONSE_OK:
+            if dialog.get_search_on_stroke():
+                self.set_search_on_stroke(True)
+            else:
+                self.set_drawing_stopped_time(dialog.get_drawing_stopped_time())
+
+            self._save_preferences()
+
+        dialog.destroy()
 
     def _on_clear(self, button):
         self.clear_canvas()
@@ -183,10 +203,28 @@ class RecognizerWidgetBase(gtk.HBox):
 
     def set_search_on_stroke(self, enabled):
         self._search_on_stroke = enabled
-        self.set_drawing_stopped_time(0)
 
     def get_characters(self):
         return self._chartable.get_characters()
+
+    def get_selected_model(self):
+       return self._models_button.selected_model
+
+    def set_selected_model(self, i):
+        try:
+            r_name, model_name, meta = Recognizer.get_all_available_models()[i]
+
+            klass = Recognizer.get_available_recognizers()[r_name]
+            self._recognizer = klass()
+            self._recognizer.set_model(meta["name"])
+            self._models_button.set_label(meta["shortname"])
+            # a hack to retain the model id the button
+            self._models_button.selected_model = i
+
+            self._ready = True
+        except IndexError:
+            self._ready = False
+
 
 class SimpleRecognizerWidget(RecognizerWidgetBase):
 
@@ -224,7 +262,8 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
         pass
   
     def _on_canvas_drawing_stopped(self, widget, curr_canv):
-        self.find()
+        if not self._search_on_stroke:
+            self.find()
 
     def _on_canvas_stroke_added(self, widget, curr_canv):
         if self._search_on_stroke:
@@ -242,7 +281,11 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
     def clear_characters(self):
         self._chartable.clear() 
 
+    def get_drawing_stopped_time(self):
+        self._canvas.get_drawing_stopped_time()
+
     def set_drawing_stopped_time(self, time_msec):
+        self._search_on_stroke = False
         self._canvas.set_drawing_stopped_time(time_msec)
 
     def revert_stroke(self):
@@ -380,7 +423,7 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         self._set_canvas_focus(curr_canv)
   
     def _on_canvas_drawing_stopped(self, widget, curr_canv):
-        if self._focused_canvas == curr_canv:
+        if self._focused_canvas == curr_canv and not self._search_on_stroke:
             self._find(curr_canv)
 
     def _on_canvas_stroke_added(self, widget, curr_canv):
@@ -497,10 +540,13 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
     def get_selected_characters(self):
         return [char[char.selected] for char in self._characters]
 
+    def get_drawing_stopped_time(self):
+        return self._canvas1.get_drawing_stopped_time()
+
     def set_drawing_stopped_time(self, time_msec):
+        self._search_on_stroke = False
         for canvas in (self._canvas1, self._canvas2):
-            if canvas:
-                canvas.set_drawing_stopped_time(time_msec)
+            canvas.set_drawing_stopped_time(time_msec)
 
     def revert_stroke(self):
         if self._focused_canvas:
@@ -653,16 +699,130 @@ class ErrorDialog(gtk.MessageDialog):
 
         self.connect("response", lambda w,r: self.destroy())
 
+class PreferenceManager(dict):
+
+    def __init__(self):
+        dict.__init__(self)
+        self._init_paths()
+        self._init_dirs()
+        self._init_defaults()
+
+    def _init_defaults(self):
+        self["GENERAL"] = {}
+
+    def _init_paths(self):
+        try:
+            self._home_dir = os.environ['HOME']
+            self._tegaki_dir = os.path.join(self._home_dir, ".tegaki")
+        except KeyError:
+            self._home_dir = os.environ['USERPROFILE']
+            self._tegaki_dir = os.path.join(self._home_dir, "tegaki")
+
+        self._conf_file = os.path.join(self._tegaki_dir, "recognizer.ini")
+
+    def _init_dirs(self):
+        if not os.path.exists(self._tegaki_dir):
+            os.makedirs(self._tegaki_dir)
+
+    def load(self):
+        config = SafeConfigParser()
+        config.read(self._conf_file)
+
+        for opt, dflt, meth  in [("SEARCH_ON_STROKE", True, config.getboolean),
+                                 ("DRAWING_STOPPED_TIME", 0, config.getint),
+                                 ("SELECTED_MODEL", 0, config.getint)]:
+
+            try:
+                self["GENERAL"][opt] = meth("GENERAL", opt)
+            except (NoSectionError, NoOptionError, ValueError), e:
+                self["GENERAL"][opt] = dflt
+
+    def save(self):
+        config = SafeConfigParser()
+        
+        for section in self.keys():
+            if not config.has_section(section):
+                config.add_section(section)
+
+            for opt, value in self[section].items():
+                config.set(section, opt, str(value))
+
+        f = open(self._conf_file, "w")
+        config.write(f)
+        f.close()
+
+class PreferenceDialog(gtk.Dialog):
+
+    def __init__(self, parent):
+        gtk.Dialog.__init__(self)
+        self._init_dialog(parent)
+        self._create_ui()
+
+    def _init_dialog(self, parent):
+        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_has_separator(True)
+        self.set_transient_for(parent)
+        self.set_border_width(6)
+        self.set_modal(True)
+        self.set_title("Preferences")
+
+    def _create_ui(self):
+        self._search_on_stroke = gtk.RadioButton(group=None, 
+                                                 label="Search on stroke")
+        self._search_on_stroke.connect("toggled", self._on_search_on_stroke)
+
+        
+        self._search_after = gtk.RadioButton(group=self._search_on_stroke,
+                                             label="Search after:")
+        self._search_after.connect("toggled", self._on_search_after)
+        adjustment = gtk.Adjustment(value=0, lower=0, upper=3000, step_incr=100,
+                                    page_incr=0, page_size=0)
+        self._spinbutton = gtk.SpinButton(adjustment)
+        self._spinbutton.set_sensitive(False)
+        self._search_after_hbox = gtk.HBox(spacing=2)
+        self._search_after_hbox.pack_start(self._search_after, expand=False)
+        self._search_after_hbox.pack_start(self._spinbutton, expand=False)
+        self._search_after_hbox.pack_start(gtk.Label("[msecs]"), expand=False)
+
+        main_vbox = self.get_child()
+        main_vbox.set_spacing(10)
+        main_vbox.pack_start(self._search_on_stroke)
+        main_vbox.pack_start(self._search_after_hbox)
+        self.show_all()
+
+    def _on_search_on_stroke(self, radiobutton):
+        self._spinbutton.set_sensitive(False)
+
+    def _on_search_after(self, radiobutton):
+        self._spinbutton.set_sensitive(True)
+
+    def get_search_on_stroke(self):
+        return self._search_on_stroke.get_active()
+
+    def set_search_on_stroke(self, active):
+        self._search_on_stroke.set_active(active)
+        self._search_after.set_active(not(active))
+
+    def get_search_after(self):
+        return self._search_after.get_active()
+
+    def set_search_after(self, active):
+        self._search_after.set_active(active)
+        self._search_on_stroke.set_active(not(active))
+
+    def get_drawing_stopped_time(self):
+        return int(self._spinbutton.get_value())
+
+    def set_drawing_stopped_time(self, time):
+        self._spinbutton.set_value(int(time))
+
 if __name__ == "__main__":
     import sys
 
     try:
-        msec = int(sys.argv[1])
-    except IndexError:
-        msec = 0
-
-    try:
-        simple = int(sys.argv[2])
+        simple = int(sys.argv[1])
     except IndexError:
         simple = False
 
@@ -672,11 +832,6 @@ if __name__ == "__main__":
         recognizer_widget = SimpleRecognizerWidget()
     else:
         recognizer_widget = SmartRecognizerWidget()
-
-    if msec == -1:
-        recognizer_widget.set_search_on_stroke(True)
-    else:
-        recognizer_widget.set_drawing_stopped_time(msec)
 
     def on_commit_string(rw, string):
         print string

@@ -19,6 +19,8 @@
 import glob
 import os
 
+from dictutils import SortedDict
+
 class RecognizerError(Exception):
     pass
 
@@ -29,7 +31,7 @@ class Recognizer:
    
     @staticmethod
     def get_available_recognizers():
-        recognizers = {}
+        recognizers = SortedDict()
 
         try:
             recognizers["zinnia"] = ZinniaRecognizer
@@ -37,6 +39,17 @@ class Recognizer:
             pass
 
         return recognizers   
+
+    @staticmethod
+    def get_all_available_models():
+        """
+        Returns a flat list of available models from all recognizers.
+        """
+        all_models = []
+        for r_name, klass in Recognizer.get_available_recognizers().items():
+            for model_name, meta in klass.get_available_models().items():
+                all_models.append([r_name, model_name, meta])
+        return all_models
 
     def get_model(self):
         return self._model
@@ -71,7 +84,7 @@ try:
 
         @staticmethod
         def _get_available_models():
-            available_models = {}
+            available_models = SortedDict()
 
             pers_dir = os.path.join(os.environ['HOME'], ".tegaki", "models",
                                     "zinnia")
