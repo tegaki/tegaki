@@ -1,0 +1,20 @@
+tegaki-recognize
+=================
+
+tegaki-recognize is a handwriting recognition program for the desktop.
+
+Requirements
+------------
+
+libtegaki-gtk
+
+Install
+-------
+
+
+
+License
+-------
+
+This package is distributed under the terms of the GNU General Public
+License. See the COPYING file for more information.

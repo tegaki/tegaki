@@ -1,0 +1,114 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2009 Mathieu Blondel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import base64
+from optparse import OptionParser
+
+import gtk
+from gtk import gdk
+
+from tegakigtk.recognizer import SmartRecognizerWidget
+
+ICON = \
+"""iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAyUlE
+QVR42mNgoAL4z8DAIEuJAfJQQ/4zMDBYUcMgigyxgBpCjLf/MzAw+OGSxKv593Pr/5+2+f5nYGD4
+z4TFG8fxaf7z2pbhzzlOhvx5D79hUxDAwMCwAKfml9b/v291/Z8TbwLzggG6ojUMDAxB2DT/vG/5
+/8sml//RAbqPoJpVsdnyEOoNFM3fLpn9f7/F93+Mv/Z/QmF0ioGBYTq6AdfXlfxPjTT4T0wM+TMw
+MFyDekWegYHhv7+j6H+kaCM6QS2GGkSSxiEKAPRgTUcK1FgfAAAAAElFTkSuQmCC"""
+
+class TegakiRecognize(object):
+
+    def __init__(self, hide):
+        self._position = None
+        self._hide = hide
+        self._init_icon()
+        self._create_window()
+        self._size = None
+
+    def _init_icon(self):
+        data = base64.b64decode(ICON.replace("\n", ""))
+        loader = gdk.PixbufLoader()
+        loader.write(data)
+        loader.close()
+        pixbuf = loader.get_pixbuf()
+
+        self._status_icon = gtk.StatusIcon()
+        self._status_icon.set_from_pixbuf(pixbuf)
+
+        self._status_icon.connect("activate", self._on_activate)
+        self._status_icon.connect("popup-menu", self._on_popup)
+
+        self._status_icon.set_visible(True)
+
+    def _create_window(self):
+        self._window = gtk.Window()
+        self._window.set_position(gtk.WIN_POS_CENTER)
+        self._window.set_title("Tegaki")
+        rw = SmartRecognizerWidget()
+        self._window.add(rw)
+
+        rw.connect("commit-string", self._on_commit)
+
+        if not self._hide:
+            self._window.show_all()
+
+    def _save_window_position(self):
+        self._size = self._window.get_size()
+        self._position = self._window.get_position()
+
+    def _load_window_position(self):
+        if self._size and self._position:
+            self._window.resize(*self._size)
+            self._window.move(*self._position)
+
+    def _on_activate(self, widget):
+        if self._window.get_property("visible"):
+            self._save_window_position()
+            self._window.hide()
+        else:
+            self._window.show_all()
+            self._load_window_position()
+
+    def _on_popup(self, widget, button, time):
+        menu = gtk.Menu()
+        quit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        quit.connect("activate", lambda x: gtk.main_quit())
+        menu.append(quit)
+        menu.show_all()
+        menu.popup(None, None, None, button, time)
+
+    def _on_commit(self, widget, string):
+        clipboard = gtk.Clipboard()
+        clipboard.set_text(string)
+
+    def run(self):
+        gtk.main()
+
+parser = OptionParser()
+parser.add_option("", "--hide",
+                  action="store_true", dest="hide", default=False,
+                  help="don't show window on startup")
+
+(options, args) = parser.parse_args()
+
+
+TegakiRecognize(options.hide).run()
+
+
+
