@@ -86,12 +86,12 @@ class RecognizerWidgetBase(gtk.HBox):
     def _create_model_menu(self):
         menu = gtk.Menu()
 
+        i = 0
         for r_name, klass in Recognizer.get_available_recognizers().items():
             recognizer = klass()
 
-            i = 1
             for model_name, meta in klass.get_available_models().items():
-                item = gtk.MenuItem("%d. %s (%s)" % (i, model_name, r_name))
+                item = gtk.MenuItem("%d. %s (%s)" % (i+1, model_name, r_name))
                 item.connect("activate", 
                              self._on_activate_model, 
                              r_name,
@@ -99,7 +99,10 @@ class RecognizerWidgetBase(gtk.HBox):
                 menu.append(item)
                 i += 1
 
-        return menu
+        if i == 0:
+            return None
+        else:
+            return menu
 
     def _create_canvas(self, canvas_name):
         canvas = Canvas()
@@ -133,9 +136,13 @@ class RecognizerWidgetBase(gtk.HBox):
                                 self._on_character_selected)
 
     def _activate_first_model(self):
-        r_name, klass = Recognizer.get_available_recognizers().items()[0]
-        model_name, meta = klass.get_available_models().items()[0]
-        self._set_recognizer(r_name, meta)
+        try:
+            r_name, klass = Recognizer.get_available_recognizers().items()[0]
+            model_name, meta = klass.get_available_models().items()[0]
+            self._set_recognizer(r_name, meta)
+            self._ready = True
+        except IndexError:
+            self._ready = False
 
     def _set_recognizer(self, recognizer_name, meta):
         klass = Recognizer.get_available_recognizers()[recognizer_name]
@@ -145,8 +152,12 @@ class RecognizerWidgetBase(gtk.HBox):
 
     def _on_models(self, button, event):
         menu = self._create_model_menu()
-        menu.show_all()
-        menu.popup(None, None, None, event.button, event.time)
+        if menu:
+            menu.show_all()
+            menu.popup(None, None, None, event.button, event.time)
+        else:
+            parent = self.get_toplevel()
+            dialog = ErrorDialog(parent, "No models installed!").run()
 
     def _on_activate_model(self, item, recognizer_name, meta):
         self._set_recognizer(recognizer_name, meta) 
@@ -240,6 +251,9 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
             self.find()
 
     def find(self):
+        if not self._ready:
+            return
+
         writing = self._canvas.get_writing()
 
         if writing.get_n_strokes() > 0:
@@ -306,7 +320,10 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         self._canvasbox.pack_start(self._canvas1_frame)
         self._canvasbox.pack_start(self._canvas2_frame)
 
-    def _writing_completed(self, canvas):
+    def _find(self, canvas):
+        if not self._ready:
+            return
+
         writing = getattr(self, canvas).get_writing()
 
         if writing.get_n_strokes() == 0:
@@ -348,13 +365,13 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
             if getattr(self, othr_canv).get_writing().get_n_strokes() > 0 and \
                self._last_completed_canvas != othr_canv:
 
-                self._writing_completed(othr_canv)
+                self._find(othr_canv)
 
         self._set_canvas_focus(curr_canv)
   
     def _on_canvas_drawing_stopped(self, widget, curr_canv):
         if self._focused_canvas == curr_canv:
-            self._writing_completed(curr_canv)
+            self._find(curr_canv)
 
     def _on_canvas_stroke_added(self, widget, curr_canv):
         pass
@@ -411,9 +428,6 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         edit_window.show_all()
 
     def _on_commit_edited_char(self, rw, char, char_selected):
-        print char_selected
-        print char
-        print rw.get_characters()
         candidate_list = CandidateList(rw.get_characters())
         candidate_list.set_selected(char)
         self.replace_character(char_selected, candidate_list)
@@ -483,7 +497,7 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
 
     def find(self):
         if self._focused_canvas:
-            self._writing_completed(self._focused_canvas)
+            self._find(self._focused_canvas)
 
 class CandidatePopup(gtk.Window):
 
@@ -619,6 +633,14 @@ class CandidateList(list):
             self.selected = i
         except ValueError:
             pass
+
+class ErrorDialog(gtk.MessageDialog):
+
+    def __init__(self, parent, msg):
+        gtk.MessageDialog.__init__(self, parent, gtk.DIALOG_MODAL,
+                                   gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, msg)
+
+        self.connect("response", lambda w,r: self.destroy())
 
 if __name__ == "__main__":
     import sys
