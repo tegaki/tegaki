@@ -1,0 +1,5 @@
+include AUTHORS COPYING COPYRIGHT README TODO MANIFEST.in
+exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST
+recursive-include tests *
+recursive-include data *
+recursive-include src *
