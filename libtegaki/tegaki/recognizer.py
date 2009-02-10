@@ -51,11 +51,77 @@ class Recognizer:
                 all_models.append([r_name, model_name, meta])
         return all_models
 
+    @classmethod
+    def get_available_models(cls):
+        if "available_models" in cls.__dict__:
+            return cls.available_models
+        else:
+            # change ZinniaRecognizer to zinnia
+            name = cls.__name__.replace("Recognizer", "").lower()
+            cls.__dict__["available_models"] = cls._get_available_models(name)
+            return cls.__dict__["available_models"]
+
+    @staticmethod
+    def _get_available_models(recognizer):
+        available_models = SortedDict()
+
+        # FIXME: use $prefix defined in setup
+        for directory in (os.path.join("/usr/local/share/tegaki/models/",
+                                       recognizer),
+                          os.path.join("/usr/share/tegaki/models/",
+                                       recognizer),
+                          os.path.join(os.environ['HOME'], ".tegaki", "models",
+                                       recognizer)):
+
+            if not os.path.exists(directory):
+                continue
+
+            meta_files = glob.glob(os.path.join(directory, "*.meta"))
+
+            for meta_file in meta_files:
+                meta = Recognizer._read_meta_file(meta_file)
+
+                if not meta.has_key("name") or \
+                    not meta.has_key("shortname"):
+                    continue
+
+                model_file = meta_file.replace(".meta", ".model")
+            
+                if meta.has_key("path") and not os.path.exists(meta["path"]):
+                    # skip model if specified path is incorrect
+                    continue
+                elif not meta.has_key("path") and os.path.exists(model_file):
+                    # if path option is missing, assume the .model file
+                    # is in the same directory
+                    meta["path"] = model_file
+
+                available_models[meta["name"]] = meta
+
+        return available_models
+
+    @staticmethod
+    def _read_meta_file(meta_file):
+        f = open(meta_file)
+        ret = {}
+        for line in f.readlines():
+            key, value = [s.strip() for s in line.strip().split("=")]
+            ret[key] = value
+        f.close()
+        return ret
+
     def get_model(self):
         return self._model
 
-    def set_model(self, model):
-        self._model = model
+    def set_model(self, model_name):
+        if not model_name in self.__class__.get_available_models():
+            raise RecognizerError, "Model does not exist"
+
+        self._model = model_name
+
+        model = ZinniaRecognizer.get_available_models()[model_name]["path"]
+
+        if not self._recognizer.open(model):
+            raise RecognizerError, "Could not open model"      
 
     # To be implemented by child class
     def recognize(self, model, writing, n=10):
@@ -72,71 +138,6 @@ try:
         def __init__(self):
             Recognizer.__init__(self)
             self._recognizer = zinnia.Recognizer()
-
-        @classmethod
-        def get_available_models(cls):
-            if "available_models" in cls.__dict__:
-                return cls.available_models
-            else:
-                cls.__dict__["available_models"] = \
-                                       ZinniaRecognizer._get_available_models()
-                return cls.__dict__["available_models"]
-
-        @staticmethod
-        def _get_available_models():
-            available_models = SortedDict()
-
-            pers_dir = os.path.join(os.environ['HOME'], ".tegaki", "models",
-                                    "zinnia")
-
-            # FIXME: use $prefix defined in setup
-            for directory in ("/usr/local/share/tegaki/models/zinnia/",
-                              "/usr/share/tegaki/models/zinnia/",
-                              pers_dir):
-
-                if not os.path.exists(directory):
-                    continue
-
-                models = glob.glob(os.path.join(directory, "*.model"))
-
-                for model in models:
-                    meta = model.replace(".model", ".meta")
-
-                    if not os.path.exists(meta):
-                        continue
-
-                    meta = ZinniaRecognizer._read_meta_file(meta)
-
-                    if not meta.has_key("name") or \
-                       not meta.has_key("shortname"):
-                        continue
-
-                    meta["model"] = model
-
-                    available_models[meta["name"]] = meta
-
-            return available_models
-
-        @staticmethod
-        def _read_meta_file( meta_file):
-            f = open(meta_file)
-            ret = {}
-            for line in f.readlines():
-                key, value = [s.strip() for s in line.strip().split("=")]
-                ret[key] = value
-            f.close()
-            return ret
-
-        def set_model(self, model_name):
-            if not model_name in ZinniaRecognizer.get_available_models():
-                raise RecognizerError, "Model does not exist"
-
-            Recognizer.set_model(self, model_name)
-
-            model = ZinniaRecognizer.get_available_models()[model_name]["model"]
-
-            if not self._recognizer.open(model):
-                raise RecognizerError, "Could not open model"
 
         def recognize(self, writing, n=10):
             s = zinnia.Character()
