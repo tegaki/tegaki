@@ -24,6 +24,8 @@ from gettext import dgettext
 _ = lambda a : dgettext ("scim-tegaki", a)
 N_ = lambda x : x
 
+from tegakigtk.recognizer import SmartRecognizerWidget
+
 class TegakiHelper(scim.HelperAgent):
 
     def __init__(self, helper_info):
@@ -44,22 +46,21 @@ class TegakiHelper(scim.HelperAgent):
 
     def _create_ui (self):
         self._window = gtk.Window()
-        self._window.set_size_request(100, 100)
+        self._window.set_title("Tegaki")
         self._window.set_position(gtk.WIN_POS_CENTER)
         self._window.set_accept_focus(False)
-        button = gtk.Button("test")
-        button.connect("clicked", self.on_button_clicked)
-        self._window.add(button)
+        rw = SmartRecognizerWidget()
+        self._window.add(rw)
         self._window.show_all()
 
-        self._window.connect("destroy", self.on_destroy)
+        self._window.connect("destroy", self._on_destroy)
+        rw.connect("commit-string", self._on_commit)
 
-    def on_destroy(self, window):
+    def _on_destroy(self, window):
         gtk.main_quit()
 
-    def on_button_clicked(self, button):
-        self.commit_string(-1, "", "漢字")
-        self.commit_string(-1, "", "test")
+    def _on_commit(self, widget, string):
+        self.commit_string(-1, "", string)
 
     def _init_properties (self):
         prop = scim.Property("/Tegaki", _("Tegaki"),

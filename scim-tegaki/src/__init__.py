@@ -17,6 +17,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import sys
+import os
 import scim
 
 from gettext import dgettext
@@ -24,7 +25,15 @@ _ = lambda a : dgettext ("scim-tegaki", a)
 
 __UUID__ = "6937480c-e1a4-11dd-b959-080027da9e6f"
 __NAME__ = _("Tegaki")
-__ICON__ = "/usr/local/share/tomoe-gtk/tomoe-handwriting.png"
+
+# Fixme: dont't hardcode icon path
+__ICON__ = ""
+for path in ("/usr/local/share/tegaki/icons", "/usr/share/tegaki/icons"):
+    path = os.path.join(path, "handwriting.png")
+    if os.path.exists(path):
+        __ICON__ = path
+        break
+
 __DESC__ = _("Tegaki helper")
 __OPT__ = scim.SCIM_HELPER_STAND_ALONE | scim.SCIM_HELPER_NEED_SCREEN_INFO
 
