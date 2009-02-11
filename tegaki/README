@@ -26,6 +26,10 @@ is to add the following to your ~/.bashrc file.
 tegakiroot=/path/to/hwr/
 export PYTHONPATH=$tegakiroot/tegaki:$tegakiroot/tegaki-gtk
 
+In order to download the latest source code, please use git.
+
+$ git clone http://www.mblondel.org/code/hwr.git
+
 License
 -------
 
