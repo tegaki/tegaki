@@ -1,0 +1,37 @@
+tegaki-zinnia-simplified-chinese
+================================
+
+Simplified Chinese handwriting model for Zinnia.
+
+Install
+-------
+
+($ su)
+# python setup.py install
+
+Model files
+-----------
+
+Model files (extension .model) contain the main handwriting model data.
+
+Meta files
+----------
+
+Meta files (extension .meta) contain meta-data regarding model files. They
+must be encoded in UTF-8. They are defined as key-value pairs, one per line.
+Possible keys include:
+
+* name: model full name (mandatory).
+* shortname: name with less than 3 characters (mandatory).
+* language: language code such as "ja" or "zh_CN" (optional).
+* path: path of the associate model file. If the path is not specified,
+        the model file is assumed to be in the same directory with the same base
+        name and the .model extension. For example, if "file.meta" is present
+        and it doesn't define a path key, the presence of "file.model" is
+        assumed (optional).
+
+License
+-------
+
+This package is distributed under the terms of the GNU Lesser General Public
+License. See the COPYING file for more information.
