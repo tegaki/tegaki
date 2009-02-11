@@ -1,17 +1,18 @@
 tegaki-recognize
 =================
 
-tegaki-recognize is a handwriting recognition program for the desktop.
+Tegaki project integration in the desktop.
 
 Requirements
 ------------
 
-libtegaki-gtk
+tegaki-gtk    0.1
 
 Install
 -------
 
-
+($ su)
+# python setup.py install
 
 License
 -------

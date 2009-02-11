@@ -1,21 +1,20 @@
 scim-tegaki
 ===========
 
-This package contains handwriting recognition support for scim.
+Tegaki project integration in SCIM.
 
 Requirements
 ------------
 
 Python       2.4         http://www.python.org
 scim-python  0.1.13rc1   http://code.google.com/p/scim-python/
-Zinnia       0.02        http://zinnia.sourceforge.net/
+tegaki-gtk   0.1
 
 Install
 -------
 
-$ su
-# mkdir /usr/share/scim-python/helper/tegaki
-# cp src/*.py /usr/share/scim-python/helper/tegaki/
+($ su)
+# python setup.py install
 
 License
 -------

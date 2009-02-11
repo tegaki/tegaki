@@ -1,16 +1,17 @@
-tegaki-models
-=============
+tegaki-lab
+===========
 
-This package contains experimental models for handwriting recognition.
-It is intented to developers and is by no means an end-user package.
+Placeholder for experiments with new recognition engines.
+
+/!\ This package is for developers only. Simple users don't need it.
 
 Requirements
 ------------
 
 Python       2.4    http://www.python.org
 GHMM *       SVN    http://ghmm.sourceforge.net
-tegaki
-tegaki-gtk
+tegaki       0.1
+tegaki-gtk   0.1
 
 [*] The Python bindings are also required.
 

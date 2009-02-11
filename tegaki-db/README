@@ -1,8 +1,9 @@
 tegaki-db
 =========
 
-tegaki-db is a web site for people to contribute their handwriting.
+Web site to manage collections of handwriting samples written by contributors.
 
+/!\ This package is for developers only. Simple users don't need it.
 
 Requirements
 ------------

@@ -1,0 +1,12 @@
+tegaki-webcanvas
+================
+
+Canvas written in Javascript using the <canvas> HTML element.
+
+/!\ This package is for developers only. Simple users don't need it.
+
+License
+-------
+
+This package is distributed under the terms of the GNU General Public
+License. See the COPYING file for more information.

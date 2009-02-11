@@ -1,24 +1,20 @@
-libtegaki-gtk
-=============
+tegaki-gtk
+==========
 
-This package contains reusable user interface components (aka widgets) for
-handwriting recognition.
+Base user interface library for the Tegaki project.
 
 Requirements
 ------------
 
 Python       2.4    http://www.python.org
 pygtk        2.10   http://www.pygtk.org
-tegaki
+tegaki       0.1
 
 Install
 -------
 
-Add the following to your ~/.bashrc file.
-
-tegakiroot=/path/to/hwr/
-
-export PYTHONPATH=$tegakiroot/libtegaki:$tegakiroot/libtegaki-gtk
+($ su)
+# python setup.py install
 
 License
 -------
