@@ -155,7 +155,8 @@ class RecognizerWidgetBase(gtk.HBox):
             menu.popup(None, None, None, event.button, event.time)
         else:
             parent = self.get_toplevel()
-            dialog = ErrorDialog(parent, "No models installed!").run()
+            msg = "No recognizers and/or no models installed!"
+            dialog = ErrorDialog(parent, msg).run()
 
     def _on_activate_model(self, item, i):
         self.set_selected_model(i)
