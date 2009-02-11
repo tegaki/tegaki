@@ -7,7 +7,7 @@ import os
 # python setup.py install   
 
 setup(
-    name = 'scimtegaki',
+    name = 'scim-tegaki',
     description = 'Tegaki integration in SCIM',
     author = 'Mathieu Blondel',
     author_email = 'mathieu ÂT mblondel DÔT org',
