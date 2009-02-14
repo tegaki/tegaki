@@ -36,8 +36,11 @@ License
 This package is distributed under the terms of the GNU Lesser General Public
 License. See the COPYING file for more information.
 
+The models are derived from character templates from the Tomoe project.
+http://tomoe.sourceforge.jp
+
 Homepage
 --------
 
-http://tomoe.sourceforge.jp
+http://tegaki.sourceforge.net
 
