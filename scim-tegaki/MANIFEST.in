@@ -3,3 +3,4 @@ exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST
 recursive-include tests *
 recursive-include data *
 recursive-include src *
+recursive-exclude src *~ *.orig *.bak *.tmp *.pyc
