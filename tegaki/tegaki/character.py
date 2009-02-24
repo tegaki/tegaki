@@ -152,8 +152,8 @@ class Writing(object):
     WIDTH = 1000
     HEIGHT = 1000
 
-    PROPORTION = 0.7
-    PROPORTION_MAX = 5.0
+    NORMALIZE_PROPORTION = 0.7 # percentage of the drawing area
+    NORMALIZE_MIN_SIZE = 0.1 # don't nornalize if below that percentage
 
     def __init__(self):
         self._width = Writing.WIDTH
@@ -259,24 +259,22 @@ class Writing(object):
         self.move_rel(dx, dy)
 
     def normalize_size(self):
-        # Note: you should call normalize_position() after that
+        # Note: you should call normalize_position() after normalize_size()
         x, y, width, height = self.size()
 
-        if width == 0:
-            width = 1
+        
+        if float(width) / self._width > Writing.NORMALIZE_MIN_SIZE:
+            xrate = self._width * Writing.NORMALIZE_PROPORTION / width
+        else:
+            # Don't normalize if too thin in width
+            xrate = 1.0
 
-        if height == 0:
-            height = 1
 
-        xrate = self._width * Writing.PROPORTION / width
-        yrate = self._height * Writing.PROPORTION / height
-
-        # This is to account for very thin strokes like "ichi"
-        if xrate > Writing.PROPORTION_MAX:
-            xrate = Writing.PROPORTION_MAX
-
-        if yrate > Writing.PROPORTION_MAX:
-            yrate = Writing.PROPORTION_MAX
+        if float(height) / self._height > Writing.NORMALIZE_MIN_SIZE:
+            yrate = self._height * Writing.NORMALIZE_PROPORTION / height
+        else:
+            # Don't normalize if too thin in height
+            yrate = 1.0
         
         self.resize(xrate, yrate)
 
