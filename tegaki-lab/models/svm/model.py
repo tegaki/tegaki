@@ -111,7 +111,7 @@ class Model(models.basic.model.Model):
 
         return [results.value(i) for i in range(0, (results.size() - 1))]
 
-    def evaluation(self):   
+    def eval(self):   
         path = os.path.join(self.ROOT, "model")
 
         if not os.path.exists(path):
