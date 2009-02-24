@@ -650,6 +650,11 @@ class Canvas(gtk.Widget):
         self._writing.normalize()
         self.refresh(force_draw=True)
 
+    def smooth(self):
+        print "smooth"
+        self._writing.smooth()
+        self.refresh(force_draw=True)
+
     def set_background_character(self, character):
         self._background_character = character
 
@@ -691,7 +696,11 @@ if __name__ == "__main__":
     
     if len(sys.argv) >= 2:
 
-        if sys.argv[1] == "normalize":
+        if sys.argv[1] == "smooth":
+            def on_drawing_stopped(widget):
+                widget.smooth()
+
+        elif sys.argv[1] == "normalize":
             def on_drawing_stopped(widget):
                 widget.normalize()
                 

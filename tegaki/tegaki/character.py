@@ -20,6 +20,7 @@ import xml.parsers.expat
 import cStringIO
 import gzip as gzipm
 import bz2 as bz2m
+import math
 
 class Point(dict):
 
@@ -95,6 +96,7 @@ class Stroke(list):
 
     def __init__(self):
         list.__init__(self)
+        self._is_smoothed = False
 
     def get_duration(self):
         if len(self) > 0:
@@ -142,6 +144,48 @@ class Stroke(list):
         for point in self:
             c.append_point(point.copy())
         return c
+
+    def smooth(self):
+        """
+        Smoothing method based on a (simple) moving average algorithm. 
+    
+        Let p = p(0), ..., p(N) be the set points of this stroke, 
+            w = w(-M), ..., w(0), ..., w(M) be a set of weights.
+        
+        This algorithm aims at replacing p with a set p' such as
+        
+            p'(i) = (w(-M)*p(i-M) + ... + w(0)*p(i) + ... + w(M)*p(i+M)) / S
+        
+        and where S = w(-M) + ... + w(0) + ... w(M). End points are not
+        affected.
+        """
+        if self._is_smoothed:
+            return
+
+        weights = [1, 1, 2, 1, 1] # Weights to be used
+        times = 3 # Number of times to apply the algorithm
+
+        if len(self) < len(weights):
+            return
+
+        offset = int(math.floor(len(weights) / 2.0))
+        wsum = sum(weights)
+
+        for n in range(times):
+            s = self.copy()
+
+            for i in range(offset, len(self) - offset):
+                self[i].x = 0
+                self[i].y = 0
+
+                for j in range(len(weights)):
+                    self[i].x += weights[j] * s[i + j - offset].x
+                    self[i].y += weights[j] * s[i + j - offset].y
+
+                self[i].x = round(self[i].x / wsum)
+                self[i].y = round(self[i].y / wsum)
+        
+        self._is_smoothed = True
 
 class Writing(object):
 
@@ -348,6 +392,10 @@ class Writing(object):
             c.append_stroke(stroke.copy())
 
         return c
+
+    def smooth(self):
+        for stroke in self._strokes:
+            stroke.smooth()
 
 class Character(object):
 
