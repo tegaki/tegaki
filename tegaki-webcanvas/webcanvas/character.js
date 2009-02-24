@@ -59,6 +59,7 @@ Point.prototype.toXML = function() {
 
 var Stroke = function() {
     this.points = [];
+    this.is_smoothed = false;
 }
 
 Stroke.prototype.copy = function(stroke) {
@@ -117,6 +118,9 @@ Stroke.prototype.smooth = function() {
      * affected.
      */
 
+    if (this.is_smoothed)
+        return;
+
     var weights = [1, 1, 2, 1, 1]; // Weights to be used
     var times = 3;                 // Number of times to apply the algorithm
 
@@ -146,6 +150,7 @@ Stroke.prototype.smooth = function() {
             }
         }
     }
+    this.is_smoothed = true;
 }
 
 /* Writing */
