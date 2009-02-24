@@ -29,7 +29,8 @@ class Model(models.basic.model.Model):
         models.basic.model.Model.__init__(self, *args)
 
         self.N_STATES_PER_STROKE = 8
-        self.CORPORA = ["latin-writer1"]
+        self.TRAIN_CORPORA = ["latin-writer1"]
+        self.EVAL_CORPORA = self.TRAIN_CORPORA
 
         self.ROOT = os.path.join("models", "basic_latin")
         self.update_folder_paths()

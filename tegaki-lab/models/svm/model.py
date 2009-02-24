@@ -35,7 +35,8 @@ class Model(models.basic.model.Model):
     def __init__(self, *args):
         models.basic.model.Model.__init__(self, *args)
 
-        self.CORPORA = ["japanese-learner1", "japanese-native1"]
+        self.TRAIN_CORPORA = ["japanese-learner1", "japanese-native1"]
+        self.EVAL_CORPORA = ["japanese-learner1", "japanese-native1"]
 
         self.ROOT = os.path.join("models", "svm")
         self.update_folder_paths()
