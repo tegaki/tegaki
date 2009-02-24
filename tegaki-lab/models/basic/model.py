@@ -56,7 +56,8 @@ class Model(object):
         # or not
         self.NON_DIAGONAL = False
 
-        self.CORPORA = ["japanese-learner1", "japanese-native1"]
+        self.TRAIN_CORPORA = ["japanese-learner1", "japanese-native1"]
+        self.EVAL_CORPORA = ["japanese-learner1", "japanese-native1"]
         self.ROOT = os.path.join("models", "basic")
         self.update_folder_paths()
 
@@ -83,17 +84,20 @@ class Model(object):
         self.eval_xml_files_dict = self.get_eval_xml_files_dict()
         self.train_xml_files_dict = self.get_train_xml_files_dict()
 
-    def get_xml_list_dict(self, directory):
+    def get_xml_list_dict(self, directory, corpora):
         """
         Returns a dictionary with xml file list.
             keys are character codes.
             values are arrays of xml files.
+
+        directory: root directory
+        corpora: corpora list to restrict to
         """
         dict = {}
         for file in glob.glob(os.path.join(directory, "*", "*", "*.xml")):
             corpus_name = file.split("/")[-3]
             # exclude data which are not in the wanted corpora
-            if corpus_name not in self.CORPORA:
+            if corpus_name not in corpora:
                 continue
             
             char_code = int(os.path.basename(file)[:-4])
@@ -103,10 +107,10 @@ class Model(object):
         return dict
                     
     def get_eval_xml_files_dict(self):
-        return self.get_xml_list_dict(self.EVAL_ROOT)
+        return self.get_xml_list_dict(self.EVAL_ROOT, self.EVAL_CORPORA)
 
     def get_train_xml_files_dict(self):
-        return self.get_xml_list_dict(self.TRAIN_ROOT)
+        return self.get_xml_list_dict(self.TRAIN_ROOT, self.TRAIN_CORPORA)
 
     def get_character(self, char_path):
         char = Character()
