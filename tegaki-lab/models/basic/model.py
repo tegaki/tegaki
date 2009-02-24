@@ -18,14 +18,17 @@
 
 import os
 import sys
-import ghmm
 import glob
+import shutil
+
+import ghmm
 
 from tegaki.character import *
 from tegaki.arrayutils import *
 from tegaki.mathutils import *
 
 from lib.exceptions import *
+from lib.utils import *
 
 class Model(object):
     """
@@ -38,7 +41,14 @@ class Model(object):
     """
 
     def __init__(self, options):
-        
+
+        self.ALL = ["clean", "fextract", "init", "train", "eval"]
+        self.COMMANDS = self.ALL + ["pad", "find", "commands"]
+     
+        self.DOMAIN = ghmm.Float()
+        self.verbose = options.verbose
+        self.options = options
+
         self.SAMPLING = 0.5
         self.N_STATES_PER_STROKE = 3
         self.N_DIMENSIONS = 2
@@ -46,12 +56,7 @@ class Model(object):
         # or not
         self.NON_DIAGONAL = False
 
-        self.DOMAIN = ghmm.Float()
-
-        self.verbose = options.verbose
-
         self.CORPORA = ["japanese-learner1", "japanese-native1"]
-
         self.ROOT = os.path.join("models", "basic")
         self.update_folder_paths()
 
@@ -71,8 +76,9 @@ class Model(object):
         self.TRAIN_FEATURES_ROOT = os.path.join(self.FEATURES_ROOT, "train")
         self.EVAL_FEATURES_ROOT = os.path.join(self.FEATURES_ROOT, "eval")
 
-        self.INIT_HMM_ROOT = os.path.join(self.ROOT, "hmms", "init")
-        self.TRAIN_HMM_ROOT = os.path.join(self.ROOT, "hmms", "train")
+        self.HMM_ROOT = os.path.join(self.ROOT, "hmms")
+        self.INIT_HMM_ROOT = os.path.join(self.HMM_ROOT, "init")
+        self.TRAIN_HMM_ROOT = os.path.join(self.HMM_ROOT, "train")
 
         self.eval_xml_files_dict = self.get_eval_xml_files_dict()
         self.train_xml_files_dict = self.get_train_xml_files_dict()
@@ -144,6 +150,7 @@ class Model(object):
         return arr
 
     def fextract(self):
+        """Extract features"""
         for dirname, xml_files_dict in (("eval", self.eval_xml_files_dict),
                                        ("train", self.train_xml_files_dict)):
             
@@ -271,6 +278,7 @@ class Model(object):
           
 
     def init(self):
+        """Init HMMs"""
         feature_files = self.get_train_feature_files()
 
         if len(feature_files) == 0:
@@ -305,6 +313,7 @@ class Model(object):
         return glob.glob(os.path.join(self.INIT_HMM_ROOT, "*.xml"))
 
     def train(self):
+        """Train HMMs"""
         initial_hmm_files = self.get_initial_hmm_files()
 
         if len(initial_hmm_files) == 0:
@@ -368,7 +377,8 @@ class Model(object):
             
         return hmms
 
-    def evaluation(self):   
+    def eval(self):
+        """Evaluate HMMs"""
         trained_hmm_files = self.get_trained_hmm_files()
 
         if len(trained_hmm_files) == 0:
@@ -441,9 +451,10 @@ class Model(object):
         hmms = self.get_hmms_from_files(trained_hmm_files)
         res = [x[0] for x in self.eval_sequence(seq, hmms)][:10]
         return [self.get_utf8_from_char_code(x) for x in res]
-        
+       
 
-    def writing_pad(self):
+    def pad(self):
+        """Find characters using a pad"""
         from lib.writing_pad import WritingPad
         
         trained_hmm_files = self.get_trained_hmm_files()
@@ -453,4 +464,55 @@ class Model(object):
         
         pad = WritingPad(self.find_writing)
         pad.run()
+
+    def find(self):
+        """Find a character in XML format"""
+        if self.options.stdin:
+            lines = []
+
+            while True:
+                line = sys.stdin.readline()
+                lines.append(line)
+                
+                if line.strip() == "</character>":
+                    xml = "\n".join(lines)
+                    writing = xml_to_writing(xml)
+                    print " ".join(self.find_writing(writing))
+                    lines = []
+
+                if len(line) == 0:
+                    break
+
+    ########################################
+    # Clean...
+    ########################################
+
+    def get_pyc_files(self, folder):
+        pyc_files = []
         
+        for name in os.listdir(folder):
+            full_path = os.path.join(folder, name)
+            if os.path.isdir(full_path):
+                pyc_files += self.get_pyc_files(full_path)
+            elif full_path.endswith(".pyc"):
+                pyc_files.append(full_path)
+                
+        return pyc_files
+
+    def clean(self):
+        """Delete temporary files"""
+        for folder in (self.FEATURES_ROOT, self.HMM_ROOT):
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+
+        for pyc_file in self.get_pyc_files(self.ROOT):
+            os.unlink(pyc_file)
+
+    ########################################
+    # Commands...
+    ########################################
+    def commands(self):
+        """Display command list"""
+        for cmd in self.COMMANDS:
+            meth = getattr(self, cmd)
+            print "- %s (%s)" % (cmd, meth.__doc__)

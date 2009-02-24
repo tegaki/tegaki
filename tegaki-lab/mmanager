@@ -24,6 +24,7 @@ from optparse import OptionParser
 
 from tegaki.character import *
 from lib.exceptions import *
+from lib.utils import *
 
 currdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -65,67 +66,66 @@ def get_model_list(path="models"):
     return [name for name in os.listdir(path) \
             if os.path.isdir(os.path.join(path, name))]
 
-def get_pyc_files(folder):
-    pyc_files = []
-    
-    for name in os.listdir(folder):
-        full_path = os.path.join(folder, name)
-        if os.path.isdir(full_path):
-            pyc_files += get_pyc_files(full_path)
-        elif full_path.endswith(".pyc"):
-            pyc_files.append(full_path)
-            
-    return pyc_files
-
-def clean_model_folder(model_folder):
-    feature_folder = os.path.join(model_folder, "features")
-    hmm_folder = os.path.join(model_folder, "hmms")
-
-    for folder in (feature_folder, hmm_folder, ):
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
-
-    for pyc_file in get_pyc_files(model_folder):
-        os.unlink(pyc_file)
-
-def writing_to_xml(writing):
-    character = Character()
-    character.set_utf8("?")
-    character.set_writing(writing)
-    return character.to_xml()
-
-def writing_to_json(writing):
-    character = Character()
-    character.set_utf8("?")
-    character.set_writing(writing)
-    return character.to_json() 
-
-def xml_to_writing(xml):
-    character = Character()
-    character.read_string(xml)
-    return character.get_writing()
-
 def stderr_print(*args):
     sys.stderr.write("".join([str(arg) for arg in args]) + "\n")
 
 def die(msg, code=0):
   stderr_print(msg)
   sys.exit(code)
+
+def run_model(name, command, options):
+    # Support for naming a model by its folder path
+    if name.startswith("models/"):
+        if name.endswith("/"):
+            name = name[:-1]
+        name = name.split("/")[1]
+
+    model_folder = os.path.join("models", name)
+
+    module = load_model_module(model_folder)
+
+    if not module:
+        die("Model %s doesn't exist.\n" % name + \
+            "Use the list command for a list of models.")
+
+    try:
+        model = module.model.Model(options)
+
+        if command == "all":
+            commands = model.ALL
+        else:
+            commands = [command]
+
+        for command in commands:
+            stderr_print("Running '%s'..." % command)
+            try:
+                getattr(model, command)()
+            except AttributeError:
+                raise ModelException, "'%s' is not implemented in '%s'." % \
+                                      (command, name)
+            stderr_print("Done.")
+
+    except ModelException, e:
+        stderr_print("Error!")
+        stderr_print(e.message)
   
 def usage():
     die("""Usage:
     
 -----  
+
+For model related commands:
   
-model-manager model-name command
+./mmanager model-name command-name
 
-Possible commands: fextract, init, train, eval, pad, all, clean
-
-all = clean, fextract, init, train and eval
+For a list of possible commands, type:
+./mmanage model-name commands
 
 -----
 
-model-manager command
+For general commands:
+
+./mmanager command-name
 
 Possible commands: list, cleanall, pad, help
 
@@ -154,6 +154,8 @@ if not len(args) in [1, 2]:
     usage()
     
 if len(args) == 1:
+    # Commands that don't need a model
+
     command = args[0]
     
     if command == "list":
@@ -162,12 +164,17 @@ if len(args) == 1:
             print "- %s" % name
             
     elif command == "cleanall":
+        stderr_print("Clean all...")
         for name in get_model_list():
             model_folder = os.path.join("models", name)
-            clean_model_folder(model_folder)
+            module = load_model_module(model_folder)
+            
+            if not module:
+                continue
 
-        for pyc_file in get_pyc_files(currdir):
-            os.unlink(pyc_file)
+            model = module.model.Model(options)
+            model.clean()
+        stderr_print("Done.")
 
     elif command == "pad":
         from lib.writing_pad import WritingPad
@@ -187,79 +194,19 @@ if len(args) == 1:
             pad.canvas_set_writing(initial_writing)
 
         pad.run()
-
+    
+    elif command == "allall":
+        for name in get_model_list():
+            stderr_print("Model '%s'." % name)
+            run_model(name, "all", options)
+        stderr_print("Done all.")
     else:
         usage()
         
 else:
+    # Commands that need a model
     command = args[1]
     name = args[0]
 
-    # support for naming a model by its folder path
-    if name.startswith("models/"):
-        if name.endswith("/"):
-            name = name[:-1]
-        name = name.split("/")[1]
-
-    model_folder = os.path.join("models", name)
-
-    if command in ("clean", "all"):
-        if os.path.exists(model_folder):
-            clean_model_folder(model_folder)
-
-        if command == "clean":
-            sys.exit()
-
-    module = load_model_module(model_folder)
-
-    if not module:
-        die("Model %s doesn't exist.\n" % name + \
-            "Use the list command for a list of models.")
-
-    try:
-        model = module.model.Model(options)
-        
-        if command in ("fextract", "all"):
-            stderr_print("Extracting features...")
-            model.fextract()
-
-        if command in ("init", "all"):
-            stderr_print("Initializing models...")
-            model.init()
-
-        if command in ("train", "all"):
-            stderr_print("Training models...")
-            model.train()
-
-        if command in ("eval", "all"):
-            if options.stdin:
-                lines = []
-
-                while True:
-                    line = sys.stdin.readline()
-                    lines.append(line)
-                    
-                    if line.strip() == "</character>":
-                        xml = "\n".join(lines)
-                        writing = xml_to_writing(xml)
-                        print " ".join(model.find_writing(writing))
-                        lines = []
-
-                    if len(line) == 0:
-                        break
-                        
-            else:
-                stderr_print("Evaluating models...")
-                model.evaluation()
-
-        if command == "pad":
-            model.writing_pad()
-            
-        if command not in ("fextract", "init", "train", "eval",
-                           "pad", "clean", "cleanall", "all"):
-            die("Unknown command.")
-
-    except ModelException, e:
-        stderr_print("Error!")
-        stderr_print(e.message)
+    run_model(name, command, options)
   
