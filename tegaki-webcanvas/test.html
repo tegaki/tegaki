@@ -81,7 +81,7 @@
                     var json = JSON.parse(input_textarea.value);
 
                     var char = new Character();
-                    char.copy(json);
+                    char.copy_from(json);
 
                     webcanvas.setWriting(char.getWriting());
                 }   

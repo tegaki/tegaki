@@ -30,7 +30,7 @@ var Point = function(x, y, pressure, xtilt, ytilt, timestamp) {
     this.timestamp = timestamp || null;
 }
 
-Point.prototype.copy = function(point) {
+Point.prototype.copy_from = function(point) {
     var keys = ["x", "y", "pressure", "xtilt", "ytilt", "timestamp"];
 
     for (var i = 0; i < keys.length; i++) {
@@ -41,6 +41,11 @@ Point.prototype.copy = function(point) {
     }
 }
 
+Point.prototype.copy = function() {
+    var c = new Point();
+    c.copy_from(this);
+    return c;
+}
 
 Point.prototype.toXML = function() {
     var values = [];
@@ -62,13 +67,19 @@ var Stroke = function() {
     this.is_smoothed = false;
 }
 
-Stroke.prototype.copy = function(stroke) {
+Stroke.prototype.copy_from = function(stroke) {
     for(var i = 0; i < stroke.points.length; i++) {
         var point = new Point();
-        point.copy(stroke.points[i]);
+        point.copy_from(stroke.points[i]);
         this.points[i] = point;
     }
     this.points.length = stroke.points.length;
+}
+
+Stroke.prototype.copy = function() {
+    var c = new Stroke();
+    c.copy_from(this);
+    return c;
 }
 
 Stroke.prototype.getPoints = function() {
@@ -133,8 +144,7 @@ Stroke.prototype.smooth = function() {
         }
 
         for (var n = 1; n <= times; n++) {
-            var s = new Stroke();
-            s.copy(this);
+            var s = this.copy();
 
             for (var i = offset; i < this.points.length - offset; i++) {
                 this.points[i].x = 0;
@@ -161,13 +171,19 @@ var Writing = function() {
     this.height = DEFAULT_HEIGHT;
 }
 
-Writing.prototype.copy = function(writing) {
+Writing.prototype.copy_from = function(writing) {
     for(var i = 0; i < writing.strokes.length; i++) {
         var stroke = new Stroke();
-        stroke.copy(writing.strokes[i]);
+        stroke.copy_from(writing.strokes[i]);
         this.strokes[i] = stroke;
     }
     this.strokes.length = writing.strokes.length;
+}
+
+Writing.prototype.copy = function() {
+    var c = new Writing();
+    c.copy_from(this);
+    return c;
 }
 
 Writing.prototype.getDuration = function() {
@@ -243,13 +259,19 @@ var Character = function() {
     this.utf8 = null;
 }
 
-Character.prototype.copy = function(character) {
+Character.prototype.copy_from = function(character) {
     this.setUTF8(character.utf8);
 
     var writing = new Writing();
-    writing.copy(character.writing);
+    writing.copy_from(character.writing);
 
     this.setWriting(writing);
+}
+
+Character.prototype.copy = function() {
+    var c = new Character();
+    c.copy_from(this);
+    return c;
 }
 
 Character.prototype.getUTF8 = function() {
