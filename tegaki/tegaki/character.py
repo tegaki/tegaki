@@ -247,6 +247,19 @@ class Writing(object):
         return (xmin, ymin, xmax-xmin, ymax-ymin)
 
     def normalize(self):
+        self.normalize_size()
+        self.normalize_position()
+
+    def normalize_position(self):
+        x, y, width, height = self.size()
+
+        dx = (self._width - width) / 2 - x
+        dy = (self._height - height) / 2 - y
+
+        self.move_rel(dx, dy)
+
+    def normalize_size(self):
+        # Note: you should call normalize_position() after that
         x, y, width, height = self.size()
 
         if width == 0:
@@ -266,13 +279,6 @@ class Writing(object):
             yrate = Writing.PROPORTION_MAX
         
         self.resize(xrate, yrate)
-
-        x, y, width, height = self.size()
-
-        dx = (self._width - width) / 2 - x
-        dy = (self._height - height) / 2 - y
-
-        self.move_rel(dx, dy)
 
     def get_width(self):
         return self._width
