@@ -53,16 +53,12 @@ class Point(dict):
             raise AttributeError
 
     def resize(self, xrate, yrate):
-        new_point = Point(**self)
-        new_point.x = int(self.x * xrate)
-        new_point.y = int(self.y * yrate)
-        return new_point
+        self.x = int(self.x * xrate)
+        self.y = int(self.y * yrate)
 
     def move_rel(self, dx, dy):
-        new_point = Point(**self)
-        new_point.x = self.x + dx
-        new_point.y = self.y + dy
-        return new_point        
+        self.x = self.x + dx
+        self.y = self.y + dy      
 
     def to_xml(self):
         attrs = []
@@ -218,30 +214,24 @@ class Writing(object):
             del self._strokes[-1]
 
     def resize(self, xrate, yrate):
-        new_writing = Writing()
-
         for stroke in self._strokes:
-            point = stroke[0].resize(xrate, yrate)
-            new_writing.move_to_point(point)
+            if len(stroke) == 0:
+                continue
+
+            stroke[0].resize(xrate, yrate)
             
             for point in stroke[1:]:
-                point = point.resize(xrate, yrate)
-                new_writing.line_to_point(point)
-
-        return new_writing
+                point.resize(xrate, yrate)
 
     def move_rel(self, dx, dy):
-        new_writing = Writing()
-
         for stroke in self._strokes:
-            point = stroke[0].move_rel(dx, dy)
-            new_writing.move_to_point(point)
+            if len(stroke) == 0:
+                continue
+
+            stroke[0].move_rel(dx, dy)
             
             for point in stroke[1:]:
-                point = point.move_rel(dx, dy)
-                new_writing.line_to_point(point)
-
-        return new_writing
+                point.move_rel(dx, dy)
 
     def size(self):
         xmin, ymin = 4294967296, 4294967296 # 2^32
@@ -275,14 +265,14 @@ class Writing(object):
         if yrate > Writing.PROPORTION_MAX:
             yrate = Writing.PROPORTION_MAX
         
-        writing = self.resize(xrate, yrate)
+        self.resize(xrate, yrate)
 
-        x, y, width, height = writing.size()
+        x, y, width, height = self.size()
 
         dx = (self._width - width) / 2 - x
         dy = (self._height - height) / 2 - y
 
-        return writing.move_rel(dx, dy)
+        self.move_rel(dx, dy)
 
     def get_width(self):
         return self._width

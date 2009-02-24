@@ -647,8 +647,7 @@ class Canvas(gtk.Widget):
             self.refresh(force_draw=True)
 
     def normalize(self):
-        self._writing = self._writing.normalize()
-
+        self._writing.normalize()
         self.refresh(force_draw=True)
 
     def set_background_character(self, character):

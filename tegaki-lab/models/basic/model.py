@@ -126,7 +126,7 @@ class Model(object):
         Get deltax and deltay as feature vectors.
         """
         if normalize:
-            writing = writing.normalize()
+            writing.normalize()
             
         strokes = writing.get_strokes()
         vectors = [(x,y) for stroke in strokes for x,y in stroke]
