@@ -445,9 +445,9 @@ class Character(object):
     def write(self, file, gzip=False, bz2=False, compresslevel=9):
         if type(file) == str:
             if gzip:
-                file = GzipFile(file, "w", compresslevel=compresslevel)
+                file = gzipm.GzipFile(file, "w", compresslevel=compresslevel)
             elif bz2:
-                file = BZ2File(file, "w", compresslevel=compresslevel)
+                file = bz2m.BZ2File(file, "w", compresslevel=compresslevel)
             else:            
                 file = open(file, "w")
                 
