@@ -448,3 +448,6 @@ u'pressure': 0, u'x': 4}]}
 
         self.assertTrue(w1 == w2)
 
+    def testGetNPoints(self):
+        writing = self._getWriting()
+        self.assertEquals(writing.get_n_points(), 2)

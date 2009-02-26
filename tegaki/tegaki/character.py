@@ -243,6 +243,9 @@ class Writing(object):
     def get_n_strokes(self):
         return len(self._strokes)
 
+    def get_n_points(self):
+        return sum([len(s) for s in self._strokes])
+
     def get_strokes(self, full=False):
         if not full:
             # For compatibility
