@@ -256,6 +256,9 @@ class Writing(object):
     def append_stroke(self, stroke):
         self._strokes.append(stroke)
 
+    def insert_stroke(self, i, stroke):
+        self._strokes.insert(i, stroke)
+
     def remove_stroke(self, i):
         if self.get_n_strokes() - 1 >= i:
             del self._strokes[-1]
@@ -263,6 +266,11 @@ class Writing(object):
     def remove_last_stroke(self):
         if self.get_n_strokes() > 0:
             del self._strokes[-1]
+
+    def replace_stroke(self, i, stroke):
+        if self.get_n_strokes() - 1 >= i:
+            self.remove_stroke(i)
+            self.insert_stroke(i, stroke)
 
     def resize(self, xrate, yrate):
         for stroke in self._strokes:
