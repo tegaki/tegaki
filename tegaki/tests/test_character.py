@@ -451,3 +451,20 @@ u'pressure': 0, u'x': 4}]}
     def testGetNPoints(self):
         writing = self._getWriting()
         self.assertEquals(writing.get_n_points(), 2)
+
+    def testRemoveStroke(self):
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+
+        s2 = Stroke()
+        s2.append_point(Point(x=2, y=3))
+        s2.append_point(Point(x=3, y=4))
+
+        w = Writing()
+        w.append_stroke(s1)
+        w.append_stroke(s2)
+
+        w.remove_stroke(1)
+        
+        self.assertEquals(w.get_strokes(), [[(2,3),(3,4)]])

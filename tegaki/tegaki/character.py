@@ -256,6 +256,10 @@ class Writing(object):
     def append_stroke(self, stroke):
         self._strokes.append(stroke)
 
+    def remove_stroke(self, i):
+        if self.get_n_strokes() - 1 >= i:
+            del self._strokes[-1]
+
     def remove_last_stroke(self):
         if self.get_n_strokes() > 0:
             del self._strokes[-1]
