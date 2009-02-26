@@ -510,3 +510,11 @@ u'pressure': 0, u'x': 4}]}
 
         w.replace_stroke(1, s3)
         self.assertEquals(w.get_strokes(), [[(2,3),(3,4)],[(22,33),(33,44)]])
+
+    def testClearStroke(self):
+        s1 = Stroke()
+        s1.append_point(Point(x=2, y=3))
+        s1.append_point(Point(x=3, y=4))
+        s1.clear()
+        
+        self.assertEquals(len(s1), 0)

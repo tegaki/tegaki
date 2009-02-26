@@ -89,6 +89,12 @@ class Point(dict):
     def __ne__(self, othr):
         return not(self == othr)
 
+    def copy_from(self, p):
+        self.clear()
+        for k in p.keys():
+            if p[k] is not None:
+                self[k] = p[k]
+
     def copy(self):
         return Point(**self)
 
@@ -139,11 +145,19 @@ class Stroke(list):
     def __ne__(self, othr):
         return not(self == othr)
 
+    def copy_from(self, s):
+        self.clear()
+        self._is_smoothed = s.get_is_smoothed()
+        for p in s:
+            self.append_point(p.copy())
+
     def copy(self):
         c = Stroke()
-        for point in self:
-            c.append_point(point.copy())
+        c.copy_from(self)
         return c
+
+    def get_is_smoothed(self):
+        return self._is_smoothed
 
     def smooth(self):
         """
@@ -186,6 +200,11 @@ class Stroke(list):
                 self[i].y = round(self[i].y / wsum)
         
         self._is_smoothed = True
+
+    def clear(self):
+        while len(self) != 0:
+            del self[0]
+        self._is_smoothed = False
 
 class Writing(object):
 
@@ -398,14 +417,17 @@ class Writing(object):
     def __ne__(self, othr):
         return not(self == othr)
 
+    def copy_from(self, w):
+        self.clear()
+        self.set_width(w.get_width())
+        self.set_height(w.get_height())
+        
+        for s in w.get_strokes(True):
+            self.append_stroke(s.copy())
+
     def copy(self):
         c = Writing()
-        c.set_width(self.get_width())
-        c.set_height(self.get_height())
-        
-        for stroke in self._strokes:
-            c.append_stroke(stroke.copy())
-
+        c.copy_from(self)
         return c
 
     def smooth(self):
@@ -503,10 +525,13 @@ class Character(object):
     def __ne__(self, othr):
         return not(self == othr)
 
+    def copy_from(self, c):
+        self.set_utf8(c.get_utf8())
+        self.set_writing(c.get_writing().copy())
+
     def copy(self):
-        c = Characters()
-        c.set_utf8(self.get_utf8())
-        c.set_writing(self.get_writing().copy())
+        c = Character()
+        c.copy_from(self)
         return c
         
     # Private...    
