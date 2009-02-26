@@ -651,7 +651,6 @@ class Canvas(gtk.Widget):
         self.refresh(force_draw=True)
 
     def smooth(self):
-        print "smooth"
         self._writing.smooth()
         self.refresh(force_draw=True)
 
