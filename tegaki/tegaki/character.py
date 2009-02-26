@@ -20,7 +20,9 @@ import xml.parsers.expat
 import cStringIO
 import gzip as gzipm
 import bz2 as bz2m
-import math
+from math import floor, atan, sin, cos, pi
+
+from tegaki.mathutils import euclidean_distance
 
 class Point(dict):
 
@@ -182,7 +184,7 @@ class Stroke(list):
         if len(self) < len(weights):
             return
 
-        offset = int(math.floor(len(weights) / 2.0))
+        offset = int(floor(len(weights) / 2.0))
         wsum = sum(weights)
 
         for n in range(times):
@@ -205,6 +207,101 @@ class Stroke(list):
         while len(self) != 0:
             del self[0]
         self._is_smoothed = False
+
+    def downsample(self, n):
+        """
+        Downsample by keeping only 1 sample every n samples.
+        """
+        if len(self) == 0:
+            return
+
+        new_s = Stroke()
+        for i in range(len(self)):
+            if i % n == 0:
+                new_s.append_point(self[i])
+
+        self.copy_from(new_s)
+
+    def downsample_threshold(self, threshold):
+        """
+        Downsample by removing consecutive samples for which
+        the euclidean distance is inferior to threshold.
+        """
+        if len(self) == 0:
+            return
+
+        new_s = Stroke()
+        new_s.append_point(self[0])
+
+        last = 0
+        for i in range(1, len(self) - 2):
+            u = [self[last].x, self[last].y]
+            v = [self[i].x, self[i].y]
+
+            if euclidean_distance(u, v) > threshold:
+                new_s.append_point(self[i])
+                last = i
+
+        new_s.append_point(self[-1])
+
+        self.copy_from(new_s)
+
+    def upsample(self, n):
+        """
+        'Artificially' increase sampling by adding n linearly spaced points
+        between consecutive points.
+        """
+        self._upsample(lambda d: n)
+
+    def upsample_threshold(self, threshold):
+        """
+        'Artificially' increase sampling, using threshold to determine
+        how many samples to add between consecutive points.
+        """
+        self._upsample(lambda d: int(floor(float(d) / threshold - 1)))
+
+    def _upsample(self, func):
+        """
+        'Artificially' increase sampling, using func(distance) to determine how
+        many samples to add between consecutive points.
+        """
+        if len(self) == 0:
+            return
+
+        new_s = Stroke()
+
+        for i in range(len(self)- 1):
+            x1, y1 = [self[i].x, self[i].y]
+            x2, y2 = [self[i+1].x, self[i+1].y]
+
+            new_s.append_point(self[i])
+
+            dx = x2 - x1
+            dy = y2 - y1
+
+            if dx == 0:
+                alpha = pi / 2
+                cosalpha = 0.0
+                sinalpha = 1.0
+            else:
+                alpha = atan(float(abs(dy)) / abs(x2 - x1))
+                cosalpha = cos(alpha)
+                sinalpha = sin(alpha)
+
+            d = euclidean_distance([x1, y1], [x2, y2])
+            signx = cmp(dx, 0)
+            signy = cmp(dy, 0)
+
+            n = func(d)
+
+            for j in range(1, n+1):
+                dx = cosalpha * 1.0 / (n + 1) * d
+                dy = sinalpha * 1.0 / (n + 1) * d
+                new_s.append_point(Point(x=x1+dx*signx, y=y1+dy*signy))
+
+        new_s.append_point(self[-1])
+
+        self.copy_from(new_s)
 
 class Writing(object):
 
@@ -355,6 +452,37 @@ class Writing(object):
             yrate = 1.0
         
         self.resize(xrate, yrate)
+
+    def downsample(self, n):
+        """
+        Downsample by keeping only 1 sample every n samples.
+        """
+        for s in self._strokes:
+            s.downsample(n)
+
+    def downsample_threshold(self, threshold):
+        """
+        Downsample by removing consecutive samples for which
+        the euclidean distance is inferior to threshold.
+        """
+        for s in self._strokes:
+            s.downsample_threshold(threshold)
+
+    def upsample(self, n):
+        """
+        'Artificially' increase sampling by adding n linearly spaced points
+        between consecutive points.
+        """
+        for s in self._strokes:
+            s.upsample(n)
+
+    def upsample_threshold(self, threshold):
+        """
+        'Artificially' increase sampling, using threshold to determine
+        how many samples to add between consecutive points.
+        """
+        for s in self._strokes:
+            s.upsample_threshold(threshold)
 
     def get_width(self):
         return self._width

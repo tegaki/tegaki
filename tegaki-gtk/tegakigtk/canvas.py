@@ -695,7 +695,55 @@ if __name__ == "__main__":
     
     if len(sys.argv) >= 2:
 
-        if sys.argv[1] == "smooth":
+        if sys.argv[1] == "upsample":
+            try:
+                n = int(sys.argv[2])
+            except IndexError:
+                n = 5
+
+            def on_drawing_stopped(widget):
+                print "before: %d pts" % widget.get_writing().get_n_points()
+                widget.get_writing().upsample(n)
+                widget.refresh(force_draw=True)
+                print "after: %d pts" % widget.get_writing().get_n_points()
+
+        elif sys.argv[1] == "upsamplet":
+            try:
+                n = int(sys.argv[2])
+            except IndexError:
+                n = 10
+
+            def on_drawing_stopped(widget):
+                print "before: %d pts" % widget.get_writing().get_n_points()
+                widget.get_writing().upsample_threshold(n)
+                widget.refresh(force_draw=True)
+                print "after: %d pts" % widget.get_writing().get_n_points()
+
+        elif sys.argv[1] == "downsample":
+            try:
+                n = int(sys.argv[2])
+            except IndexError:
+                n = 5
+
+            def on_drawing_stopped(widget):
+                print "before: %d pts" % widget.get_writing().get_n_points()
+                widget.get_writing().downsample(n)
+                widget.refresh(force_draw=True)
+                print "after: %d pts" % widget.get_writing().get_n_points()
+
+        elif sys.argv[1] == "downsamplet":
+            try:
+                n = int(sys.argv[2])
+            except IndexError:
+                n = 10
+
+            def on_drawing_stopped(widget):
+                print "before: %d pts" % widget.get_writing().get_n_points()
+                widget.get_writing().downsample_threshold(n)
+                widget.refresh(force_draw=True)
+                print "after: %d pts" % widget.get_writing().get_n_points()
+                
+        elif sys.argv[1] == "smooth":
             def on_drawing_stopped(widget):
                 widget.smooth()
 
