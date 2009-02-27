@@ -99,11 +99,13 @@ def run_model(name, command, options):
         for command in commands:
             stderr_print("Running '%s'..." % command)
             try:
-                getattr(model, command)()
+                cmd = getattr(model, command)
             except AttributeError:
                 raise ModelException, "'%s' is not implemented in '%s'." % \
                                       (command, name)
-            stderr_print("Done.")
+            else:
+                cmd()
+                stderr_print("Done.")
 
     except ModelException, e:
         stderr_print("Error!")
