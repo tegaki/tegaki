@@ -106,6 +106,9 @@ class Stroke(list):
         list.__init__(self)
         self._is_smoothed = False
 
+    def get_coordinates(self):
+        return [(p.x, p.y) for p in self]
+
     def get_duration(self):
         if len(self) > 0:
             if self[-1].timestamp is not None and self[0].timestamp is not None:
