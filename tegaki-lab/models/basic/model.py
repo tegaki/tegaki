@@ -26,6 +26,7 @@ import ghmm
 from tegaki.character import *
 from tegaki.arrayutils import *
 from tegaki.mathutils import *
+from tegaki.dictutils import SortedDict
 
 from lib.exceptions import *
 from lib.utils import *
@@ -93,7 +94,7 @@ class Model(object):
         directory: root directory
         corpora: corpora list to restrict to
         """
-        dict = {}
+        dict = SortedDict()
         for file in glob.glob(os.path.join(directory, "*", "*", "*.xml")):
             corpus_name = file.split("/")[-3]
             # exclude data which are not in the wanted corpora
