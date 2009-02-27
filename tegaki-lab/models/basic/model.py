@@ -95,13 +95,13 @@ class Model(object):
         corpora: corpora list to restrict to
         """
         dict = SortedDict()
-        for file in glob.glob(os.path.join(directory, "*", "*", "*.xml")):
+        for file in glob.glob(os.path.join(directory, "*", "*", "*.*")):
             corpus_name = file.split("/")[-3]
             # exclude data which are not in the wanted corpora
             if corpus_name not in corpora:
                 continue
             
-            char_code = int(os.path.basename(file)[:-4])
+            char_code = int(os.path.basename(file).split(".")[0])
             if not dict.has_key(char_code):
                 dict[char_code] = []
             dict[char_code].append(file)
@@ -115,7 +115,10 @@ class Model(object):
 
     def get_character(self, char_path):
         char = Character()
-        char.read(char_path)
+        if char_path.endswith(".gz"):
+            char.read(char_path, gzip=True)
+        else:
+             char.read(char_path)
         return char
 
     def get_sequence_set(self, file_path):
