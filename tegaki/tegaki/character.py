@@ -55,6 +55,9 @@ class Point(dict):
         except KeyError:
             raise AttributeError
 
+    def get_coordinates(self):
+        return (self.x, self.y)
+
     def resize(self, xrate, yrate):
         self.x = int(self.x * xrate)
         self.y = int(self.y * yrate)
