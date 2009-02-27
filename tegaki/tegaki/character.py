@@ -297,7 +297,8 @@ class Stroke(list):
             for j in range(1, n+1):
                 dx = cosalpha * 1.0 / (n + 1) * d
                 dy = sinalpha * 1.0 / (n + 1) * d
-                new_s.append_point(Point(x=x1+dx*signx, y=y1+dy*signy))
+                new_s.append_point(Point(x=int(x1+j*dx*signx), 
+                                         y=int(y1+j*dy*signy)))
 
         new_s.append_point(self[-1])
 
