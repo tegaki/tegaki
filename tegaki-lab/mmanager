@@ -93,7 +93,23 @@ def run_model(name, command, options):
 
         if command == "all":
             commands = model.ALL
+        elif "--" in command:
+            # Range of commands
+            commands = command.split("--")
+            if len(commands) != 2:
+                raise ModelException, "Not a range"
+            try:
+                cmd1 = model.ALL.index(commands[0])
+                cmd2 = model.ALL.index(commands[1])
+            except ValueError:
+                raise ModelException, "Wrong command"
+
+            if cmd1 > cmd2:
+                raise ModelException, "Not a range"
+
+            commands = model.ALL[cmd1:cmd2+1]
         else:
+            # Single command
             commands = [command]
 
         for command in commands:
