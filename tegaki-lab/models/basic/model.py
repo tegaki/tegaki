@@ -20,6 +20,8 @@ import os
 import sys
 import glob
 import shutil
+import tarfile
+import datetime
 
 import ghmm
 
@@ -44,7 +46,7 @@ class Model(object):
     def __init__(self, options):
 
         self.ALL = ["clean", "fextract", "init", "train", "eval"]
-        self.COMMANDS = self.ALL + ["pad", "find", "commands"]
+        self.COMMANDS = self.ALL + ["pad", "find", "commands", "archive"]
      
         self.DOMAIN = ghmm.Float()
         self.verbose = options.verbose
@@ -524,3 +526,19 @@ class Model(object):
         for cmd in self.COMMANDS:
             meth = getattr(self, cmd)
             print "- %s (%s)" % (cmd, meth.__doc__)
+
+    ########################################
+    # Archive...
+    ########################################
+
+    def archive(self):
+        """Make a copy of the model in a tar.gz file"""
+        if not os.path.exists("archives"):
+            os.mkdir("archives")
+
+        filename = os.path.basename(self.ROOT) + "-" + \
+                  str(datetime.datetime.now()).replace(" ", "@") + ".tar.gz"
+        path = os.path.join("archives", filename)
+        targz = tarfile.open(path, mode="w:gz")
+        targz.add(self.ROOT)
+        targz.close()
