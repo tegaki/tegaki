@@ -22,6 +22,7 @@ import glob
 import shutil
 import pickle
 from math import ceil
+import gc
 
 import numpy
 import hcluster
@@ -41,7 +42,7 @@ class Model(BaseModel):
     def __init__(self, *args):
         BaseModel.__init__(self, *args)
 
-        self.ALL = ["clean", "dtw", "init"]
+        self.ALL = ["clean", "dtw", "cluster", "init", "sdict"]
         self.COMMANDS = self.ALL + ["pad", "find", "commands"]
 
         self.CLUSTER_MATRIX_SIZE = 1000 
@@ -67,6 +68,8 @@ class Model(BaseModel):
         self.DTW_DATA = os.path.join(self.DTW_ROOT, "dtw.npy")
         self.CLUSTER_ROOT = os.path.join(self.ROOT, "cluster")
         self.CLUSTER_DATA = os.path.join(self.CLUSTER_ROOT, "cluster.pickle")
+        self.DICT_ROOT = os.path.join(self.ROOT, "dict")
+        self.DICT_DATA = os.path.join(self.DICT_ROOT, "cluster.pickle")
 
     ########################################
     # DTW...
@@ -90,6 +93,11 @@ class Model(BaseModel):
         return strokes
 
     def dtw(self):
+        """Run Dynamic Time Warping on strokes"""
+
+        # the purpose of this step is to build a distance matrix
+        # between CLUSTER_MATRIX_SIZE stroke pairs using the DTW algorithm
+
         strokes = self.get_first_n_strokes(self.CLUSTER_MATRIX_SIZE)
         matrix_size = len(strokes)
         matrix = numpy.zeros((matrix_size, matrix_size))
@@ -135,6 +143,11 @@ class Model(BaseModel):
                             ", ".join([str(i) for i in clusters[cluster_id]]))
 
     def cluster(self):
+        """Cluster strokes"""
+
+        # the purpose of this step is to cluster strokes using
+        # the previously calculated distance matrix
+
         matrix = numpy.load(self.DTW_DATA)
         Y = hcluster.squareform(matrix)
         Z = hcluster.linkage(Y, method=self.CLUSTERING_METHOD)
@@ -322,12 +335,78 @@ class Model(BaseModel):
             hmm.write(output_file)
 
     ########################################
+    # Stroke dictionary...
+    ########################################
+
+    def eval_sequence(self, seq, hmms):
+        res = []
+        
+        for i in range(len(hmms)):
+            logp = hmms[i].viterbi(seq)[1]
+            res.append([i, logp])
+
+        if seq.__class__.__name__ == ghmm.SequenceSet:
+            res.sort(key=lambda x:array_mean(x[1]), reverse=True)
+        else:
+            res.sort(key=lambda x:x[1], reverse=True)
+
+        return res
+
+    def get_cluster_for_stroke(self, hmms, stroke):
+        """
+        Determine which cluster/HMM this stroke belongs to.
+        """
+        features = self.get_stroke_feature_vectors(stroke, upsample=True)
+        
+        seq = ghmm.EmissionSequence(self.DOMAIN,
+                                    list(features.flatten()))
+
+        # eval_sequence returns a list [cluster_id, logp] 
+        # ordered by logp, and we want the most probable cluster_id
+        return self.eval_sequence(seq, hmms)[0][0]
+        
+    def sdict(self):
+        """Build stroke dictionary"""
+
+        # the purpose of this step is to determine what strokes the 
+        # characters are composed of
+        files = self.get_initial_hmm_files()
+        hmms = self.get_hmms_from_files(files)
+        dic = {}
+
+        i = 0
+        for char_code, xml_files in self.train_xml_files_dict.items():
+            # we use only the first file and we assume the stroke
+            # order is correct
+            xml_file = xml_files[0]
+
+            character = self.get_character(xml_file)
+            writing = character.get_writing()
+
+            dic[char_code] = []
+
+            for stroke in writing.get_strokes(full=True):
+                dic[char_code].append(self.get_cluster_for_stroke(hmms, stroke))
+
+            self.print_verbose("%d: %s" % (char_code, dic[char_code]))
+            
+            if i % 100 == 0:
+                gc.collect()
+
+            i += 1
+
+        if not os.path.exists(self.DICT_ROOT):
+            os.makedirs(self.DICT_ROOT)
+
+        pickle.dump(dic, open(self.DICT_DATA, "w"))
+
+    ########################################
     # Clean...
     ########################################
 
     def clean(self):
         BaseModel.clean(self)
 
-        for path in (self.DTW_ROOT, self.CLUSTER_ROOT):
+        for path in (self.DTW_ROOT, self.CLUSTER_ROOT, self.DICT_ROOT):
             if os.path.exists(path):
                 shutil.rmtree(path)
