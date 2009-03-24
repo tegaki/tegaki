@@ -64,6 +64,7 @@ class TegakiRecognize(object):
         self._window.add(rw)
 
         rw.connect("commit-string", self._on_commit)
+        self._window.connect("delete-event", self._on_delete_event)
 
         if not self._hide:
             self._window.show_all()
@@ -76,6 +77,11 @@ class TegakiRecognize(object):
         if self._size and self._position:
             self._window.resize(*self._size)
             self._window.move(*self._position)
+
+    def _on_delete_event(self, widget, event):
+        self._save_window_position()
+        self._window.hide()
+        return True # don't propagate the event
 
     def _on_activate(self, widget):
         if self._window.get_property("visible"):
