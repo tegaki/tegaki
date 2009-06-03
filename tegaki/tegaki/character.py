@@ -85,6 +85,9 @@ class Point(dict):
         return "{ %s }" % ", ".join(attrs)
 
     def __eq__(self, othr):
+        if not isinstance(othr, Point):
+            return False
+
         for key in self.KEYS:
             if self[key] != othr[key]:
                 return False
@@ -141,6 +144,9 @@ class Stroke(list):
         return s  
 
     def __eq__(self, othr):
+        if not isinstance(othr, Stroke):
+            return False
+
         if len(self) != len(othr):
             return False
 
@@ -532,6 +538,9 @@ class Writing(object):
         return str(self.get_strokes(full=True))
 
     def __eq__(self, othr):
+        if not isinstance(othr, Writing):
+            return False
+
         if self.get_n_strokes() != othr.get_n_strokes():
             return False
 
@@ -654,6 +663,9 @@ class Character(object):
         return s
 
     def __eq__(self, char):
+        if not isinstance(char, Character):
+            return False
+
         return self._utf8 == char.get_utf8() and \
                self._writing == char.get_writing()
 
