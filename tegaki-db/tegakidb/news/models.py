@@ -6,8 +6,8 @@ class NewsItem(models.Model):
     class Admin:
         pass
  
-    title = models.CharField(maxlength=50)
-    description = models.CharField(maxlength=250)
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=250)
     body = models.TextField()
     pub_date = models.DateTimeField('date published')
     user = models.ForeignKey(User)
