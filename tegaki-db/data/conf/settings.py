@@ -9,14 +9,14 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql',
-                                    #'mysql', 'sqlite3' or 'ado_mssql'.
-DATABASE_NAME = 'tegakidb'             # Or path to database file if using
-                                      #sqlite3.
-DATABASE_USER = 'root'             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_ENGINE = 'postgresql_psycopg2'
+DATABASE_NAME = 'tegakidb'
+DATABASE_USER = 'tegaki'
+DATABASE_PASSWORD = 'shufa_TEGAKI'
+DATABASE_HOST = 'localhost'
+DATABASE_PORT = ''
+
+CUSTOM_USER_MODEL = 'users.TegakiUser'
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -38,11 +38,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/vol/shufa/hwr/tegaki-db/data/www/'
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
-MEDIA_URL = ''
+# This should of course point to the actual domain using to host (see usage guide for setting up apache)
+MEDIA_URL = 'http://localhost/static/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -68,7 +69,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'tegakidb.urls'
 
 TEMPLATE_DIRS = (
-    '/path/to/tegaki-db/data/templates/',
+    '/vol/shufa/hwr/tegaki-db/data/templates/',
 )
 
 INSTALLED_APPS = (
@@ -79,5 +80,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
                 
     'tegakidb.hwdb',    
-    'tegakidb.news'
+    'tegakidb.news',
+    'tegakidb.users'
 )

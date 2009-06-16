@@ -1,0 +1,42 @@
+<html>
+<head>
+<link href="style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../dojo/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+<script type="text/javascript" src="util.js"></script>
+<script type="text/javascript" src="enjastroke.js"></script>
+<script type="text/javascript">
+
+var stele;
+
+function load_stele()
+{
+    stele = new Stele("stele");
+    stele.init();
+}
+
+function loadStele(id)
+{
+    dojo.xhrGet({
+        url: "http://mandarindragon.com/shufa/hanzi/get?gid=" + id,
+        load: function(data){
+            geojson = eval('(' + data + ')');
+            stele.loadChar(geojson);
+        }
+    });
+}
+
+function playStele()
+{
+    stele.character.play();
+}
+
+
+</script>
+</head>
+<body onload="load_stele();">
+<div id="stele" class="stele"></div>
+
+<input type="button" id="load" name="load" value="Load" onclick="loadStele(6);">
+<input type="button" id="play" name="play" value="Play" onclick="playStele();">
+</body>
+</html>

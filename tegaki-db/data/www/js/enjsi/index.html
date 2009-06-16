@@ -1,0 +1,55 @@
+<html>
+<head>
+<link href="style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="/dojo/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+<script type="text/javascript" src="enjastroke.js"></script>
+<script type="text/javascript" src="util.js"></script>
+<script type="text/javascript" src="ajax.js"></script>
+
+<script type="text/javascript">
+
+var ricepaper;
+
+function load()
+{
+    ricepaper = new Ricepaper("ricepaper");
+    ricepaper.init();
+}
+
+function submitDrawing(){
+    json = ricepaper.character.jsonify();
+    //console.log(json)
+    dojo.xhrGet({
+        url: "/shufa/reco/?strokes=(character (width 400)(height 400)(strokes " + json + ")",
+        load: function(data){
+            console.log("what?")
+            console.log(data);
+            console.log(document.getElementById("charactersDiv"))
+            jsonMagic(data);
+            console.log("magic!");       
+            }
+    });
+
+}
+
+</script>
+
+</head>
+
+<body onload="load();">
+<div id="ricepaper" class="ricepaper"></div>
+
+<!--
+<div id="stele" class="steleDiv"></div>
+-->
+<div id="charContainer">
+	<div id="charactersDiv"></div>
+	<br class="clear"/>
+	<br />
+	<input type="button" id="submitBut" name="submit" value="Submit" onclick="submitDrawing();">
+	<input type="button" id="clearBut" name="clear" onclick="ricepaper.clear();" value="Clear">
+	
+</div>	
+	
+</body>
+</html>

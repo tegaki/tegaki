@@ -1,10 +1,9 @@
 from django.db import models
+from django.contrib import admin
+
 from django.contrib.auth.models import User
 
 class NewsItem(models.Model):
-
-    class Admin:
-        pass
  
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
@@ -14,3 +13,5 @@ class NewsItem(models.Model):
 
     def __str__(self):
         return "%d - %s " % (self.id, self.title)
+
+admin.site.register(NewsItem)
