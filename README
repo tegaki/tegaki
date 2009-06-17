@@ -1,3 +1,16 @@
+Welcome to the Tegaki git repository!
+=====================================
+
+Tegaki is composed of the following subprojects:
+* scim-tegaki: Tegaki integration in SCIM.
+* tegaki: Base Python library.
+* tegaki-db: Community-based handwriting sample database.
+* tegaki-gtk: User-interface Python library.
+* tegaki-lab: Handwriting recognition experimentation.
+* tegaki-models: Handwriting recognition data models.
+* tegaki-recognize: Tegaki integration in the desktop.
+* tegaki-webcanvas: Canvas for the browser.
+
 In order to download the latest source code, please use git.
 
 $ git clone http://www.mblondel.org/code/hwr.git
