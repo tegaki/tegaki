@@ -41,7 +41,7 @@ Ricepaper.prototype.clear = function()
 
 Ricepaper.prototype.createChar = function()
 {
-    var character = new Character();
+    var character = new enjCharacter();
     character.character_group = this.surface.createGroup();
     var a = dojo.connect(this.canvas, 'onmousedown', character, "startCapture");
     var b = dojo.connect(this.canvas, 'onmousemove', character, "capture");
@@ -60,19 +60,19 @@ Stele.prototype = new Ricepaper;
 
 Stele.prototype.createChar = function()
 {
-    var character = new Character();
+    var character = new enjCharacter();
     character.character_group = this.surface.createGroup();
     this.character = character;
 }
 
 Stele.prototype.loadChar = function(geojson)
 {
-    this.character = new Character();
+    this.character = new enjCharacter();
     this.character.character_group = this.surface.createGroup();
     this.character.load(geojson);
 }
 
-function Character()
+function enjCharacter()
 {
     this.strokes = [];          //an array of strokes (which are arrays of points)
     this.character_group;       //holds the dojo graphic object
@@ -84,7 +84,7 @@ function Character()
     //this.init();
 }
 
-Character.prototype.init = function()
+enjCharacter.prototype.init = function()
 {
     
 }
@@ -92,7 +92,7 @@ Character.prototype.init = function()
 /*
  * Loads a character from a geojson representation
  */
-Character.prototype.load = function(geojson)
+enjCharacter.prototype.load = function(geojson)
 {
     //console.log(geojson);
     var coords = geojson['geometries'][0]['coordinates'];
@@ -115,7 +115,7 @@ Character.prototype.load = function(geojson)
 /*
  * Clears the canvas and redraws its strokes as an animation
  */
-Character.prototype.play = function()
+enjCharacter.prototype.play = function()
 {
     console.log("clear");
     this.character_group.clear();
@@ -179,27 +179,32 @@ function animateStroke(index, str, character, duration)
 /*
  * serialize the characters stroke for transfer to web service
  */
-Character.prototype.jsonify = function()
+enjCharacter.prototype.jsonify = function()
 {
     //A character is a series of strokes, which are arrays of points
-    cs = ""
+    //cs = ""
+    writing = new Writing()
+    //hardcoding...
+    writing.width = 400;
+    writing.height = 400;
     //console.log(this.strokes);
     //console.log(this.strokes.length);
     for(var i = 0; i < this.strokes.length; i++)
     {
         //console.log(i);
-        cs += zinniaStroke(this.strokes[i]);
+        writing.appendStroke(tegakiStroke(this.strokes[i]));
+        //cs += zinniaStroke(this.strokes[i]);
     }
     //we now have the coordinates for geojson, lets wrap the rest:
     //var geojson = '{ "type": "GeometryCollection", "geometries":' +
     //    '[ { "type": "MultiLineString", "coordinates":' + cs + 
     //    '} ] }';
     //return geojson;
-    return cs
+    return writing.toXML();
 }
 
 /*GET POINTS FROM MOUSE*/
-Character.prototype.startCapture = function(evt)
+enjCharacter.prototype.startCapture = function(evt)
 {
     this.capturing = true;
     point = castPoint(evt);
@@ -210,7 +215,7 @@ Character.prototype.startCapture = function(evt)
     dojo.stopEvent(evt);
 }
 
-Character.prototype.stopCapture = function(evt)
+enjCharacter.prototype.stopCapture = function(evt)
 {
     if(this.capturing)
     {
@@ -221,7 +226,7 @@ Character.prototype.stopCapture = function(evt)
     }
 }
 
-Character.prototype.capture = function(evt)
+enjCharacter.prototype.capture = function(evt)
 {
     if(this.capturing)
     {

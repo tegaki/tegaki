@@ -47,6 +47,23 @@ function jsonStroke(stroke)
     return s;
 }   
 
+function tegakiPoint(point)
+{
+    p = new Point(point.x, point.y);
+    return p;
+}
+
+function tegakiStroke(stroke)
+{
+    //writing = Writing();
+    var s = new Stroke()
+    for(var i = 0; i < stroke.length; i++)
+    {
+        s.appendPoint(tegakiPoint(stroke[i]));
+    }
+    return s
+}
+
 function zinniaPoint(point)
 {
     return "(" + point.x + " " + point.y + ")";

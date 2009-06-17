@@ -5,6 +5,8 @@
 <script type="text/javascript" src="enjastroke.js"></script>
 <script type="text/javascript" src="util.js"></script>
 <script type="text/javascript" src="ajax.js"></script>
+<script type="text/javascript" src="character.js"></script>
+<script type="text/javascript" src="json2.js"></script>
 
 <script type="text/javascript">
 
@@ -17,10 +19,10 @@ function load()
 }
 
 function submitDrawing(){
-    json = ricepaper.character.jsonify();
+    xml = ricepaper.character.jsonify();
     //console.log(json)
     dojo.xhrGet({
-        url: "/shufa/reco/?strokes=(character (width 400)(height 400)(strokes " + json + ")",
+        url: "/tegaki/hwdb/recognize?xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
         load: function(data){
             console.log("what?")
             console.log(data);

@@ -24,7 +24,7 @@ ENVIRONMENT
 This is how I set up my environment on Ubuntu 9.04 (has python 2.6 by default)
 I checked out hwr.git into /vol/shufa/
 
-sudo apt-get install python-django apache2
+sudo apt-get install python-django apache2 libapache2-mod-python
 sudo apt-get install postgresql python-psycopg2
 sudo passwd postgres
 shufa_TEGAKI
@@ -36,6 +36,7 @@ cd /vol/shufa/hwr/tegaki-db/data/www/
 ln -s /var/lib/python-support/python2.6/django/contrib/admin/media/ media
 
 #Edit apache2 config
+#Our django apps will run from tegaki/ like http://example.com/tegaki/ or http://example.com/tegaki/hwdb/
 sudo vim /etc/apache2/httpd.conf
 ===
 Alias /static/ /vol/shufa/hwr/tegaki-db/data/www/
@@ -48,11 +49,21 @@ Alias /static/ /vol/shufa/hwr/tegaki-db/data/www/
 
 Alias /dojo/ /vol/shufa/dojo/
 <Directory "/vol/shufa/dojo/">
-    AllowOverride Non
+    AllowOverride None
     Options Indexes
     Order allow,deny
     Allow from all
 </Directory>
+
+<Location "/tegaki" >
+    SetHandler python-program
+    PythonHandler django.core.handlers.modpython
+    SetEnv DJANGO_SETTINGS_MODULE tegakidb.settings
+    PythonOption django.root /django
+    PythonDebug On
+    PythonPath "['/vol/shufa/hwr/tegaki-db'] + sys.path"
+    PythonInterpreter tegaki
+</Location>
 ===
 
 #install dojo toolkit
@@ -61,6 +72,6 @@ wget http://download.dojotoolkit.org/release-1.3.1/dojo-release-1.3.1.tar.gz
 tar xzvf dojo-release-1.3.1.tar.gz
 mv dojo-release-1.3.1.tar.gz dojo
 
-
+#now we can use apache environment and still use the dev server to see our changes 
 
 

@@ -4,14 +4,15 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'^tegaki/$', 'tegakidb.news.views.index'),        #this could be changed
 
-    (r'^news/', include('tegakidb.news.urls')),
+    (r'^tegaki/news/', include('tegakidb.news.urls')),
 
-    (r'^users/', include('tegakidb.users.urls')),
+    (r'^tegaki/users/', include('tegakidb.users.urls')),
     
-    (r'^hwdb/', include('tegakidb.hwdb.urls')),
+    (r'^tegaki/hwdb/', include('tegakidb.hwdb.urls')),
 
-    (r'^admin/(.*)', admin.site.root),
+    (r'^tegaki/admin/(.*)', admin.site.root),
     #(r'^admin/', include(admin.site.urls)), #this is Django 1.1 version 
 
 )
