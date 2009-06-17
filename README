@@ -1,0 +1,14 @@
+In order to download the latest source code, please use git.
+
+$ git clone http://www.mblondel.org/code/hwr.git
+
+License
+-------
+
+This package is distributed under the terms of the GNU General Public
+License. See the COPYING file for more information.
+
+Homepage
+--------
+
+http://tegaki.sourceforge.net
