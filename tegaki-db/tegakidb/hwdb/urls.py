@@ -1,4 +1,4 @@
-from django .conf.urls.defaults import *
+from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tegakidb.hwdb.views',
     (r'^$', 'index'),
