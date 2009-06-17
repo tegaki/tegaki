@@ -1,4 +1,12 @@
 
+06/17/09
+Changed the structure to move the static js to tegaki-webcanvas (where javascript can be improved upon in that project)
+added recognizing and storing of characters by using xml (check tegakidb/hwdb)
+* we want to transfer some other way, either json or find ways to slim down the points (i saw a "smooth" function, havnt tried it yet)
+because the XML gets too big too fast
+Setup a template for hwdb that uses enjastroke.js to display the recognizer
+
+
 06/15/2009
 Setup of more structure in the get repo:
 data/www - this is where static content will reside (certain aspects of settings.py will have to be edited to reflect this)
@@ -47,6 +55,14 @@ Alias /static/ /vol/shufa/hwr/tegaki-db/data/www/
     Allow from all
 </Directory>
 
+Alias /webcanvas/ /vol/shufa/hwr/tegaki-webcanvas/webcanvas/
+<Directory "/vol/shufa/hwr/tegaki-webcanvas/webcanvas/" >
+    AllowOverride None
+    Options Indexes FollowSymLinks Multiviews
+    Order allow,deny
+    Allow from all
+</Directory>
+
 Alias /dojo/ /vol/shufa/dojo/
 <Directory "/vol/shufa/dojo/">
     AllowOverride None
@@ -73,5 +89,8 @@ tar xzvf dojo-release-1.3.1.tar.gz
 mv dojo-release-1.3.1.tar.gz dojo
 
 #now we can use apache environment and still use the dev server to see our changes 
+
+#install tegaki and one of the models so we have the recognizer available
+
 
 

@@ -4,9 +4,7 @@
 <script type="text/javascript" src="/dojo/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
 <script type="text/javascript" src="enjastroke.js"></script>
 <script type="text/javascript" src="util.js"></script>
-<script type="text/javascript" src="ajax.js"></script>
 <script type="text/javascript" src="character.js"></script>
-<script type="text/javascript" src="json2.js"></script>
 
 <script type="text/javascript">
 
@@ -24,11 +22,11 @@ function submitDrawing(){
     dojo.xhrGet({
         url: "/tegaki/hwdb/recognize?xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
         load: function(data){
-            console.log("what?")
+            //console.log("what?")
             console.log(data);
-            console.log(document.getElementById("charactersDiv"))
+            //console.log(document.getElementById("charactersDiv"))
             jsonMagic(data);
-            console.log("magic!");       
+            //console.log("magic!");       
             }
     });
 

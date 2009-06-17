@@ -17,6 +17,27 @@ function submittedExample(data)
     
 }
 
+function jsonMagic(data){
+        csdiv = document.getElementById("charactersDiv");
+        csdiv.innerHTML = "";
+
+        eval("var chars = " + data + ";");
+        console.log("magician")
+        console.log(chars)
+        for(var i =0; i < chars.length; i++)
+        {
+                cd = document.createElement('div');
+                cd.innerHTML = chars[i].character;
+                cd.setAttribute('class', 'charbox');
+                csdiv.appendChild(cd);
+        }
+        if (chars.length <= 0 || !chars.length)
+        {
+                csdiv.innerHTML = "Mei you";
+        }
+}
+
+
 
 function castPoint(evt)
 {

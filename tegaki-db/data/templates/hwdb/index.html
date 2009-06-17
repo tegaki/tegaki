@@ -1,0 +1,60 @@
+{% extends "base/base.html" %}
+
+{% block title %}Tegaki-db - Latest news{% endblock %}
+{% block extrahead %}
+<link href="/static/css/enjastroke_style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="/dojo/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+<script type="text/javascript" src="/webcanvas/enjastroke.js"></script>
+<script type="text/javascript" src="/webcanvas/util.js"></script>
+<script type="text/javascript" src="/webcanvas/character.js"></script>
+
+<script type="text/javascript">
+
+var ricepaper;
+
+function load()
+{
+    ricepaper = new Ricepaper("ricepaper");
+    ricepaper.init();
+}
+
+function submitDrawing(){
+    xml = ricepaper.character.jsonify();
+    //console.log(json)
+    dojo.xhrGet({
+        url: "/tegaki/hwdb/recognize?xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
+        load: function(data){
+            //console.log("what?")
+            console.log(data);
+            //console.log(document.getElementById("charactersDiv"))
+            jsonMagic(data);
+            //console.log("magic!");       
+            }
+    });
+
+}
+
+</script>
+{% endblock %}
+
+{% block onload %}load();{% endblock %}
+
+{% block content %}
+<h1>Ricepaper</h1>
+
+
+<div id="ricepaper" class="ricepaper"></div>
+
+<!--
+<div id="stele" class="steleDiv"></div>
+-->
+<div id="charContainer">
+	<div id="charactersDiv"></div>
+	<br class="clear"/>
+	<br />
+	<input type="button" id="submitBut" name="submit" value="Submit" onclick="submitDrawing();">
+	<input type="button" id="clearBut" name="clear" onclick="ricepaper.clear();" value="Clear">
+	
+</div>	
+	
+{% endblock %}
