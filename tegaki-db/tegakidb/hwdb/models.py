@@ -84,6 +84,7 @@ class CharacterSet(models.Model):
                     n += range_len
         return None # should never be reached
 
+admin.site.register(CharacterSet)
 
 class HandWritingSample(models.Model):
     utf8 = models.CharField(max_length=2)
