@@ -85,6 +85,10 @@ FIXTURE_DIRS = (
     TEGAKIDB_ROOT + '/data/fixtures/',
 )
 
+FIXTURE_DIRS = (
+    '/vol/shufa/fixtures/tegakidb/',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',

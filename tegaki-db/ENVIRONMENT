@@ -1,0 +1,131 @@
+This document describes the environment I've (Ian) set up to host tegaki-db.
+I'm running Ubuntu-9.04 Server
+hopefuly this can be helpful for setting up your own environment:
+
+apt-get update
+apt-get upgrade
+#dev tools
+apt-get install vim subversion git git-core build-essential python-dev python-setuptools
+apt-get install apache2 libapache2-mod-python
+apt-get install python-django
+#I prefer Postgres
+apt-get install postgresql python-psycopg2
+
+#install python packages
+easy_install simplejson
+
+#setup .python-eggs dir (simplejson and some other python apps use this)
+(in ~/)
+mkdir .python-eggs
+chown user:www-data .python-eggs
+chmod 770 .python-eggs
+
+#install zinnia
+#I use latest release, but you can also check out SVN for cutting edge:
+# svn co https://zinnia.svn.sourceforge.net/svnroot/zinnia zinnia
+wget http://hivelocity.dl.sourceforge.net/sourceforge/zinnia/zinnia-0.05.tar.gz
+tar xzvf zinnia-0.05.tar.gz
+cd zinnia-0.05
+./configure
+make
+make install
+cd python
+python setup.py install
+
+#install tegaki
+#http://tegaki.sourceforge.net/
+#because of my setup on Amazon Web Services I have a particular directory structure
+#you can match it by just creating /vol/shufa
+cd /vol/shufa
+git clone http://www.mblondel.org/code/hwr.git
+
+#install tegaki and at least one of the tegaki-models (you can read the INSTALL files for that)
+
+#setup Postgres (you can also use mysql for your backend if you prefer)
+sudo passwd postgres
+somepassword
+psql
+CREATE USER tegaki WITH CREATEDB PASSWORD 'somepassword';
+CREATE DATABASE tegaki;
+
+#set up static media files for the django admin interface
+cd /vol/shufa/hwr/tegaki-db/data/www/
+ln -s /var/lib/python-support/python2.6/django/contrib/admin/media/
+
+#set up dojo
+cd /vol/shufa
+wget http://download.dojotoolkit.org/release-1.3.1/dojo-release-1.3.1.tar.gz
+tar xzvf dojo-release-1.3.1.tar.gz
+mv dojo-release-1.3.1/ dojo
+
+#setup Apache2 to serve static content and the mod_python handler for Django
+/etc/apache2/httpd.conf
+
+===
+Alias /static/ /vol/shufa/hwr/tegaki-db/data/www/
+<Directory "/vol/shufa/hwr/tegaki-db/data/www/" >
+    AllowOverride None
+    Options INdexes FollowSymLinks Multiviews
+    Order allow,deny
+    Allow from all
+</Directory>
+
+Alias /webcanvas/ /vol/shufa/hwr/tegaki-webcanvas/webcanvas/
+<Directory "/vol/shufa/hwr/tegaki-webcanvas/webcanvas/" >
+    AllowOverride None
+    Options Indexes FollowSymLinks Multiviews
+    Order allow,deny
+    Allow from all
+</Directory>
+
+Alias /dojo/ /vol/shufa/dojo/
+<Directory "/vol/shufa/dojo/">
+    AllowOverride None
+    Options Indexes
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<Location "/tegaki" >
+    SetHandler python-program
+    PythonHandler django.core.handlers.modpython
+    SetEnv DJANGO_SETTINGS_MODULE tegakidb.settings
+    SetEnv PYTHON_EGG_CACHE /vol/shufa/.python-eggs
+    PythonOption django.root /django
+    PythonDebug On
+    PythonPath "['/vol/shufa/hwr/tegaki-db'] + sys.path"
+    PythonInterpreter tegaki
+</Location>
+===
+
+#restart apache:
+apache2ctl restart
+
+#install cjklib
+#http://code.google.com/p/cjklib
+#api: http://www.stud.uni-karlsruhe.de/~uyhc/api/cjklib-module.html
+#dependencies
+apt-get install python-sqlalchemy python-sqlite sqlite3
+svn checkout http://cjklib.googlecode.com/svn/trunk/ cjklib
+cd cjklib
+#change cjklib.conf to reflect directory structure you want
+#databaseUrl = sqlite:////vol/shufa/cjklib/cjklib.db
+mkdir /vol/shufa/cjklib
+sudo python setup.py install
+wget ftp://ftp.unicode.org/Public/UNIDATA/Unihan.zip
+sudo ./buildcjkdb -b cjklibData
+wget http://us.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz
+sudo ./buildcjkdb -b fullCEDICT
+
+###
+
+#setup tegaki-db (change the settings.py for django to reflect your database settings etc)
+cd /vol/shufa/hwr/tegaki-db/tegakidb
+cp /vol/shufa/hwr/tegaki-db/data/conf/settings.py .
+python manage.py syncdb
+
+#You should now have a production environment with Apache, you can also develope
+#with the builtin django server by doing
+python manage.py runserver
+
+#good luck!
