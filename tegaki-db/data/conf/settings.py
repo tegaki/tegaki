@@ -79,14 +79,17 @@ ROOT_URLCONF = 'tegakidb.urls'
 
 TEMPLATE_DIRS = (
     TEGAKIDB_ROOT + '/data/templates/',
+<<<<<<< HEAD:tegaki-db/data/conf/settings.py
 )
 
 FIXTURE_DIRS = (
     TEGAKIDB_ROOT + '/data/fixtures/',
+=======
+>>>>>>> pulled latest updates:tegaki-db/data/conf/settings.py
 )
 
 FIXTURE_DIRS = (
-    '/vol/shufa/fixtures/tegakidb/',
+    TEGAKIDB_ROOT + '/data/fixtures/',
 )
 
 INSTALLED_APPS = (
