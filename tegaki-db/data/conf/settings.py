@@ -1,4 +1,5 @@
-# Django settings for tegakidb project.
+# Sample Django settings for tegakidb project.
+# Copy your own to ../../tegakidb/ and edit it with your personal settings.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -9,15 +10,19 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'postgresql_psycopg2'
-DATABASE_NAME = 'tegakidb'
-DATABASE_USER = 'tegaki'
-DATABASE_PASSWORD = 'shufa_TEGAKI'
-DATABASE_HOST = 'localhost'
-DATABASE_PORT = ''
+DATABASE_ENGINE = 'postgresql_psycopg2' # 'postgresql_psycopg2', 'postgresql',
+                                        # 'mysql', 'sqlite3' or 'ado_mssql'.
+DATABASE_NAME = 'tegakidb' # Or path to database file if using sqlite3
+DATABASE_USER = 'tegaki' # Not used with sqlite3
+DATABASE_PASSWORD = '' # Not used with sqlite3
+DATABASE_HOST = 'localhost' # Set to empty string for localhost. 
+                            # Not used with sqlite3.
+DATABASE_PORT = ''   # Set to empty string for localhost. 
+                     # Not used with sqlite3.       
 
 CUSTOM_USER_MODEL = 'users.TegakiUser'
 
+TEGAKIDB_ROOT_DIR = '/path/to/hwr/tegaki-db'
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -39,7 +44,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/vol/shufa/hwr/tegaki-db/data/www/'
+MEDIA_ROOT = TEGAKIDB_ROOT_DIR + '/data/www/'
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
@@ -70,11 +75,11 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'tegakidb.urls'
 
 TEMPLATE_DIRS = (
-    '/vol/shufa/hwr/tegaki-db/data/templates/',
+    TEGAKIDB_ROOT_DIR + '/data/templates/',
 )
 
 FIXTURE_DIRS = (
-    '/vol/shufa/fixtures/tegakidb/',
+    TEGAKIDB_ROOT_DIR + '/data/fixtures/',
 )
 
 INSTALLED_APPS = (
