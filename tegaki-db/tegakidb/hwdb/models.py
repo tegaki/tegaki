@@ -16,7 +16,7 @@ class CharacterSet(models.Model):
     def get_array_from_string(s):
         """
         Returns an an array representation of the string representation.
-        e.g. "8,10..15,17" => [8, [10,15], 17]
+        e.g. "8,A..F,11" => [0x8, [0x10,0xF], 0x11]
 
         raises ValueError if the input is not valid.
         """
@@ -25,7 +25,7 @@ class CharacterSet(models.Model):
 
         ret = []
         for ele in s.strip().split(","):
-            arr = [int(x) for x in ele.strip().split("..")]
+            arr = [int(x, 16) for x in ele.strip().split("..")]
             if len(arr) == 1:
                 ret.append(arr[0])
             else:
