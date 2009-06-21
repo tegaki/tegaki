@@ -30,6 +30,11 @@ $ ./manage.py runserver
 
 Then see http://localhost:8000.
 
+Tests
+-----
+
+$ ./manage.py test
+
 Homepage
 --------
 
