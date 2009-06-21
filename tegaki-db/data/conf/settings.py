@@ -22,7 +22,9 @@ DATABASE_PORT = ''   # Set to empty string for localhost.
 
 CUSTOM_USER_MODEL = 'users.TegakiUser'
 
-TEGAKIDB_ROOT_DIR = '/path/to/hwr/tegaki-db'
+TEGAKIDB_ROOT = '/path/to/hwr/tegaki-db'
+WEBCANVAS_ROOT = '/path/to/hwr/tegaki-webcanvas/webcanvas'
+DOJO_ROOT = '/path/to/dojo-release-1.3.1'
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -44,11 +46,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = TEGAKIDB_ROOT_DIR + '/data/www/'
+MEDIA_ROOT = TEGAKIDB_ROOT + '/data/www/'
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
-# This should of course point to the actual domain using to host (see usage guide for setting up apache)
+# This should of course point to the actual domain using to host (see usage
+# guide for setting up apache)
 MEDIA_URL = 'http://localhost/static/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -75,11 +78,11 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'tegakidb.urls'
 
 TEMPLATE_DIRS = (
-    TEGAKIDB_ROOT_DIR + '/data/templates/',
+    TEGAKIDB_ROOT + '/data/templates/',
 )
 
 FIXTURE_DIRS = (
-    TEGAKIDB_ROOT_DIR + '/data/fixtures/',
+    TEGAKIDB_ROOT + '/data/fixtures/',
 )
 
 INSTALLED_APPS = (
