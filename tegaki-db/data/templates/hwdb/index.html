@@ -19,13 +19,15 @@ function load()
 }
 
 function submitDrawing(){
-    xml = ricepaper.character.jsonify();
+    w = ricepaper.character.get_writing();
+    xml = w.toXML();
     //console.log(json)
-    dojo.xhrGet({
-        url: "/tegaki/hwdb/recognize?xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
+    dojo.xhrPost({
+        url: "/tegaki/hwdb/recognize/",
+        postData: "xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
         load: function(data){
             //console.log("what?")
-            console.log(data);
+            //console.log(data);
             //console.log(document.getElementById("charactersDiv"))
             jsonMagic(data);
             //console.log("magic!");       

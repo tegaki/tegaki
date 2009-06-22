@@ -22,8 +22,8 @@ function jsonMagic(data){
         csdiv.innerHTML = "";
 
         eval("var chars = " + data + ";");
-        console.log("magician")
-        console.log(chars)
+        //console.log("magician")
+        //console.log(chars)
         for(var i =0; i < chars.length; i++)
         {
                 cd = document.createElement('div');

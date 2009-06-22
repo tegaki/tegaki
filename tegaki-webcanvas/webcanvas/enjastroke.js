@@ -117,10 +117,10 @@ enjCharacter.prototype.load = function(geojson)
  */
 enjCharacter.prototype.play = function()
 {
-    console.log("clear");
+    //console.log("clear");
     this.character_group.clear();
     //iterate through array of strokes
-    console.log("here we go");
+    //console.log("here we go");
     //should check to see if the character has strokes huh.
     //do the first stroke first, so the setInterval doesn't delay the fun.
     stroke_duration = 1000;
@@ -179,7 +179,7 @@ function animateStroke(index, str, character, duration)
 /*
  * serialize the characters stroke for transfer to web service
  */
-enjCharacter.prototype.jsonify = function()
+enjCharacter.prototype.get_writing = function()
 {
     //A character is a series of strokes, which are arrays of points
     //cs = ""
@@ -200,7 +200,7 @@ enjCharacter.prototype.jsonify = function()
     //    '[ { "type": "MultiLineString", "coordinates":' + cs + 
     //    '} ] }';
     //return geojson;
-    return writing.toXML();
+    return writing;
 }
 
 /*GET POINTS FROM MOUSE*/

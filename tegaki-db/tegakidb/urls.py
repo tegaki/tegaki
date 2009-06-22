@@ -5,6 +5,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^tegaki/$', 'tegakidb.news.views.index'),        #this could be changed
+    (r'^tegaki/login/$', 'django.contrib.auth.views.login', {'template_name': 'users/login.html'}),
+    (r'^tegaki/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'users/logout.html', 'next_page':'/tegaki/login/'}),
+
 
     (r'^tegaki/news/', include('tegakidb.news.urls')),
 
