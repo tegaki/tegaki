@@ -88,17 +88,19 @@ class CharacterSet(models.Model):
                     n += range_len
         return None # should never be reached
 
+    def __unicode__(self):
+        return self.name
+
 admin.site.register(CharacterSet)
 
 class Character(models.Model):
-    utf8 = models.CharField(max_length=1)
     lang = models.CharField(max_length=10)
     unicode = models.IntegerField()
     n_correct_handwriting_samples = models.IntegerField(default=0)
     n_handwriting_samples = models.IntegerField(default=0)
     
     def __unicode__(self):      #this is the display name
-        return self.utf8 
+        return unichr(self.unicode)#.encode("UTF-8") 
 
 admin.site.register(Character)
 
@@ -119,6 +121,6 @@ class HandWritingSample(models.Model):
     client = models.TextField(blank=True)
 
     def __unicode__(self):      #this is the display name
-        return self.character.utf8
+        return self.character.__unicode__()
 
 admin.site.register(HandWritingSample)
