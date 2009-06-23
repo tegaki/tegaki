@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from tegakidb.hwdb.models import CharacterSet
 
@@ -16,6 +17,11 @@ class CharacterSetTestCase(unittest.TestCase):
         self.assertEquals(CharacterSet.get_array_from_string("0..FF"),
                           [[0,0xFF]])
         self.assertEquals(CharacterSet.get_array_from_string("9,A..F,11,12"),
+                          [0x9, [0xA,0xF], 0x11, 0x12])
+        self.assertEquals(CharacterSet.get_array_from_string(unicode("0..FF")),
+                          [[0,0xFF]])
+        self.assertEquals(CharacterSet.get_array_from_string(
+                              unicode("9,A..F,11,12")),
                           [0x9, [0xA,0xF], 0x11, 0x12])
 
     def testContains(self):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib import admin
 
@@ -24,7 +25,7 @@ class CharacterSet(models.Model):
 
         raises ValueError if the input is not valid.
         """
-        if not isinstance(s, str):
+        if not isinstance(s, str) and not isinstance(s, unicode):
             raise ValueError
 
         ret = []
