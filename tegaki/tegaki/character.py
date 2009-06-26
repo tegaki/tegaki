@@ -644,6 +644,19 @@ class _XmlBase(object):
         else:
             file.write(self.to_xml())
 
+    def write_string(self, gzip=False, bz2=False, compresslevel=9):
+        if bz2:
+            return bz2m.compress(self.to_xml(), compresslevel=compresslevel)
+        elif gzip:
+            io = cStringIO.StringIO()
+            f = gzipm.GzipFile(fileobj=io, mode="w",
+                               compresslevel=compresslevel)
+            f.write(self.to_xml())
+            f.close()
+            return io.getvalue()
+        else:
+            return self.to_xml()
+
     def _get_parser(self):
         parser = xml.parsers.expat.ParserCreate(encoding="UTF-8")
         parser.StartElementHandler = self._start_element

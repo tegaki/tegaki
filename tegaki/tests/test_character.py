@@ -665,4 +665,23 @@ class CharacterCollectionTest(unittest.TestCase):
         self.assertEquals(charcol.get_list(), charcol2.get_list())
         self.assertEquals(charcol.get_all_characters(),
                           charcol2.get_all_characters())
-        
+  
+    def testWriteGzipString(self):
+        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
+        charcol = CharacterCollection()
+        charcol.read(path)
+        charcol2 = CharacterCollection()
+        charcol2.read_string(charcol.write_string(gzip=True), gzip=True)
+        self.assertEquals(charcol.get_list(), charcol2.get_list())
+        self.assertEquals(charcol.get_all_characters(),
+                          charcol2.get_all_characters())
+
+    def testWriteBz2String(self):
+        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
+        charcol = CharacterCollection()
+        charcol.read(path)
+        charcol2 = CharacterCollection()
+        charcol2.read_string(charcol.write_string(bz2=True), bz2=True)
+        self.assertEquals(charcol.get_list(), charcol2.get_list())
+        self.assertEquals(charcol.get_all_characters(),
+                          charcol2.get_all_characters())        
