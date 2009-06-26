@@ -75,10 +75,17 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.doc.XViewMiddleware',
 )
 
+LOGIN_URL = '/tegaki/login/'
+LOGIN_REDIRECT_URL = '/tegaki/'
+
 ROOT_URLCONF = 'tegakidb.urls'
 
 TEMPLATE_DIRS = (
     TEGAKIDB_ROOT + '/data/templates/',
+)
+
+FIXTURE_DIRS = (
+    TEGAKIDB_ROOT + '/data/fixtures/',
 )
 
 FIXTURE_DIRS = (

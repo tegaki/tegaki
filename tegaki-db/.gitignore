@@ -1,1 +1,4 @@
 tegakidb/settings.py
+*.pyc
+.*.swp
+data/www/media

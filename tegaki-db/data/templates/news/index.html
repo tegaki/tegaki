@@ -7,7 +7,7 @@
 {% if latest_news %}
     <ul>
     {% for news_item in latest_news %}
-        <h2><a href="/news/{{news_item.id}}">{{news_item.title}}</a></h2>
+        <h2><a href="/tegaki/news/{{news_item.id}}">{{news_item.title}}</a></h2>
 
         <p>{{news_item.body}}</p>
     {% endfor %}

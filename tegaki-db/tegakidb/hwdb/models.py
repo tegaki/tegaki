@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib import admin
 
+from tegakidb.users.models import TegakiUser
+
 from random import randint
+from datetime import datetime
+
 
 class CharacterSet(models.Model):
     name = models.CharField(max_length=30)
@@ -20,7 +25,7 @@ class CharacterSet(models.Model):
 
         raises ValueError if the input is not valid.
         """
-        if not isinstance(s, str):
+        if not isinstance(s, str) and not isinstance(s, unicode):
             raise ValueError
 
         ret = []
@@ -84,11 +89,39 @@ class CharacterSet(models.Model):
                     n += range_len
         return None # should never be reached
 
+    def __unicode__(self):
+        return self.name
+
 admin.site.register(CharacterSet)
 
+class Character(models.Model):
+    lang = models.CharField(max_length=10)
+    unicode = models.IntegerField()
+    n_correct_handwriting_samples = models.IntegerField(default=0)
+    n_handwriting_samples = models.IntegerField(default=0)
+    
+    def __unicode__(self):      #this is the display name
+        return unichr(self.unicode)#.encode("UTF-8") 
+
+admin.site.register(Character)
+
 class HandWritingSample(models.Model):
-    utf8 = models.CharField(max_length=2)
-    pickled_char = models.TextField()
-    xml = models.TextField()
+    character = models.ForeignKey(Character)
+    user = models.ForeignKey(TegakiUser)
+    data = models.TextField()
+    compressed = models.IntegerField(default=0) #(NON_COMPRESSED=0, GZIP=1, BZ2=2)
+    date = models.DateField(default=datetime.today())
+    n_proofread = models.IntegerField(default=0)
+    proofread_by = models.ManyToManyField(TegakiUser, related_name='user', blank=True)
+    device_used = models.IntegerField(default=0) #(MOUSE, TABLET, PDA)
+    model = models.BooleanField(default=False)
+    stroke_order_incorrect = models.BooleanField(default=False)
+    stroke_number_incorrect = models.BooleanField(default=False)
+    wrong_stroke = models.BooleanField(default=False)
+    wrong_spacing = models.BooleanField(default=False)
+    client = models.TextField(blank=True)
+
+    def __unicode__(self):      #this is the display name
+        return self.character.__unicode__()
 
 admin.site.register(HandWritingSample)
