@@ -591,3 +591,78 @@ u'pressure': 0, u'x': 4}]}
             sys.stderr.write("lxml missing!\n")
             pass
 
+class CharacterCollectionTest(unittest.TestCase):
+
+    def setUp(self):
+        self.currdir = os.path.dirname(os.path.abspath(__file__))        
+
+    def testValidate(self):
+        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
+        f = open(path)
+        buf = f.read()
+        f.close()
+
+        invalid = \
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+  <character>
+    <utf8>防</utf8>
+    <strokes>
+      <stroke>
+      </stroke>
+    </strokes>
+  </character>
+"""
+
+        malformed = \
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+  <character>
+"""
+
+        try:
+            self.assertTrue(CharacterCollection.validate(buf))
+            self.assertFalse(CharacterCollection.validate(invalid))
+            self.assertFalse(CharacterCollection.validate(malformed))
+        except NotImplementedError:
+            sys.stderr.write("lxml missing!\n")
+            pass
+
+    def _testReadXML(self, charcol):
+        self.assertEquals(charcol.get_list(), ["一", "三", "二", "四"])
+
+        c = {}
+        for k in ["19968_1", "19968_2", "19968_3", "19977_1", "19977_2",
+                 "20108_1"]:
+            c[k] = Character()
+            c[k].read(os.path.join(self.currdir, "data", "collection", 
+                      k + ".xml"))
+
+        self.assertEquals(charcol.get_characters("一"),
+                          [c["19968_1"], c["19968_2"], c["19968_3"]])
+        self.assertEquals(charcol.get_characters("三"),
+                          [c["19977_1"], c["19977_2"]])
+        self.assertEquals(charcol.get_characters("二"),
+                          [c["20108_1"]])
+        self.assertEquals(charcol.get_characters("四"), [])
+        self.assertEquals(charcol.get_all_characters(),
+                          [c["19968_1"], c["19968_2"], c["19968_3"],
+                           c["19977_1"], c["19977_2"], c["20108_1"]])
+
+    def testReadXMLFile(self):
+        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
+        charcol = CharacterCollection()
+        charcol.read(path)
+
+        self._testReadXML(charcol)
+
+    def testToXML(self):
+        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
+        charcol = CharacterCollection()
+        charcol.read(path)
+        charcol2 = CharacterCollection()
+        charcol2.read_string(charcol.to_xml())
+        self.assertEquals(charcol.get_list(), charcol2.get_list())
+        self.assertEquals(charcol.get_all_characters(),
+                          charcol2.get_all_characters())
+        

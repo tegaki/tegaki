@@ -31,6 +31,7 @@ except ImportError:
     pass
 
 from tegaki.mathutils import euclidean_distance
+from tegaki.dictutils import SortedDict
 
 class Point(dict):
 
@@ -398,7 +399,7 @@ class Writing(object):
 
     def remove_stroke(self, i):
         if self.get_n_strokes() - 1 >= i:
-            del self._strokes[-1]
+            del self._strokes[i]
 
     def remove_last_stroke(self):
         if self.get_n_strokes() > 0:
@@ -586,41 +587,12 @@ class Writing(object):
         for stroke in self._strokes:
             stroke.smooth()
 
-class Character(object):
+class _XmlBase(object):
 
-    DTD = \
-"""
-<!ELEMENT character (utf8?,strokes)>
-<!ELEMENT utf8 (#PCDATA)>
-<!ELEMENT strokes (stroke+)>
-<!ELEMENT stroke (point+)>
-<!ELEMENT point EMPTY>
-
-<!ATTLIST point x CDATA #REQUIRED>
-<!ATTLIST point y CDATA #REQUIRED>
-<!ATTLIST point timestamp CDATA #IMPLIED>
-"""
-
-    def __init__(self):
-        self._writing = Writing()
-        self._utf8 = None
-
-    def get_utf8(self):
-        return self._utf8
-        
-    def set_utf8(self, utf8):
-        self._utf8 = utf8
-
-    def get_writing(self):
-        return self._writing
-
-    def set_writing(self, writing):
-        self._writing = writing
-
-    @staticmethod
-    def validate(string):
+    @classmethod
+    def validate(cls, string):
         try:
-            dtd = etree.DTD(cStringIO.StringIO(Character.DTD))
+            dtd = etree.DTD(cStringIO.StringIO(cls.DTD))
             root = etree.XML(string.strip())
             return dtd.validate(root)
         except etree.XMLSyntaxError:
@@ -670,7 +642,51 @@ class Character(object):
             file.write(self.to_xml())
             file.close()
         else:
-            file.write(self.to_xml())       
+            file.write(self.to_xml())
+
+    def _get_parser(self):
+        parser = xml.parsers.expat.ParserCreate(encoding="UTF-8")
+        parser.StartElementHandler = self._start_element
+        parser.EndElementHandler = self._end_element
+        parser.CharacterDataHandler = self._char_data
+        return parser
+
+class Character(_XmlBase):
+
+    DTD = \
+"""
+<!ELEMENT character (utf8?,width?,height?,strokes)>
+<!ELEMENT utf8 (#PCDATA)>
+<!ELEMENT width (#PCDATA)>
+<!ELEMENT height (#PCDATA)>
+<!ELEMENT strokes (stroke+)>
+<!ELEMENT stroke (point+)>
+<!ELEMENT point EMPTY>
+
+<!ATTLIST point x CDATA #REQUIRED>
+<!ATTLIST point y CDATA #REQUIRED>
+<!ATTLIST point timestamp CDATA #IMPLIED>
+<!ATTLIST point pressure CDATA #IMPLIED>
+<!ATTLIST point xtilt CDATA #IMPLIED>
+<!ATTLIST point ytilt CDATA #IMPLIED>
+
+"""
+
+    def __init__(self):
+        self._writing = Writing()
+        self._utf8 = None
+
+    def get_utf8(self):
+        return self._utf8
+        
+    def set_utf8(self, utf8):
+        self._utf8 = utf8
+
+    def get_writing(self):
+        return self._writing
+
+    def set_writing(self, writing):
+        self._writing = writing       
 
     def to_xml(self):
         s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -756,9 +772,164 @@ class Character(object):
         elif self._tag == "height":
             self._writing.set_height(int(data))
 
-    def _get_parser(self):
-        parser = xml.parsers.expat.ParserCreate(encoding="UTF-8")
-        parser.StartElementHandler = self._start_element
-        parser.EndElementHandler = self._end_element
-        parser.CharacterDataHandler = self._char_data
-        return parser
+class CharacterCollection(_XmlBase):
+    """
+    A collection of characters.
+    Each character can have zero, one, or more instances.
+    """
+
+    DTD = \
+"""
+<!ELEMENT character-collection (set*)>
+<!ELEMENT set (character*)>
+
+<!ATTLIST set utf8 CDATA #REQUIRED>
+
+<!ELEMENT character (utf8?,width?,height?,strokes)>
+<!ELEMENT utf8 (#PCDATA)>
+<!ELEMENT width (#PCDATA)>
+<!ELEMENT height (#PCDATA)>
+<!ELEMENT strokes (stroke+)>
+<!ELEMENT stroke (point+)>
+<!ELEMENT point EMPTY>
+
+<!ATTLIST point x CDATA #REQUIRED>
+<!ATTLIST point y CDATA #REQUIRED>
+<!ATTLIST point timestamp CDATA #IMPLIED>
+<!ATTLIST point pressure CDATA #IMPLIED>
+<!ATTLIST point xtilt CDATA #IMPLIED>
+<!ATTLIST point ytilt CDATA #IMPLIED>
+"""
+
+    def __init__(self):
+        self._characters = SortedDict()
+
+    def get_list(self):
+        return self._characters.keys()
+
+    def get_characters(self, utf8):
+        if self._characters.has_key(utf8):
+            return self._characters[utf8]
+        else:
+            return []
+
+    def get_all_characters(self):
+        characters = []
+        for k in self._characters.keys():
+            characters += self._characters[k]
+        return characters
+
+    def set_characters(self, utf8, characters):
+        self._characters[utf8] = characters
+
+    def append_character(self, utf8, character):
+        if not self._characters.has_key(utf8):
+            self._characters[utf8] = []
+
+        self._characters[utf8].append(character)
+
+    def insert_character(self, utf8, i, character):
+        if not self._characters.has_key(utf8):
+            self._characters[utf8] = []
+            self._characters[utf8].append(character)
+        else:
+            self._characters[utf8].insert(i, character)
+
+    def remove_character(self, utf8, i):
+        if self._characters.has_key(utf8):
+            if len(self._characters[utf8]) - 1 >= i:
+                del self._characters[utf8][i]
+
+    def remove_last_character(self, utf8):
+        if self._characters.has_key(utf8):
+            if len(self._characters[utf8]) > 0:
+                del self._characters[utf8][-1]
+
+    def replace_character(self, utf8, i, character):
+        if self._characters.has_key(utf8):
+            if len(self._characters[utf8]) - 1 >= i:
+                self.remove_character(utf8, i)
+                self.insert_character(utf8, i, character)
+
+    def to_xml(self):
+        s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        s += "<character-collection>\n"
+
+        for utf8 in self._characters.keys():
+            s += "<set utf8=\"%s\">\n" % utf8
+
+            for character in self._characters[utf8]:
+                s += "  <character>\n"
+
+                for line in character.get_writing().to_xml().split("\n"):
+                    s += "    %s\n" % line
+                
+                s += "  </character>\n"
+
+            s += "</set>\n"
+
+        s += "</character-collection>\n"
+
+        return s
+
+    # Private...    
+
+    def _start_element(self, name, attrs):
+        self._tag = name
+
+        if self._tag == "set":
+            if not attrs.has_key("utf8"):
+                raise ValueError, "<set> should have an utf8 attribute"
+
+            self._curr_utf8 = attrs["utf8"].encode("UTF-8")
+            self._curr_chars = []
+
+        if self._tag == "character":
+            self._curr_char = Character()
+            self._curr_writing = self._curr_char.get_writing()
+            self._curr_width = None
+            self._curr_height = None
+
+        if self._tag == "stroke":
+            self._curr_stroke = Stroke()
+            
+        elif self._tag == "point":
+            point = Point()
+
+            for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
+                if attrs.has_key(key):
+                    value = attrs[key].encode("UTF-8")
+                    if key in ("pressure", "xtilt", "ytilt"):
+                        value = float(value)
+                    else:
+                        value = int(value)
+                else:
+                    value = None
+
+                setattr(point, key, value)
+
+            self._curr_stroke.append_point(point)
+
+    def _end_element(self, name):
+        if name == "set":
+            self.set_characters(self._curr_utf8, self._curr_chars)
+
+        if name == "character":
+            self._curr_char.set_utf8(self._curr_utf8)
+            if self._curr_width:
+                self._curr_writing.set_width(self._curr_width)
+            if self._curr_height:
+                self._curr_writing.set_height(self._curr_height)
+            self._curr_chars.append(self._curr_char)
+
+        if name == "stroke":
+            self._curr_writing.append_stroke(self._curr_stroke)
+            self._stroke = None
+
+        self._tag = None
+
+    def _char_data(self, data):
+        if self._tag == "width":
+            self._curr_width = int(data)
+        elif self._tag == "height":
+            self._curr_height = int(data)
