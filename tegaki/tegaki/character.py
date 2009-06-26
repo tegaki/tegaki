@@ -22,6 +22,14 @@ import gzip as gzipm
 import bz2 as bz2m
 from math import floor, atan, sin, cos, pi
 
+try:
+    # lxml is used for DTD validation
+    # for server-side applications, it is recommended to install it
+    # for desktop applications, it is optional
+    from lxml import etree
+except ImportError:
+    pass
+
 from tegaki.mathutils import euclidean_distance
 
 class Point(dict):
@@ -580,6 +588,19 @@ class Writing(object):
 
 class Character(object):
 
+    DTD = \
+"""
+<!ELEMENT character (utf8?,strokes)>
+<!ELEMENT utf8 (#PCDATA)>
+<!ELEMENT strokes (stroke+)>
+<!ELEMENT stroke (point+)>
+<!ELEMENT point EMPTY>
+
+<!ATTLIST point x CDATA #REQUIRED>
+<!ATTLIST point y CDATA #REQUIRED>
+<!ATTLIST point timestamp CDATA #IMPLIED>
+"""
+
     def __init__(self):
         self._writing = Writing()
         self._utf8 = None
@@ -596,6 +617,20 @@ class Character(object):
     def set_writing(self, writing):
         self._writing = writing
 
+    @staticmethod
+    def validate(string):
+        try:
+            dtd = etree.DTD(cStringIO.StringIO(Character.DTD))
+            root = etree.XML(string.strip())
+            return dtd.validate(root)
+        except etree.XMLSyntaxError:
+            return False
+        except NameError:
+            # this means that the functionality is not available on that
+            # system so you have to catch that exception if you want to
+            # ignore it
+            raise NotImplementedError
+       
     def read(self, file, gzip=False, bz2=False, compresslevel=9):
         parser = self._get_parser()
 

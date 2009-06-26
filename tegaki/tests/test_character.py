@@ -18,6 +18,7 @@
 
 import unittest
 import os
+import sys
 import StringIO
 import minjson
 
@@ -552,3 +553,41 @@ u'pressure': 0, u'x': 4}]}
         s1.clear()
         
         self.assertEquals(len(s1), 0)
+
+    def testValidate(self):
+        path = os.path.join(self.currdir, "data", "character.xml")
+        f = open(path)
+        buf = f.read()
+        f.close()
+
+        invalid = \
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+  <character>
+    <utf8>防</utf8>
+    <strokes>
+      <stroke>
+      </stroke>
+    </strokes>
+  </character>
+"""
+
+        malformed = \
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+  <character>
+    <utf8>防</utf8>
+    <strokes>
+      <stroke>
+      </stroke>
+    </strokes>
+"""
+
+        try:
+            self.assertTrue(Character.validate(buf))
+            self.assertFalse(Character.validate(invalid))
+            self.assertFalse(Character.validate(malformed))
+        except NotImplementedError:
+            sys.stderr.write("lxml missing!\n")
+            pass
+
