@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <character-collection>
-<set utf8="一">
+<set name="一">
   <character>
     <utf8>一</utf8>
     <width>800</width>
@@ -52,6 +52,7 @@
     </strokes>
   </character>
   <character>
+    <utf8>一</utf8>
     <strokes>
       <stroke>
         <point x="256" y="530"/>
@@ -105,6 +106,7 @@
     </strokes>
   </character>
   <character>
+    <utf8>一</utf8>
     <strokes>
       <stroke>
         <point x="120" y="510"/>
@@ -192,8 +194,9 @@
     </strokes>
   </character>
 </set>
-<set utf8="三">
+<set name="三">
   <character>
+    <utf8>三</utf8>
     <strokes>
       <stroke>
         <point x="303" y="366"/>
@@ -367,6 +370,7 @@
     </strokes>
   </character>
   <character>
+    <utf8>三</utf8>
     <strokes>
       <stroke>
         <point x="240" y="313"/>
@@ -520,8 +524,9 @@
     </strokes>
   </character>
 </set>
-<set utf8="二">
+<set name="二">
   <character>
+    <utf8>二</utf8>
     <strokes>
       <stroke>
         <point x="293" y="360"/>
@@ -613,6 +618,6 @@
     </strokes>
   </character>
 </set>
-<set utf8="四">
+<set name="四">
 </set>
 </character-collection>

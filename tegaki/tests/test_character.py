@@ -629,7 +629,7 @@ class CharacterCollectionTest(unittest.TestCase):
             pass
 
     def _testReadXML(self, charcol):
-        self.assertEquals(charcol.get_list(), ["一", "三", "二", "四"])
+        self.assertEquals(charcol.get_set_list(), ["一", "三", "二", "四"])
 
         c = {}
         for k in ["19968_1", "19968_2", "19968_3", "19977_1", "19977_2",
@@ -662,7 +662,7 @@ class CharacterCollectionTest(unittest.TestCase):
         charcol.read(path)
         charcol2 = CharacterCollection()
         charcol2.read_string(charcol.to_xml())
-        self.assertEquals(charcol.get_list(), charcol2.get_list())
+        self.assertEquals(charcol.get_set_list(), charcol2.get_set_list())
         self.assertEquals(charcol.get_all_characters(),
                           charcol2.get_all_characters())
   
@@ -672,7 +672,7 @@ class CharacterCollectionTest(unittest.TestCase):
         charcol.read(path)
         charcol2 = CharacterCollection()
         charcol2.read_string(charcol.write_string(gzip=True), gzip=True)
-        self.assertEquals(charcol.get_list(), charcol2.get_list())
+        self.assertEquals(charcol.get_set_list(), charcol2.get_set_list())
         self.assertEquals(charcol.get_all_characters(),
                           charcol2.get_all_characters())
 
@@ -682,6 +682,6 @@ class CharacterCollectionTest(unittest.TestCase):
         charcol.read(path)
         charcol2 = CharacterCollection()
         charcol2.read_string(charcol.write_string(bz2=True), bz2=True)
-        self.assertEquals(charcol.get_list(), charcol2.get_list())
+        self.assertEquals(charcol.get_set_list(), charcol2.get_set_list())
         self.assertEquals(charcol.get_all_characters(),
                           charcol2.get_all_characters())        

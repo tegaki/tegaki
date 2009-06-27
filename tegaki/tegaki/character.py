@@ -771,6 +771,10 @@ class Character(_XmlBase):
             self._stroke.append_point(point)
 
     def _end_element(self, name):
+        if name == "character":
+            del self._tag
+            del self._stroke
+
         if name == "stroke":
             self._writing.append_stroke(self._stroke)
             self._stroke = None
@@ -787,8 +791,8 @@ class Character(_XmlBase):
 
 class CharacterCollection(_XmlBase):
     """
-    A collection of characters.
-    Each character can have zero, one, or more instances.
+    A collection of characters is composed of sets.
+    Each set can have zero, one, or more characters.
     """
 
     DTD = \
@@ -796,7 +800,8 @@ class CharacterCollection(_XmlBase):
 <!ELEMENT character-collection (set*)>
 <!ELEMENT set (character*)>
 
-<!ATTLIST set utf8 CDATA #REQUIRED>
+<!-- The name attribute identifies a set uniquely -->
+<!ATTLIST set name CDATA #REQUIRED>
 
 <!ELEMENT character (utf8?,width?,height?,strokes)>
 <!ELEMENT utf8 (#PCDATA)>
@@ -817,12 +822,12 @@ class CharacterCollection(_XmlBase):
     def __init__(self):
         self._characters = SortedDict()
 
-    def get_list(self):
+    def get_set_list(self):
         return self._characters.keys()
 
-    def get_characters(self, utf8):
-        if self._characters.has_key(utf8):
-            return self._characters[utf8]
+    def get_characters(self, set_name):
+        if self._characters.has_key(set_name):
+            return self._characters[set_name]
         else:
             return []
 
@@ -832,47 +837,51 @@ class CharacterCollection(_XmlBase):
             characters += self._characters[k]
         return characters
 
-    def set_characters(self, utf8, characters):
-        self._characters[utf8] = characters
+    def set_characters(self, set_name, characters):
+        self._characters[set_name] = characters
 
-    def append_character(self, utf8, character):
-        if not self._characters.has_key(utf8):
-            self._characters[utf8] = []
+    def append_character(self, set_name, character):
+        if not self._characters.has_key(set_name):
+            self._characters[set_name] = []
 
-        self._characters[utf8].append(character)
+        self._characters[set_name].append(character)
 
-    def insert_character(self, utf8, i, character):
-        if not self._characters.has_key(utf8):
-            self._characters[utf8] = []
-            self._characters[utf8].append(character)
+    def insert_character(self, set_name, i, character):
+        if not self._characters.has_key(set_name):
+            self._characters[set_name] = []
+            self._characters[set_name].append(character)
         else:
-            self._characters[utf8].insert(i, character)
+            self._characters[set_name].insert(i, character)
 
-    def remove_character(self, utf8, i):
-        if self._characters.has_key(utf8):
-            if len(self._characters[utf8]) - 1 >= i:
-                del self._characters[utf8][i]
+    def remove_character(self, set_name, i):
+        if self._characters.has_key(set_name):
+            if len(self._characters[set_name]) - 1 >= i:
+                del self._characters[set_name][i]
 
-    def remove_last_character(self, utf8):
-        if self._characters.has_key(utf8):
-            if len(self._characters[utf8]) > 0:
-                del self._characters[utf8][-1]
+    def remove_last_character(self, set_name):
+        if self._characters.has_key(set_name):
+            if len(self._characters[set_name]) > 0:
+                del self._characters[set_name][-1]
 
-    def replace_character(self, utf8, i, character):
-        if self._characters.has_key(utf8):
-            if len(self._characters[utf8]) - 1 >= i:
-                self.remove_character(utf8, i)
-                self.insert_character(utf8, i, character)
+    def replace_character(self, set_name, i, character):
+        if self._characters.has_key(set_name):
+            if len(self._characters[set_name]) - 1 >= i:
+                self.remove_character(set_name, i)
+                self.insert_character(set_name, i, character)
 
     def to_xml(self):
         s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         s += "<character-collection>\n"
 
-        for utf8 in self._characters.keys():
-            s += "<set utf8=\"%s\">\n" % utf8
+        for set_name in self._characters.keys():
+            s += "<set name=\"%s\">\n" % set_name
 
-            for character in self._characters[utf8]:
+            for character in self._characters[set_name]:
                 s += "  <character>\n"
+
+                utf8 = character.get_utf8()
+                if utf8:
+                    s += "    <utf8>%s</utf8>\n" % utf8
 
                 for line in character.get_writing().to_xml().split("\n"):
                     s += "    %s\n" % line
@@ -891,10 +900,10 @@ class CharacterCollection(_XmlBase):
         self._tag = name
 
         if self._tag == "set":
-            if not attrs.has_key("utf8"):
-                raise ValueError, "<set> should have an utf8 attribute"
+            if not attrs.has_key("name"):
+                raise ValueError, "<set> should have a name attribute"
 
-            self._curr_utf8 = attrs["utf8"].encode("UTF-8")
+            self._curr_set_name = attrs["name"].encode("UTF-8")
             self._curr_chars = []
 
         if self._tag == "character":
@@ -902,6 +911,7 @@ class CharacterCollection(_XmlBase):
             self._curr_writing = self._curr_char.get_writing()
             self._curr_width = None
             self._curr_height = None
+            self._curr_utf8 = None
 
         if self._tag == "stroke":
             self._curr_stroke = Stroke()
@@ -924,11 +934,23 @@ class CharacterCollection(_XmlBase):
             self._curr_stroke.append_point(point)
 
     def _end_element(self, name):
+        if name == "character-collection":
+            del self._tag
+            del self._curr_char
+            del self._curr_writing
+            del self._curr_width
+            del self._curr_height
+            del self._curr_utf8
+            del self._curr_stroke
+            del self._curr_chars
+            del self._curr_set_name
+
         if name == "set":
-            self.set_characters(self._curr_utf8, self._curr_chars)
+            self.set_characters(self._curr_set_name, self._curr_chars)
 
         if name == "character":
-            self._curr_char.set_utf8(self._curr_utf8)
+            if self._curr_utf8:
+                self._curr_char.set_utf8(self._curr_utf8)
             if self._curr_width:
                 self._curr_writing.set_width(self._curr_width)
             if self._curr_height:
@@ -942,6 +964,8 @@ class CharacterCollection(_XmlBase):
         self._tag = None
 
     def _char_data(self, data):
+        if self._tag == "utf8":
+            self._curr_utf8 = data.encode("UTF-8")
         if self._tag == "width":
             self._curr_width = int(data)
         elif self._tag == "height":
