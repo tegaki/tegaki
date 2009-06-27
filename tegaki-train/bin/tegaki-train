@@ -1,0 +1,187 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2009 Mathieu Blondel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import gtk
+from gtk import gdk
+
+from tegakigtk.iconview import WritingIconView
+
+class TegakiTrain(object):
+
+    def __init__(self):
+        self._create_window()
+
+    def _on_new(self, widget):
+        pass
+
+    def _on_save(self, widget):
+        pass
+
+    def _on_save_as(self, widget):
+        pass
+
+    def _on_train(self, widget):
+        pass
+
+    def _on_quit(self, widget):
+        pass
+
+    def _on_copy(self, widget):
+        pass
+
+    def _on_select_all(self, widget):
+        pass
+
+    def _on_toggle_statusbar(self, widget):
+        pass
+
+    def _on_toggle_toolbar(self, widget):
+        pass
+
+    def _create_menu(self):
+        self._uimanager = gtk.UIManager()
+        menu_xml = \
+"""
+<ui>
+    <menubar name="MainMenubar">
+        <menu action="FileMenu">
+            <menuitem action="New"/>
+            <separator/>
+            <menuitem action="Save"/>
+            <menuitem action="SaveAs"/>
+            <separator/>
+            <menuitem action="Train"/>
+            <separator/>
+            <menuitem action="Quit"/>
+        </menu>
+        <menu action="EditMenu">
+            <menuitem action="Copy"/>
+            <menuitem action="SelectAll"/>
+        </menu>
+        <menu action="ViewMenu">
+            <menuitem action="Statusbar"/>
+            <menuitem action="Toolbar"/>
+        </menu>
+        <!-- <menu action="HelpMenu">
+            <menuitem action="Help"/>
+            <separator/>
+            <menuitem action="About"/>
+        </menu> -->
+    </menubar>
+</ui>
+"""
+
+        toolbar_xml = \
+"""
+<ui>
+    <toolbar name="Toolbar">
+            <toolitem action="New"/>
+            <separator/>
+            <toolitem action="Save"/>
+            <toolitem action="SaveAs"/>
+            <separator/>
+            <toolitem action="Train"/>
+    </toolbar>
+</ui>
+"""
+
+        # [(name, stock_id, label, accelerator, tooltip, proc), ... ]
+        standard_actions = [
+("FileMenu", None, "_File"),
+("New", gtk.STOCK_NEW, None, None, None, self._on_new),
+("Save", gtk.STOCK_SAVE, None, None, None, self._on_save),
+("SaveAs", gtk.STOCK_SAVE_AS, None, None, None, self._on_save_as),
+("Train", gtk.STOCK_EXECUTE, "_Train", None, None, self._on_train),
+("Quit", gtk.STOCK_QUIT, None, None, None, self._on_quit),
+
+("EditMenu", None, "_Edit"),
+("Copy", gtk.STOCK_COPY, None, None, None, self._on_copy),
+("SelectAll", None, "Select _All", "<ctrl>A", None, self._on_select_all),
+
+("ViewMenu", None, "_View"),
+        ]
+
+        toggle_actions = [
+("Statusbar", None, "_Statusbar", None, None, self._on_toggle_statusbar, 1),
+("Toolbar", None, "_Toolbar", None, None, self._on_toggle_toolbar, 1),
+        ]
+
+        self._global_actions = gtk.ActionGroup("Standard actions")
+        self._global_actions.add_actions(standard_actions)
+        self._global_actions.add_toggle_actions(toggle_actions)
+
+        self._uimanager.insert_action_group(self._global_actions, 0)
+        self._uimanager.add_ui_from_string(menu_xml)
+        self._uimanager.add_ui_from_string(toolbar_xml)
+        
+        self._menubar = self._uimanager.get_widget("/MainMenubar")
+        self._toolbar = self._uimanager.get_widget("/Toolbar")
+        self._toolbar.set_border_width(0)
+
+    def _create_left_pane(self):
+        self._leftvbox = gtk.VBox()
+        
+        frame = gtk.Frame()
+        frame.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        frame.add(gtk.Label("Characters"))
+        self._leftvbox.pack_start(frame, expand=False)
+
+        self._treeview = gtk.TreeView()
+        self._leftvbox.pack_start(self._treeview)
+
+        hbox = gtk.HBox()
+        self._add_char_button = gtk.Button(stock=gtk.STOCK_ADD)
+        self._remove_char_button = gtk.Button(stock=gtk.STOCK_REMOVE)
+        hbox.pack_start(self._add_char_button)
+        hbox.pack_start(self._remove_char_button)
+
+        self._leftvbox.pack_start(hbox, expand=False)
+
+    def _create_window(self):
+        self._window = gtk.Window()
+
+        self._create_menu()
+        self._window.add_accel_group(self._uimanager.get_accel_group())
+
+        main_vbox = gtk.VBox()
+        main_vbox.pack_start(self._menubar, expand=False)
+        main_vbox.pack_start(self._toolbar, expand=False)
+
+        self._sidepane = gtk.HPaned()
+
+        self._create_left_pane()
+        self._sidepane.add1(self._leftvbox)
+
+        self._iconview = WritingIconView()
+        self._sidepane.add2(self._iconview)
+
+        main_vbox.pack_start(self._sidepane, padding=2)
+
+        self._statusbar = gtk.Statusbar()
+        main_vbox.pack_start(self._statusbar, expand=False, padding=2)
+
+        self._window.add(main_vbox)
+        self._window.set_default_size(600, 500)
+        self._window.set_title("Tegaki Train")
+        self._window.show_all()
+
+    def run(self):
+        gtk.main()
+
+TegakiTrain().run()
