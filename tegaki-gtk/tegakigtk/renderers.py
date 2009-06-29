@@ -35,6 +35,7 @@ class _CairoRendererBase(object):
         self.axis_line_color = (0, 0, 0, 0.2)
         self.annotations_color = (0x00, 0x00, 0x00ff, 0.5)
         self.stroke_line_color = (255, 0, 0, 0.5)
+        self.border_line_color = (0, 0, 0, 1.0)
 
     def _with_handwriting_line(self):
         self.cr.set_line_width(self.stroke_width)
@@ -45,6 +46,12 @@ class _CairoRendererBase(object):
         self.cr.set_source_rgba (*self.axis_line_color)
         self.cr.set_line_width (4)
         self.cr.set_dash ([8, 8], 2)
+        self.cr.set_line_cap(cairo.LINE_CAP_BUTT)
+        self.cr.set_line_join(cairo.LINE_JOIN_ROUND)
+
+    def _with_border_line(self):
+        self.cr.set_source_rgba (*self.border_line_color)
+        self.cr.set_line_width (8)
         self.cr.set_line_cap(cairo.LINE_CAP_BUTT)
         self.cr.set_line_join(cairo.LINE_JOIN_ROUND)
 
@@ -124,6 +131,20 @@ class _CairoRendererBase(object):
         self.cr.set_source_rgb(*color)
         self.cr.paint()
         self.cr.restore()
+
+    def draw_border(self):
+        self.cr.save()
+
+        self._with_axis_line()
+
+        self.cr.move_to(0, 0)
+        self.cr.line_to(0, 1000)
+        self.cr.line_to(1000, 1000)
+        self.cr.line_to(1000, 0)
+        self.cr.line_to(0, 0)
+        
+        self.cr.stroke()
+        self.cr.restore()        
 
     def draw_axis(self):
         self.cr.save()

@@ -70,6 +70,7 @@ class WritingIconView(gtk.IconView):
                                               self.get_item_width())
             renderer.set_draw_annotations(False)
             renderer.draw_background()
+            renderer.draw_border()
             #renderer.draw_axis()
             renderer.draw_writing()
             self._model.append((renderer.get_pixbuf(), char.get_utf8()))
