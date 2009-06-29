@@ -17,6 +17,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import os.path
+
 import gtk
 from gtk import gdk
 
@@ -466,11 +468,13 @@ class TegakiTrain(object):
     def __init__(self):
         self._charcol = CharacterCollection()
         self._create_window()
+        self._update_title()
 
     def _on_new(self, widget):
         if not self._save_is_enabled() or self._confirm_continue():
             if "_curr_file" in self.__dict__:
                 del self.__dict__["_curr_file"]
+            self._update_title()
             self._charcol = CharacterCollection()
             self._treeview.get_model().clear()
             self._iconview.get_model().clear()
@@ -489,6 +493,7 @@ class TegakiTrain(object):
             if response == gtk.RESPONSE_OK:
                 self._curr_folder = dialog.get_current_folder()
                 self._curr_file = dialog.get_filename()
+                self._update_title()
                 charcol = dialog.get_character_collection()
                 if charcol:
                     self._add_recent(self._curr_file)
@@ -501,6 +506,8 @@ class TegakiTrain(object):
 
     def _on_recent_activated(self, widget):
         filename = self._recent_menu.get_current_item().get_uri_display()
+        self._curr_file = filename
+        self._update_title()
         self._charcol = CharacterCollectionFileChooserDialog.\
                             open_character_collection(filename)           
         self._iconview.get_model().clear()
@@ -513,6 +520,13 @@ class TegakiTrain(object):
         if not filename.startswith("file://"):
             filename = "file://" + filename
         self._recent_manager.add_full(filename, meta)
+
+    def _update_title(self):
+        if "_curr_file" in self.__dict__:
+            basename = os.path.basename(self._curr_file)
+            self._window.set_title("Tegaki Train - %s" % basename)
+        else:
+            self._window.set_title("Tegaki Train - Unsaved file")
 
     def _refresh_treeview(self):
         self._treeview.get_model().clear()
@@ -547,6 +561,7 @@ class TegakiTrain(object):
         if response == gtk.RESPONSE_OK:
             self._curr_folder = dialog.get_current_folder()
             self._curr_file = dialog.get_filename()
+            self._update_title()
             self._add_recent(self._curr_file)
             dialog.set_character_collection(self._charcol)
             self._disable_save()
@@ -953,7 +968,6 @@ class TegakiTrain(object):
 
         self._window.add(main_vbox)
         self._window.set_default_size(650, 500)
-        self._window.set_title("Tegaki Train")
         self._window.show_all()
 
     def run(self):
