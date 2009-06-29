@@ -366,14 +366,12 @@ class CharacterFileChooserDialog(gtk.FileChooserDialog):
         char = Character()
 
         try:
-            if filename.endswith(".xml.gz"):
+            if filename.endswith(".gz"):
                 char.read(filename, gzip=True)
-            elif filename.endswith(".xml.bz2"):
+            elif filename.endswith(".bz2"):
                 char.read(filename, bz2=True)
-            elif filename.endswith(".xml"):
-                char.read(filename)
             else:
-                return None
+                char.read(filename)
         except ValueError: # incorrect XML
             return None
 
@@ -381,12 +379,79 @@ class CharacterFileChooserDialog(gtk.FileChooserDialog):
 
     def set_character(self, char):
         filename = self.get_filename()
-        if filename.endswith(".xml.gz"):
+        if filename.endswith(".gz"):
             char.write(filename, gzip=True)
-        elif filename.endswith(".xml.bz2"):
+        elif filename.endswith(".bz2"):
             char.write(filename, bz2=True)
-        elif filename.endswith(".xml"):
+        else:
             char.write(filename)
+
+class CharacterCollectionFileChooserDialog(gtk.FileChooserDialog):
+
+    def __init__(self, title, parent, action=gtk.FILE_CHOOSER_ACTION_OPEN):
+        if action == gtk.FILE_CHOOSER_ACTION_OPEN:
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+        else:
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        gtk.FileChooserDialog.__init__(self, title, parent, action, buttons)
+        self._init_dialog()
+
+    def _init_dialog(self):
+        self.set_default_size(400, 400)
+        
+        for name, pat in [["Character collection", "*.charcol"], 
+                          ["Gzip-compressed Character collection",
+                           "*.charcol.gz"],
+                          ["Bz2-compressed Character collection",
+                           "*.charcol.bz2"],
+                          ["All files", "*.*"]]:
+            filt = gtk.FileFilter()
+            filt.set_name(name)
+            filt.add_pattern(pat)
+            self.add_filter(filt)
+
+        self.set_default_response(gtk.RESPONSE_OK)
+
+    def get_character_collection(self):
+        return self._get_character_collection(self.get_filename())
+
+    def _get_character_collection(self, filename):
+        charcol = CharacterCollection()
+
+        try:
+            if filename.endswith(".gz"):
+                charcol.read(filename, gzip=True)
+            elif filename.endswith(".bz2"):
+                charcol.read(filename, bz2=True)
+            else:
+                charcol.read(filename)
+        except ValueError: # incorrect XML
+            return None
+
+        return charcol
+
+    def set_character_collection(self, charcol):
+        filename = self.get_filename()
+        CharacterCollectionFileChooserDialog. \
+            save_character_collection(charcol, filename)
+
+    @staticmethod
+    def save_character_collection(charcol, filename):
+        if filename.endswith(".gz"):
+            charcol.write(filename, gzip=True)
+        elif filename.endswith(".bz2"):
+            charcol.write(filename, bz2=True)
+        else:
+            charcol.write(filename)
+
+class QuestionDialog(gtk.MessageDialog):
+
+    def __init__(self, parent, msg):
+        gtk.MessageDialog.__init__(self, parent, gtk.DIALOG_MODAL,
+                                   gtk.MESSAGE_QUESTION, 
+                                   gtk.BUTTONS_YES_NO, msg)
 
 class TegakiTrain(object):
 
@@ -395,25 +460,95 @@ class TegakiTrain(object):
         self._create_window()
 
     def _on_new(self, widget):
-        pass
+        if not self._save_is_enabled() or self._confirm_continue():
+            if "_curr_file" in self.__dict__:
+                del self.__dict__["_curr_file"]
+            self._charcol = CharacterCollection()
+            self._treeview.get_model().clear()
+            self._iconview.get_model().clear()
+
+    def _on_open(self, widget):
+        if not self._save_is_enabled() or self._confirm_continue():
+            dialog = CharacterCollectionFileChooserDialog(
+                                           "Open Character Collection",
+                                           self._window,
+                                           action=gtk.FILE_CHOOSER_ACTION_OPEN)
+
+            if "_curr_folder" in self.__dict__:
+                dialog.set_current_folder(self._curr_folder)
+
+            response = dialog.run()
+            if response == gtk.RESPONSE_OK:
+                self._curr_folder = dialog.get_current_folder()
+                self._curr_file = dialog.get_filename()
+                self._charcol = dialog.get_character_collection()
+                self._iconview.get_model().clear()
+                self._refresh_treeview()
+                self._disable_save()
+
+            dialog.destroy()
+
+    def _refresh_treeview(self):
+        self._treeview.get_model().clear()
+        for charset in self._charcol.get_set_list():
+            self._treeview.append_charset(charset)
+
+    def _confirm_continue(self):
+        dialog = QuestionDialog(self._window,
+"Some changes have not been saved yet, continue anyway?")
+        response = dialog.run()
+        dialog.destroy()
+        return response == gtk.RESPONSE_YES
 
     def _on_save(self, widget):
-        pass
+        if "_curr_file" in self.__dict__:
+            CharacterCollectionFileChooserDialog. \
+                save_character_collection(self._charcol, self._curr_file)
+            self._disable_save()
+        else:
+            self._on_save_as(widget)
 
     def _on_save_as(self, widget):
-        pass
+        dialog = CharacterCollectionFileChooserDialog(
+                                            "Save Character Collection",
+                                            self._window,
+                                            action=gtk.FILE_CHOOSER_ACTION_SAVE)
+
+        if "_curr_folder" in self.__dict__:
+            dialog.set_current_folder(self._curr_folder)
+
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            self._curr_folder = dialog.get_current_folder()
+            self._curr_file = dialog.get_filename()
+            dialog.set_character_collection(self._charcol)
+            self._disable_save()
+
+        dialog.destroy()
+
+    def _enable_save(self):
+        self._global_actions.get_action("Save").set_sensitive(True)
+
+    def _disable_save(self):
+        self._global_actions.get_action("Save").set_sensitive(False)
+
+    def _save_is_enabled(self):
+        return self._global_actions.get_action("Save").get_sensitive()
 
     def _on_train(self, widget):
         pass
 
     def _on_quit(self, widget):
-        gtk.main_quit()
+        if not self._save_is_enabled() or self._confirm_continue():
+            gtk.main_quit()
+        else:
+            return True
 
-    def _on_copy(self, widget):
-        pass
+    #def _on_copy(self, widget):
+        #pass
 
-    def _on_select_all(self, widget):
-        pass
+    #def _on_select_all(self, widget):
+        #pass
 
     def _on_toggle_statusbar(self, widget):
         active = self._global_actions.get_action("Statusbar").get_active()
@@ -448,14 +583,15 @@ class TegakiTrain(object):
 
     def _on_add_charset(self, widget):
         dialog = AddCharacterSetDialog(self._window)
-        dialog.connect("response", self._on_add_charset_validate)
+        dialog.connect("response", self._on_add_charset_done)
         dialog.run()
 
-    def _on_add_charset_validate(self, dialog, response):
+    def _on_add_charset_done(self, dialog, response):
         if response == gtk.RESPONSE_OK:
             for charset in dialog.get_charsets():
                 self._treeview.append_charset(charset)
                 self._charcol.add_set(charset)
+                self._enable_save()
 
         dialog.destroy()
 
@@ -464,6 +600,7 @@ class TegakiTrain(object):
         charset = self._treeview.get_model().get_value(seliter, 0)
         self._treeview.get_model().remove(seliter)
         self._charcol.remove_set(charset)
+        self._enable_save()
 
     def _on_charset_selection_changed(self, widget):
         if self._treeview.get_selection().count_selected_rows() >= 1:
@@ -499,6 +636,7 @@ class TegakiTrain(object):
         character = window.get_character()
         self._charcol.append_character(charset, character)
         self._iconview.set_characters(self._charcol.get_characters(charset))
+        self._enable_save()
 
     def _on_icon_selection_changed(self, widget):
         selitems = widget.get_selected_items()
@@ -526,6 +664,7 @@ class TegakiTrain(object):
                 self._charcol.append_character(charset, char)
                 chars = self._charcol.get_characters(charset)
                 self._iconview.set_characters(chars)
+                self._enable_save()
 
         dialog.destroy()
 
@@ -546,6 +685,7 @@ class TegakiTrain(object):
         charindex = selitems[0][0]
         self._charcol.replace_character(charset, charindex, character)
         self._iconview.set_characters(self._charcol.get_characters(charset))
+        self._enable_save()
 
     def _on_remove_sample(self, widget):
         selitems = self._iconview.get_selected_items()
@@ -554,6 +694,7 @@ class TegakiTrain(object):
         self._charcol.remove_character(charset, charindex)
         chars = self._charcol.get_characters(charset)
         self._iconview.set_characters(chars)
+        self._enable_save()
 
     def _on_save_sample_to_file(self, widget):
         dialog = CharacterFileChooserDialog("Save Character",
@@ -582,6 +723,7 @@ class TegakiTrain(object):
     <menubar name="MainMenubar">
         <menu action="FileMenu">
             <menuitem action="New"/>
+            <menuitem action="Open"/>
             <separator/>
             <menuitem action="Save"/>
             <menuitem action="SaveAs"/>
@@ -597,9 +739,9 @@ class TegakiTrain(object):
             <menuitem action="EditSample"/>
             <menuitem action="SaveSampleToFile"/>
             <menuitem action="RemoveSample"/>
-            <separator/>
+            <!-- <separator/>
             <menuitem action="Copy"/>
-            <menuitem action="SelectAll"/>
+            <menuitem action="SelectAll"/> -->
         </menu>
         <menu action="ViewMenu">
             <menu action="IconSizeMenu">
@@ -626,6 +768,7 @@ class TegakiTrain(object):
 <ui>
     <toolbar name="Toolbar">
             <toolitem action="New"/>
+            <toolitem action="Open"/>
             <separator/>
             <toolitem action="Save"/>
             <toolitem action="SaveAs"/>
@@ -643,6 +786,7 @@ class TegakiTrain(object):
         standard_actions = [
 ("FileMenu", None, "_File"),
 ("New", gtk.STOCK_NEW, None, None, None, self._on_new),
+("Open", gtk.STOCK_OPEN, None, None, None, self._on_open),
 ("Save", gtk.STOCK_SAVE, None, None, None, self._on_save),
 ("SaveAs", gtk.STOCK_SAVE_AS, None, None, None, self._on_save_as),
 ("Train", gtk.STOCK_EXECUTE, "_Train", None, None, self._on_train),
@@ -657,8 +801,8 @@ class TegakiTrain(object):
     self._on_save_sample_to_file),
 ("RemoveSample", gtk.STOCK_REMOVE, "Remove sample", None, None,
     self._on_remove_sample),
-("Copy", gtk.STOCK_COPY, None, None, None, self._on_copy),
-("SelectAll", None, "Select _All", "<ctrl>A", None, self._on_select_all),
+#("Copy", gtk.STOCK_COPY, None, None, None, self._on_copy),
+#("SelectAll", None, "Select _All", "<ctrl>A", None, self._on_select_all),
 
 ("ViewMenu", None, "_View"),
 ("IconSizeMenu", None, "Icon size"),
@@ -679,7 +823,8 @@ class TegakiTrain(object):
 
         # Default to False
         for s in ["AddSample", "AddSampleFromFile",
-                  "EditSample", "SaveSampleToFile", "RemoveSample"]:
+                  "EditSample", "SaveSampleToFile", "RemoveSample",
+                  "Save"]:
             self._global_actions.get_action(s).set_sensitive(False)
 
         self._uimanager.insert_action_group(self._global_actions, 0)
@@ -723,7 +868,7 @@ class TegakiTrain(object):
 
     def _create_window(self):
         self._window = gtk.Window()
-        self._window.connect("delete-event", lambda x,y: gtk.main_quit())
+        self._window.connect("delete-event", lambda w,e: self._on_quit(w))
 
         self._create_menu()
         self._window.add_accel_group(self._uimanager.get_accel_group())
@@ -756,7 +901,7 @@ class TegakiTrain(object):
         main_vbox.pack_start(self._statusbar, expand=False, padding=2)
 
         self._window.add(main_vbox)
-        self._window.set_default_size(600, 500)
+        self._window.set_default_size(650, 500)
         self._window.set_title("Tegaki Train")
         self._window.show_all()
 
