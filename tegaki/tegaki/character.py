@@ -604,20 +604,25 @@ class _XmlBase(object):
             raise NotImplementedError
        
     def read(self, file, gzip=False, bz2=False, compresslevel=9):
+        """
+        raises ValueError if incorrect XML
+        """
         parser = self._get_parser()
-
-        if type(file) == str:
-            if gzip:
-                file = gzipm.GzipFile(file, compresslevel=compresslevel)
-            elif bz2:
-                file = bz2m.BZ2File(file, compresslevel=compresslevel)
-            else:
-                file = open(file)
-                
-            parser.ParseFile(file)
-            file.close()
-        else:                
-            parser.ParseFile(file)
+        try:
+            if type(file) == str:
+                if gzip:
+                    file = gzipm.GzipFile(file, compresslevel=compresslevel)
+                elif bz2:
+                    file = bz2m.BZ2File(file, compresslevel=compresslevel)
+                else:
+                    file = open(file)
+                    
+                parser.ParseFile(file)
+                file.close()
+            else:                
+                parser.ParseFile(file)
+        except (IOError, xml.parsers.expat.ExpatError):
+            raise ValueError
 
     def read_string(self, string, gzip=False, bz2=False, compresslevel=9):
         if gzip:
@@ -778,8 +783,9 @@ class Character(_XmlBase):
 
     def _end_element(self, name):
         if name == "character":
-            del self._tag
-            del self._stroke
+            for s in ["_tag", "_stroke"]:
+                if s in self.__dict__:
+                    del self.__dict__[s]
 
         if name == "stroke":
             self._writing.append_stroke(self._stroke)
@@ -833,7 +839,7 @@ class CharacterCollection(_XmlBase):
             self._characters[set_name] = []
 
     def remove_set(self, set_name):
-        if f._characters.has_key(set_name):
+        if self._characters.has_key(set_name):
             del self._characters[set_name]
 
     def get_set_list(self):
@@ -955,16 +961,12 @@ class CharacterCollection(_XmlBase):
 
     def _end_element(self, name):
         if name == "character-collection":
-            del self._tag
-            del self._curr_char
-            del self._curr_writing
-            del self._curr_width
-            del self._curr_height
-            del self._curr_utf8
-            del self._curr_stroke
-            del self._curr_chars
-            del self._curr_set_name
-
+            for s in ["_tag", "_curr_char", "_curr_writing", "_curr_width",
+                      "_curr_height", "_curr_utf8", "_curr_stroke",
+                      "_curr_chars", "_curr_set_name"]:
+                if s in self.__dict__:
+                    del self.__dict__[s]
+               
         if name == "set":
             self.set_characters(self._curr_set_name, self._curr_chars)
 
