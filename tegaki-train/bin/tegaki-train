@@ -287,18 +287,32 @@ class EditCharacterSampleWindow(gtk.Window):
 
 class CharacterSetListView(gtk.TreeView):
 
-    def __init__(self):
+    def __init__(self, parent):
         self._model = gtk.ListStore(str)
         gtk.TreeView.__init__(self, self._model)
-        self._column_name = gtk.TreeViewColumn("Character sets")
+        self._init()
+        self._parentw = parent
+
+    def _init(self):
+        column = gtk.TreeViewColumn("Character sets")
         cell = gtk.CellRendererText()
-        self._column_name.pack_start(cell, expand=True)
-        self._column_name.add_attribute(cell, 'text', 0)
-        self._column_name.set_sort_column_id(0)
+        column.pack_start(cell, expand=True)
+        column.set_min_width(100)
+        column.add_attribute(cell, 'text', 0)
+        column.set_sort_column_id(0)
         self.set_search_column(0)
         self.set_headers_visible(False)
         self.set_reorderable(True)
-        self.append_column(self._column_name)
+        self.append_column(column)
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn(None, cell)
+        column.set_cell_data_func(cell, self._set_to_cell)
+        self.append_column(column)
+
+    def _set_to_cell(self, column, cell, model, iter):
+        charset = model[iter][0]
+        n_chars = len(self._parentw._charcol.get_characters(charset))
+        cell.props.text = str(n_chars)
 
     def append_charset(self, charset):
         if not self.includes_charset(charset):
@@ -912,7 +926,7 @@ class TegakiTrain(object):
         frame.set_shadow_type(gtk.SHADOW_ETCHED_IN)
         scrolledwindow = gtk.ScrolledWindow()
         scrolledwindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self._treeview = CharacterSetListView()
+        self._treeview = CharacterSetListView(self)
         selection = self._treeview.get_selection()
         selection.connect("changed", self._on_charset_selection_changed)
         scrolledwindow.add(self._treeview)
