@@ -219,16 +219,21 @@ class EditCharacterSampleWindow(gtk.Window):
         self._clear_button = gtk.Button(stock=gtk.STOCK_CLEAR)
         self._clear_button.connect("clicked", self._on_clear)
         hbox.pack_start(self._clear_button)
-        self._center_button = gtk.Button("Center")
-        self._center_button.connect("clicked", self._on_center)
-        hbox.pack_start(self._center_button)
-        self._norm_button = gtk.Button("Normalize")
-        self._norm_button.connect("clicked", self._on_norm)
-        hbox.pack_start(self._norm_button)
-        self._smooth_button = gtk.Button("Smooth")
-        self._smooth_button.connect("clicked", self._on_smooth)
-        hbox.pack_start(self._smooth_button)
         vbox.pack_start(hbox)
+
+        align = gtk.Alignment(xalign=0.5, yalign=0.0, xscale=0.0, yscale=0.0)
+        vbox2 = gtk.VBox()
+        self._center_button = gtk.CheckButton("Center")
+        self._center_button.set_active(True)
+        vbox2.pack_start(self._center_button)
+        self._norm_button = gtk.CheckButton("Normalize")
+        self._norm_button.set_active(False)
+        vbox2.pack_start(self._norm_button)
+        self._smooth_button = gtk.CheckButton("Smooth")
+        self._smooth_button.set_active(False)
+        vbox2.pack_start(self._smooth_button)
+        align.add(vbox2)
+        vbox.pack_start(align)
         
         self.add(vbox)
         self.set_default_size(400, 500)
@@ -243,16 +248,6 @@ class EditCharacterSampleWindow(gtk.Window):
     def _on_clear(self, widget):
         self._canvas.clear()
 
-    def _on_center(self, widget):
-        self._canvas.get_writing().normalize_position()
-        self._canvas.refresh(force_draw=True)
-
-    def _on_norm(self, widget):
-        self._canvas.normalize()
-
-    def _on_smooth(self, widget):
-        self._canvas.smooth()
-
     def get_character_value(self):
         return self._entry.get_text().strip()
 
@@ -260,7 +255,18 @@ class EditCharacterSampleWindow(gtk.Window):
         self._entry.set_text(value.strip())
 
     def get_writing(self):
-        return self._canvas.get_writing()
+        writing = self._canvas.get_writing()
+
+        if self._center_button.get_active():
+            writing .normalize_position()
+
+        if self._norm_button.get_active():
+            writing .normalize()
+
+        if self._smooth_button.get_active():
+            writing .smooth()
+
+        return writing
 
     def set_writing(self, writing):
         self._canvas.set_writing(writing)
@@ -481,10 +487,12 @@ class TegakiTrain(object):
             if response == gtk.RESPONSE_OK:
                 self._curr_folder = dialog.get_current_folder()
                 self._curr_file = dialog.get_filename()
-                self._charcol = dialog.get_character_collection()
-                self._iconview.get_model().clear()
-                self._refresh_treeview()
-                self._disable_save()
+                charcol = dialog.get_character_collection()
+                if charcol:
+                    self._charcol = charcol
+                    self._iconview.get_model().clear()
+                    self._refresh_treeview()
+                    self._disable_save()
 
             dialog.destroy()
 
