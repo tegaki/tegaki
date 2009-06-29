@@ -662,6 +662,7 @@ class _XmlBase(object):
         parser.StartElementHandler = self._start_element
         parser.EndElementHandler = self._end_element
         parser.CharacterDataHandler = self._char_data
+        self._first_tag = True
         return parser
 
 class Character(_XmlBase):
@@ -750,6 +751,11 @@ class Character(_XmlBase):
     def _start_element(self, name, attrs):
         self._tag = name
 
+        if self._first_tag:
+            self._first_tag = False
+            if self._tag != "character":
+                raise ValueError, "The very first tag should be <character>"
+
         if self._tag == "stroke":
             self._stroke = Stroke()
             
@@ -821,6 +827,14 @@ class CharacterCollection(_XmlBase):
 
     def __init__(self):
         self._characters = SortedDict()
+
+    def add_set(self, set_name):
+        if not self._characters.has_key(set_name):
+            self._characters[set_name] = []
+
+    def remove_set(self, set_name):
+        if f._characters.has_key(set_name):
+            del self._characters[set_name]
 
     def get_set_list(self):
         return self._characters.keys()
@@ -898,6 +912,12 @@ class CharacterCollection(_XmlBase):
 
     def _start_element(self, name, attrs):
         self._tag = name
+
+        if self._first_tag:
+            self._first_tag = False
+            if self._tag != "character-collection":
+                raise ValueError, \
+                      "The very first tag should be <character-collection>"
 
         if self._tag == "set":
             if not attrs.has_key("name"):
