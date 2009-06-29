@@ -219,8 +219,8 @@ class Stroke(list):
                     self[i].x += weights[j] * s[i + j - offset].x
                     self[i].y += weights[j] * s[i + j - offset].y
 
-                self[i].x = round(self[i].x / wsum)
-                self[i].y = round(self[i].y / wsum)
+                self[i].x = int(round(self[i].x / wsum))
+                self[i].y = int(round(self[i].y / wsum))
         
         self._is_smoothed = True
 
@@ -773,7 +773,7 @@ class Character(_XmlBase):
                     if key in ("pressure", "xtilt", "ytilt"):
                         value = float(value)
                     else:
-                        value = int(value)
+                        value = int(float(value))
                 else:
                     value = None
 
@@ -951,7 +951,7 @@ class CharacterCollection(_XmlBase):
                     if key in ("pressure", "xtilt", "ytilt"):
                         value = float(value)
                     else:
-                        value = int(value)
+                        value = int(float(value))
                 else:
                     value = None
 
