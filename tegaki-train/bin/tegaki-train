@@ -421,9 +421,11 @@ class CharacterCollectionFileChooserDialog(gtk.FileChooserDialog):
         self.set_default_response(gtk.RESPONSE_OK)
 
     def get_character_collection(self):
-        return self._get_character_collection(self.get_filename())
+        return CharacterCollectionFileChooserDialog. \
+            open_character_collection(self.get_filename ())
 
-    def _get_character_collection(self, filename):
+    @staticmethod
+    def open_character_collection(filename):
         charcol = CharacterCollection()
 
         try:
@@ -480,7 +482,7 @@ class TegakiTrain(object):
                                            self._window,
                                            action=gtk.FILE_CHOOSER_ACTION_OPEN)
 
-            if "_curr_folder" in self.__dict__:
+            if "_curr_folder" in self.__dict__ and self._curr_folder:
                 dialog.set_current_folder(self._curr_folder)
 
             response = dialog.run()
@@ -489,12 +491,28 @@ class TegakiTrain(object):
                 self._curr_file = dialog.get_filename()
                 charcol = dialog.get_character_collection()
                 if charcol:
+                    self._add_recent(self._curr_file)
                     self._charcol = charcol
                     self._iconview.get_model().clear()
                     self._refresh_treeview()
                     self._disable_save()
 
             dialog.destroy()
+
+    def _on_recent_activated(self, widget):
+        filename = self._recent_menu.get_current_item().get_uri_display()
+        self._charcol = CharacterCollectionFileChooserDialog.\
+                            open_character_collection(filename)           
+        self._iconview.get_model().clear()
+        self._refresh_treeview()
+        self._disable_save()
+
+    def _add_recent(self, filename):
+        meta = {'mime_type':'text/xml', 'app_name':'tegaki-train',
+                'app_exec':'tegaki-train'}
+        if not filename.startswith("file://"):
+            filename = "file://" + filename
+        self._recent_manager.add_full(filename, meta)
 
     def _refresh_treeview(self):
         self._treeview.get_model().clear()
@@ -529,6 +547,7 @@ class TegakiTrain(object):
         if response == gtk.RESPONSE_OK:
             self._curr_folder = dialog.get_current_folder()
             self._curr_file = dialog.get_filename()
+            self._add_recent(self._curr_file)
             dialog.set_character_collection(self._charcol)
             self._disable_save()
 
@@ -732,6 +751,8 @@ class TegakiTrain(object):
         <menu action="FileMenu">
             <menuitem action="New"/>
             <menuitem action="Open"/>
+            <menu action="OpenRecent">
+            </menu>
             <separator/>
             <menuitem action="Save"/>
             <menuitem action="SaveAs"/>
@@ -795,6 +816,7 @@ class TegakiTrain(object):
 ("FileMenu", None, "_File"),
 ("New", gtk.STOCK_NEW, None, None, None, self._on_new),
 ("Open", gtk.STOCK_OPEN, None, None, None, self._on_open),
+("OpenRecent", None, "Open Recent"),
 ("Save", gtk.STOCK_SAVE, None, None, None, self._on_save),
 ("SaveAs", gtk.STOCK_SAVE_AS, None, None, None, self._on_save_as),
 ("Train", gtk.STOCK_EXECUTE, "_Train", None, None, self._on_train),
@@ -842,6 +864,25 @@ class TegakiTrain(object):
         self._menubar = self._uimanager.get_widget("/MainMenubar")
         self._toolbar = self._uimanager.get_widget("/Toolbar")
         self._toolbar.set_border_width(0)
+
+        # Recent files
+        self._recent_manager = gtk.recent_manager_get_default()
+        self._recent_menu = gtk.RecentChooserMenu(self._recent_manager)
+        self._recent_menu.connect("item-activated", self._on_recent_activated)
+        self._recent_menu.set_show_not_found(False)
+        self._recent_menu.set_local_only(True)
+        self._recent_menu.set_show_tips(False)
+        self._recent_menu.set_sort_type(gtk.RECENT_SORT_MRU)
+        filt = gtk.RecentFilter()
+        filt.add_application("tegaki-train")
+        #filt.add_pattern("*.charcol")
+        #filt.add_pattern("*.charcol.gz")
+        #filt.add_pattern("*.charcol.bz2")
+        self._recent_menu.add_filter(filt)
+        self._recent_menu.set_limit(15)
+        open_r = self._uimanager.get_widget("/MainMenubar/FileMenu/OpenRecent")
+        open_r.set_submenu(self._recent_menu)
+        open_r.show()
 
     def _create_left_pane(self):
         self._leftvbox = gtk.VBox()
