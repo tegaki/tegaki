@@ -20,7 +20,9 @@
 import gtk
 from gtk import gdk
 
-from tegakigtk.iconview import WritingIconView
+from tegaki.character import Character, CharacterCollection
+from tegakigtk.iconview import WritingIconView, _WritingPixbufRenderer
+from tegakigtk.canvas import Canvas
 
 PREDEFINED_SETS = {
 "Digits" : [[48,57]],
@@ -187,6 +189,94 @@ class AddCharacterSetDialog(gtk.Dialog):
             d[char] = 1
         return d.keys()
 
+class EditCharacterSampleWindow(gtk.Window):
+
+    def __init__(self, parent):
+        gtk.Window.__init__(self)
+        self._init_window(parent)
+
+    def _init_window(self, parent):
+        vbox = gtk.VBox(spacing=2)
+
+        hbox = gtk.HBox(spacing=3)
+        label = gtk.Label()
+        label.set_markup("<b>Character value:</b>")
+        hbox.pack_start(label, expand=False)
+        self._entry = gtk.Entry()
+        hbox.pack_start(self._entry)
+        vbox.pack_start(hbox)
+
+        frame = gtk.Frame()
+        frame.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self._canvas = Canvas()
+        frame.add(self._canvas)
+        vbox.pack_start(frame)
+
+        hbox = gtk.HBox()
+        self._revert_button = gtk.Button(stock=gtk.STOCK_UNDO)
+        self._revert_button.connect("clicked", self._on_revert)
+        hbox.pack_start(self._revert_button)
+        self._clear_button = gtk.Button(stock=gtk.STOCK_CLEAR)
+        self._clear_button.connect("clicked", self._on_clear)
+        hbox.pack_start(self._clear_button)
+        self._center_button = gtk.Button("Center")
+        self._center_button.connect("clicked", self._on_center)
+        hbox.pack_start(self._center_button)
+        self._norm_button = gtk.Button("Normalize")
+        self._norm_button.connect("clicked", self._on_norm)
+        hbox.pack_start(self._norm_button)
+        self._smooth_button = gtk.Button("Smooth")
+        self._smooth_button.connect("clicked", self._on_smooth)
+        hbox.pack_start(self._smooth_button)
+        vbox.pack_start(hbox)
+        
+        self.add(vbox)
+        self.set_default_size(400, 500)
+        self.set_title("Edit character sample")
+        self.set_transient_for(parent)
+        self.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+        self.set_modal(True)
+
+    def _on_revert(self, widget):
+        self._canvas.revert_stroke()
+
+    def _on_clear(self, widget):
+        self._canvas.clear()
+
+    def _on_center(self, widget):
+        self._canvas.get_writing().normalize_position()
+        self._canvas.refresh(force_draw=True)
+
+    def _on_norm(self, widget):
+        self._canvas.normalize()
+
+    def _on_smooth(self, widget):
+        self._canvas.smooth()
+
+    def get_character_value(self):
+        return self._entry.get_text().strip()
+
+    def set_character_value(self, value):
+        self._entry.set_text(value.strip())
+
+    def get_writing(self):
+        return self._canvas.get_writing()
+
+    def set_writing(self, writing):
+        self._canvas.set_writing(writing)
+
+    def get_character(self):
+        utf8 = self.get_character_value()
+        writing = self.get_writing()
+        character = Character()
+        character.set_utf8(utf8)
+        character.set_writing(writing)
+        return character
+
+    def set_character(self, character):
+        self.set_character_value(character.get_utf8())
+        self.set_writing(character.get_writing())
+
 class CharacterSetListView(gtk.TreeView):
 
     def __init__(self):
@@ -202,19 +292,106 @@ class CharacterSetListView(gtk.TreeView):
         self.set_reorderable(True)
         self.append_column(self._column_name)
 
-    def append_character(self, character):
-        if not self.includes_character(character):
-            self._model.append((character,))
+    def append_charset(self, charset):
+        if not self.includes_charset(charset):
+            self._model.append((charset,))
 
-    def includes_character(self, character):
+    def includes_charset(self, charset):
         for row in self._model:
-            if row[0] == character:
+            if row[0] == charset:
                 return True
         return False
+
+    def get_selected_charset(self):
+        if self.get_selection().count_selected_rows() == 0:
+            return None
+        else:
+            seliter = self.get_selection().get_selected()[1]
+            return self._model.get_value(seliter, 0)
+
+class CharacterFileChooserDialog(gtk.FileChooserDialog):
+
+    def __init__(self, title, parent, action=gtk.FILE_CHOOSER_ACTION_OPEN):
+        if action == gtk.FILE_CHOOSER_ACTION_OPEN:
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+        else:
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        gtk.FileChooserDialog.__init__(self, title, parent, action, buttons)
+        self._init_dialog()
+
+    def _init_dialog(self):
+        self.set_default_size(400, 400)
+        
+        for name, pat in [["XML", "*.xml"], 
+                          ["Gzip-compressed XML", "*.xml.gz"],
+                          ["Bz2-compressed XML", "*.xml.bz2"],
+                          ["All files", "*.*"]]:
+            filt = gtk.FileFilter()
+            filt.set_name(name)
+            filt.add_pattern(pat)
+            self.add_filter(filt)
+
+        self.set_default_response(gtk.RESPONSE_OK)
+
+        self.set_preview_widget(gtk.Image())
+        self.connect("selection-changed", self._selection_changed)
+
+    def _selection_changed(self, widget):
+        filename = self.get_preview_filename()
+
+        if filename:
+            char = self._get_character(filename)
+            
+            if char:
+                image = self.get_preview_widget()
+                writing = char.get_writing()
+                writing.smooth()
+                renderer = _WritingPixbufRenderer(writing, 200, 200)
+                renderer.set_draw_annotations(False)
+                renderer.draw_background()
+                #renderer.draw_axis()
+                renderer.draw_writing()
+                pixbuf = renderer.get_pixbuf()
+                image.set_from_pixbuf(pixbuf)
+                self.set_preview_widget_active(True)
+            else:
+                self.set_preview_widget_active(False)
+
+    def get_character(self):
+        return self._get_character(self.get_filename())
+
+    def _get_character(self, filename):
+        char = Character()
+
+        try:
+            if filename.endswith(".xml.gz"):
+                char.read(filename, gzip=True)
+            elif filename.endswith(".xml.bz2"):
+                char.read(filename, bz2=True)
+            elif filename.endswith(".xml"):
+                char.read(filename)
+            else:
+                return None
+        except ValueError: # incorrect XML
+            return None
+
+        return char
+
+    def set_character(self, char):
+        filename = self.get_filename()
+        if filename.endswith(".xml.gz"):
+            char.write(filename, gzip=True)
+        elif filename.endswith(".xml.bz2"):
+            char.write(filename, bz2=True)
+        elif filename.endswith(".xml"):
+            char.write(filename)
 
 class TegakiTrain(object):
 
     def __init__(self):
+        self._charcol = CharacterCollection()
         self._create_window()
 
     def _on_new(self, widget):
@@ -239,10 +416,35 @@ class TegakiTrain(object):
         pass
 
     def _on_toggle_statusbar(self, widget):
-        pass
+        active = self._global_actions.get_action("Statusbar").get_active()
+        self._statusbar.set_property("visible", active)
 
     def _on_toggle_toolbar(self, widget):
-        pass
+        active = self._global_actions.get_action("Toolbar").get_active()
+        self._toolbar.set_property("visible", active)
+
+    def _on_toggle_icon_text(self, widget):
+        active = self._global_actions.get_action("IconText").get_active()
+        if active:
+            self._iconview.show_icon_text()
+        else:
+            self._iconview.hide_icon_text()
+
+    def _on_icon_large(self, widget):
+        self._set_icon_size(150)
+
+    def _on_icon_medium(self, widget):
+        self._set_icon_size(100)
+
+    def _on_icon_small(self, widget):
+        self._set_icon_size(50)
+
+    def _set_icon_size(self, size):
+        self._iconview.set_item_width(size)
+        charset = self._treeview.get_selected_charset()
+        if charset:
+            characters = self._charcol.get_characters(charset)
+            self._iconview.set_characters(characters)
 
     def _on_add_charset(self, widget):
         dialog = AddCharacterSetDialog(self._window)
@@ -252,29 +454,125 @@ class TegakiTrain(object):
     def _on_add_charset_validate(self, dialog, response):
         if response == gtk.RESPONSE_OK:
             for charset in dialog.get_charsets():
-                self._treeview.append_character(charset)
+                self._treeview.append_charset(charset)
+                self._charcol.add_set(charset)
 
         dialog.destroy()
 
     def _on_remove_charset(self, widget):
         seliter = self._treeview.get_selection().get_selected()[1]
+        charset = self._treeview.get_model().get_value(seliter, 0)
         self._treeview.get_model().remove(seliter)
+        self._charcol.remove_set(charset)
 
     def _on_charset_selection_changed(self, widget):
         if self._treeview.get_selection().count_selected_rows() >= 1:
             sensitive = True
+            charset = self._treeview.get_selected_charset()
+            characters = self._charcol.get_characters(charset)
         else:
             sensitive = False
+            characters = []
 
+        # Sensitize button accordingly
         self._remove_charset_button.set_sensitive(sensitive)
         for s in ["AddSample", "AddSampleFromFile"]:
             self._global_actions.get_action(s).set_sensitive(sensitive)
 
+        # Iconview
+        self._iconview.set_characters(characters)
+
     def _on_add_sample(self, widget):
-        pass
+        window = EditCharacterSampleWindow(self._window)
+        charset = self._treeview.get_selected_charset()
+        characters = self._charcol.get_characters(charset)
+        if len(characters) == 0:
+            charvalue = charset
+        else:
+            charvalue = characters[0].get_utf8()
+        window.set_character_value(charvalue)
+        window.connect("delete-event", self._on_add_sample_done)
+        window.show_all()
+
+    def _on_add_sample_done(self, window, event):
+        charset = self._treeview.get_selected_charset()
+        character = window.get_character()
+        self._charcol.append_character(charset, character)
+        self._iconview.set_characters(self._charcol.get_characters(charset))
+
+    def _on_icon_selection_changed(self, widget):
+        selitems = widget.get_selected_items()
+        if len(selitems) == 0:
+            sensitive = False
+        else:
+            sensitive = True
+
+        for s in ["EditSample", "SaveSampleToFile", "RemoveSample"]:
+            self._global_actions.get_action(s).set_sensitive(sensitive)
 
     def _on_add_sample_from_file(self, widget):
-        pass
+        dialog = CharacterFileChooserDialog("Open Character",
+                                            self._window)
+
+        if "_curr_folder" in self.__dict__:
+            dialog.set_current_folder(self._curr_folder)
+
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            self._curr_folder = dialog.get_current_folder()
+            char = dialog.get_character()
+            if char:
+                charset = self._treeview.get_selected_charset()
+                self._charcol.append_character(charset, char)
+                chars = self._charcol.get_characters(charset)
+                self._iconview.set_characters(chars)
+
+        dialog.destroy()
+
+    def _on_edit_sample(self, widget):
+        window = EditCharacterSampleWindow(self._window)
+        charset = self._treeview.get_selected_charset()
+        selitems = self._iconview.get_selected_items()
+        charindex = selitems[0][0]
+        char = self._charcol.get_characters(charset)[charindex]
+        window.set_character(char)
+        window.connect("delete-event", self._on_edit_sample_done)
+        window.show_all()
+
+    def _on_edit_sample_done(self, window, event):
+        charset = self._treeview.get_selected_charset()
+        character = window.get_character()
+        selitems = self._iconview.get_selected_items()
+        charindex = selitems[0][0]
+        self._charcol.replace_character(charset, charindex, character)
+        self._iconview.set_characters(self._charcol.get_characters(charset))
+
+    def _on_remove_sample(self, widget):
+        selitems = self._iconview.get_selected_items()
+        charset = self._treeview.get_selected_charset()
+        charindex = selitems[0][0]
+        self._charcol.remove_character(charset, charindex)
+        chars = self._charcol.get_characters(charset)
+        self._iconview.set_characters(chars)
+
+    def _on_save_sample_to_file(self, widget):
+        dialog = CharacterFileChooserDialog("Save Character",
+                                            self._window,
+                                            action=gtk.FILE_CHOOSER_ACTION_SAVE)
+
+        if "_curr_folder" in self.__dict__:
+            dialog.set_current_folder(self._curr_folder)
+
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            self._curr_folder = dialog.get_current_folder()
+            charset = self._treeview.get_selected_charset()
+            selitems = self._iconview.get_selected_items()
+            charindex = selitems[0][0]
+            char = self._charcol.get_characters(charset)[charindex]
+            dialog.set_character(char)
+
+        dialog.destroy()
 
     def _create_menu(self):
         self._uimanager = gtk.UIManager()
@@ -296,10 +594,21 @@ class TegakiTrain(object):
             <menuitem action="AddSample"/>
             <menuitem action="AddSampleFromFile"/>
             <separator/>
+            <menuitem action="EditSample"/>
+            <menuitem action="SaveSampleToFile"/>
+            <menuitem action="RemoveSample"/>
+            <separator/>
             <menuitem action="Copy"/>
             <menuitem action="SelectAll"/>
         </menu>
         <menu action="ViewMenu">
+            <menu action="IconSizeMenu">
+                <menuitem action="IconLarge"/>
+                <menuitem action="IconMedium"/>
+                <menuitem action="IconSmall"/>
+            </menu>
+            <menuitem action="IconText"/>
+            <separator/>
             <menuitem action="Statusbar"/>
             <menuitem action="Toolbar"/>
         </menu>
@@ -324,6 +633,8 @@ class TegakiTrain(object):
             <toolitem action="Train"/>
             <separator/>
             <toolitem action="AddSample"/>
+            <toolitem action="EditSample"/>
+            <toolitem action="RemoveSample"/>
     </toolbar>
 </ui>
 """
@@ -341,13 +652,23 @@ class TegakiTrain(object):
 ("AddSample", gtk.STOCK_ADD, "Add sample", None, None, self._on_add_sample),
 ("AddSampleFromFile", None, "Add sample from file", None, None, 
     self._on_add_sample_from_file),
+("EditSample", gtk.STOCK_EDIT, "Edit sample", None, None, self._on_edit_sample),
+("SaveSampleToFile", None, "Save sample to file", None, None, 
+    self._on_save_sample_to_file),
+("RemoveSample", gtk.STOCK_REMOVE, "Remove sample", None, None,
+    self._on_remove_sample),
 ("Copy", gtk.STOCK_COPY, None, None, None, self._on_copy),
 ("SelectAll", None, "Select _All", "<ctrl>A", None, self._on_select_all),
 
 ("ViewMenu", None, "_View"),
+("IconSizeMenu", None, "Icon size"),
+("IconLarge", None, "Large", None, None, self._on_icon_large),
+("IconMedium", None, "Medium", None, None, self._on_icon_medium),
+("IconSmall", None, "Small", None, None, self._on_icon_small),
         ]
 
         toggle_actions = [
+("IconText", None, "Icon text", None, None, self._on_toggle_icon_text, 1),
 ("Statusbar", None, "_Statusbar", None, None, self._on_toggle_statusbar, 1),
 ("Toolbar", None, "_Toolbar", None, None, self._on_toggle_toolbar, 1),
         ]
@@ -355,9 +676,11 @@ class TegakiTrain(object):
         self._global_actions = gtk.ActionGroup("Standard actions")
         self._global_actions.add_actions(standard_actions)
         self._global_actions.add_toggle_actions(toggle_actions)
-        self._global_actions.get_action("AddSample").set_sensitive(False)
-        self._global_actions.get_action("AddSampleFromFile"). \
-            set_sensitive(False)
+
+        # Default to False
+        for s in ["AddSample", "AddSampleFromFile",
+                  "EditSample", "SaveSampleToFile", "RemoveSample"]:
+            self._global_actions.get_action(s).set_sensitive(False)
 
         self._uimanager.insert_action_group(self._global_actions, 0)
         self._uimanager.add_ui_from_string(menu_xml)
@@ -400,6 +723,7 @@ class TegakiTrain(object):
 
     def _create_window(self):
         self._window = gtk.Window()
+        self._window.connect("delete-event", lambda x,y: gtk.main_quit())
 
         self._create_menu()
         self._window.add_accel_group(self._uimanager.get_accel_group())
@@ -418,6 +742,10 @@ class TegakiTrain(object):
         scrolledwindow = gtk.ScrolledWindow()
         scrolledwindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self._iconview = WritingIconView()
+        self._iconview.connect("selection-changed",
+                               self._on_icon_selection_changed)
+        self._global_actions.get_action("IconText").set_active(False)
+        
         scrolledwindow.add(self._iconview)
         frame.add(scrolledwindow)
         self._sidepane.add2(frame)
