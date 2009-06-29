@@ -676,7 +676,7 @@ class TegakiTrain(object):
 
         dialog.destroy()
 
-    def _on_edit_sample(self, widget):
+    def _on_edit_sample(self, widget, path=None):
         window = EditCharacterSampleWindow(self._window)
         charset = self._treeview.get_selected_charset()
         selitems = self._iconview.get_selected_items()
@@ -897,6 +897,8 @@ class TegakiTrain(object):
         self._iconview = WritingIconView()
         self._iconview.connect("selection-changed",
                                self._on_icon_selection_changed)
+        self._iconview.connect("item-activated",
+                               self._on_edit_sample)
         self._global_actions.get_action("IconText").set_active(False)
         
         scrolledwindow.add(self._iconview)
