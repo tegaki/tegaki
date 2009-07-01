@@ -118,15 +118,16 @@ class Recognizer:
 
         self._model = model_name
 
-        model = ZinniaRecognizer.get_available_models()[model_name]["path"]
+        model = self.__class__.get_available_models()[model_name]["path"]
 
         if not self._recognizer.open(model):
             raise RecognizerError, "Could not open model"      
 
     # To be implemented by child class
-    def recognize(self, model, writing, n=10):
+    def recognize(self, writing, n=10):
         """
-        Recognizes writing using model and returns n candidates.
+        Recognizes writing and returns n candidates.
+        A model must be set with set_model() beforehand.
         """
         raise NotImplementedError
 
@@ -166,16 +167,16 @@ if __name__ == "__main__":
     from tegaki.character import Character
 
     recognizer = sys.argv[1] # name of recognizer
-    model = sys.argv[2] # name of .model file
+    model = sys.argv[2] # name of model file
     char = Character()
-    char.read(sys.argv[3])
-    writing = char.get_writing() # path of .xml file
+    char.read(sys.argv[3]) # path of .xml file
+    writing = char.get_writing() 
 
     recognizers = Recognizer.get_available_recognizers()
     print "Available recognizers", recognizers
 
     if not recognizer in recognizers:
-        raise "Not an available recognizer"
+        raise Exception, "Not an available recognizer"
 
     recognizer_klass = recognizers[recognizer]
     recognizer = recognizer_klass()
@@ -184,7 +185,7 @@ if __name__ == "__main__":
     print "Available models", models
 
     if not model in models:
-        raise "Not an available model"
+        raise Exception, "Not an available model"
 
     recognizer.set_model(model)
 
