@@ -60,6 +60,10 @@ Point.prototype.toXML = function() {
     return "<point " + values.join(" ") + " />";
 }
 
+Point.prototype.toSexp = function() {
+    return "(" + this["x"] + " "+ this["y"] + ")";
+}
+
 /* Stroke */
 
 var Stroke = function() {
@@ -94,7 +98,8 @@ Stroke.prototype.getDuration = function() {
     if (this.points.length > 0) {
         last = this.points.length - 1;
 
-        if (this.points[last].timestamp != null && this.points[0].timestamp != null)
+        if (this.points[last].timestamp != null && this.points[0].timestamp !=
+null)
             return (this.points[last].timestamp - this.points[0].timestamp);
     }
     return null;
@@ -111,6 +116,17 @@ Stroke.prototype.toXML = function() {
         s += "  " + this.points[i].toXML() + "\n";
 
     s += "</stroke>";
+
+    return s;
+}
+
+Stroke.prototype.toSexp = function() {
+    var s = "(";
+
+    for (var i=0; i < this.points.length; i++)
+        s += "  " + this.points[i].toSexp() + "\n";
+
+    s += ")";
 
     return s;
 }
@@ -246,6 +262,24 @@ Writing.prototype.toXML = function() {
     return s;
 }
 
+Writing.prototype.toSexp = function() {
+    var s = "(width " + this.width + ") "
+    s += "(height " + this.height + ")\n"
+
+    s += "(strokes ";
+
+    for (var i = 0; i < this.strokes.length; i++) {
+        var lines = this.strokes[i].toSexp().split("\n");
+        
+        for (var j = 0; j < lines.length; j++)
+            s += " " + lines[j] + "";
+    }
+
+    s += ")";
+
+    return s;
+}
+
 Writing.prototype.smooth = function() {
     for (var i = 0; i < this.strokes.length; i++) {
         this.strokes[i].smooth();
@@ -288,6 +322,19 @@ Character.prototype.getWriting = function() {
 
 Character.prototype.setWriting = function(writing) {
     this.writing = writing;
+}
+
+Character.prototype.toSexp = function() {
+    var s = "(character";
+
+    var lines = this.writing.toSexp().split("\n");
+
+    for (var i = 0; i < lines.length; i++)
+        s += " " + lines[i] + " ";
+
+    s += ")";
+
+    return s;
 }
 
 Character.prototype.toXML = function() {

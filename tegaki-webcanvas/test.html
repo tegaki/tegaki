@@ -31,6 +31,13 @@
                 char.setWriting(writing);
                 return char.toXML();
             }
+            
+            function writingToSexp(writing) {
+                var char = new Character();
+                char.setUTF8("?");
+                char.setWriting(writing);
+                return char.toSexp();
+            }            
     
             function canvasToXML() {
                 if (webcanvas) {
@@ -40,6 +47,17 @@
                                           getElementById("output_textarea");
     
                     output_textarea.value = writingToXML(writing);
+                }
+            }
+            
+            function canvasToSexp() {
+                if (webcanvas) {
+                    var writing = webcanvas.getWriting();
+    
+                    var output_textarea = document.
+                                          getElementById("output_textarea");
+    
+                    output_textarea.value = writingToSexp(writing);
                 }
             }
             
@@ -131,6 +149,7 @@
                 <td>
                     <ul>
                         <li><a href="javascript:canvasToXML();">to XML</a></li>
+                        <li><a href="javascript:canvasToSexp();">to Sexp</a></li>
                         <li><a href="javascript:canvasToPNG();">to PNG</a> (<a href="javascript:canvasToPNGURL();">URL</a>)</li>
                         <li><a href="javascript:canvasClear();">clear</a></li>
                         <li><a href="javascript:canvasRevertStroke();">revert stroke</a></li>
