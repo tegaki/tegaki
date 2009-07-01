@@ -93,6 +93,9 @@ class Point(dict):
 
         return "{ %s }" % ", ".join(attrs)
 
+    def to_sexp(self):
+        return "(%d %d)" % (self.x, self.y)
+
     def __eq__(self, othr):
         if not isinstance(othr, Point):
             return False
@@ -150,7 +153,10 @@ class Stroke(list):
         
         s += "]}"
 
-        return s  
+        return s
+
+    def to_sexp(self):
+        return "(" + "".join([p.to_sexp() for p in self]) + ")"
 
     def __eq__(self, othr):
         if not isinstance(othr, Stroke):
@@ -543,6 +549,11 @@ class Writing(object):
 
         return s
 
+    def to_sexp(self):
+        return "((width %d)(height %d)(strokes %s))" % \
+            (self._width, self._height, 
+             "".join([s.to_sexp() for s in self._strokes]))                    
+         
     def __str__(self):
         return str(self.get_strokes(full=True))
 
@@ -731,6 +742,10 @@ class Character(_XmlBase):
         s += "}"
 
         return s
+
+    def to_sexp(self):
+        return "(character (value %s)" % self._utf8 + \
+                    self._writing.to_sexp()[1:-1]
 
     def __eq__(self, char):
         if not isinstance(char, Character):

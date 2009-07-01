@@ -591,6 +591,16 @@ u'pressure': 0, u'x': 4}]}
             sys.stderr.write("lxml missing!\n")
             pass
 
+    def testToSexp(self):
+        f = os.path.join(self.currdir, "data", "character.xml")
+        char = Character()
+        char.read(f)
+        f = open(os.path.join(self.currdir, "data", "character.sexp"))
+        sexp = f.read().strip()
+        f.close()
+        self.assertEquals(char.to_sexp(), sexp)
+        
+
 class CharacterCollectionTest(unittest.TestCase):
 
     def setUp(self):
