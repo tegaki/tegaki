@@ -17,12 +17,14 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import os.path
+import os
 
+import glib
 import gtk
 from gtk import gdk
 
 from tegaki.character import Character, CharacterCollection
+from tegaki.trainer import Trainer
 from tegakigtk.iconview import WritingIconView, _WritingPixbufRenderer
 from tegakigtk.canvas import Canvas
 
@@ -190,6 +192,107 @@ class AddCharacterSetDialog(gtk.Dialog):
         for char in unicodestr:
             d[char] = 1
         return d.keys()
+
+class TrainDialog(gtk.Dialog):
+
+    def __init__(self, parent):
+        gtk.Dialog.__init__(self)
+        self._init_dialog(parent)
+        self._create_ui()
+
+    def _init_dialog(self, parent):
+        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        self.set_response_sensitive(gtk.RESPONSE_OK, False)
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_has_separator(True)
+        self.set_transient_for(parent)
+        self.set_border_width(6)
+        self.set_modal(True)
+        self.set_title("Train")
+
+    def _create_ui(self):
+        self._table = gtk.Table(rows=4, columns=2)
+        self._table.set_row_spacings(8)
+        self._table.set_col_spacings(5)
+
+        self._table.attach(gtk.Label("Engine"), 0, 1, 0, 1)
+        self._create_engine_combo()
+        self._table.attach(self._engine_combo, 1, 2, 0, 1)
+
+        self._table.attach(gtk.Label("Name"), 0, 1, 1, 2)
+        self._name_entry = gtk.Entry()
+        self._name_entry.connect("changed", self._on_entry_changed)
+        self._table.attach(self._name_entry, 1, 2, 1, 2)
+
+        self._table.attach(gtk.Label("Short name"), 0, 1, 2, 3)
+        self._shortname_entry = gtk.Entry()
+        self._shortname_entry.connect("changed", self._on_entry_changed)
+        self._table.attach(self._shortname_entry, 1, 2, 2, 3)
+
+        self._table.attach(gtk.Label("Language"), 0, 1, 3, 4)
+        self._create_lang_comboentry()
+        self._table.attach(self._lang_comboentry, 1, 2, 3, 4)
+
+        # Main vbox
+        main_vbox = self.get_child()
+        main_vbox.set_spacing(10)
+        main_vbox.pack_start(self._table)
+        #msg = "<i>The model is going to be saved in\n%s.</i>" % \
+            #os.path.join(os.environ["HOME"], ".tegaki", "models")
+        #label = gtk.Label()
+        #label.set_markup(msg)
+        #main_vbox.pack_start(label)
+        self.show_all()
+
+    def _on_entry_changed(self, widget):
+        if len(Trainer.get_available_trainers()) == 0:
+            self.set_response_sensitive(gtk.RESPONSE_OK, False)
+            return
+
+        for entry in [self._name_entry, self._shortname_entry]:
+            if entry.get_text().strip() == "":
+                self.set_response_sensitive(gtk.RESPONSE_OK, False)
+                return
+
+        self.set_response_sensitive(gtk.RESPONSE_OK, True)
+
+    def _create_engine_combo(self):
+        self._engine_combo = gtk.ComboBox(gtk.ListStore(str))
+        cell = gtk.CellRendererText()
+        self._engine_combo.pack_start(cell, True)
+        self._engine_combo.add_attribute(cell, 'text', 0)
+        for engine in Trainer.get_available_trainers():
+            self._engine_combo.append_text(engine)
+        self._engine_combo.set_active(0)
+
+    def _create_lang_comboentry(self):
+        self._lang_comboentry = gtk.ComboBoxEntry(gtk.ListStore(str))
+        for lang in ["ja", "zh_CN", "zh_TW", "None"]:
+            self._lang_comboentry.append_text(lang)
+        self._lang_comboentry.set_active(0)
+
+    def get_name(self):
+        return self._name_entry.get_text().strip()
+
+    def get_shortname(self):
+        return self._shortname_entry.get_text().strip()
+
+    def get_lang(self):
+        lang = self._lang_comboentry.child.get_text().strip()
+        if lang == "None":
+            lang = None
+        return lang
+
+    def get_meta(self):
+        return { "name" : self.get_name(),
+                 "shortname" : self.get_shortname(),
+                 "language" : self.get_lang() }
+
+    def get_engine(self):
+        i = self._engine_combo.get_active()
+        keys = Trainer.get_available_trainers().keys()
+        return keys[i]
 
 class EditCharacterSampleWindow(gtk.Window):
 
@@ -559,6 +662,7 @@ class TegakiTrain(object):
             CharacterCollectionFileChooserDialog. \
                 save_character_collection(self._charcol, self._curr_file)
             self._disable_save()
+            self._statusbar_push("File saved!", sec=5)
         else:
             self._on_save_as(widget)
 
@@ -579,6 +683,7 @@ class TegakiTrain(object):
             self._add_recent(self._curr_file)
             dialog.set_character_collection(self._charcol)
             self._disable_save()
+            self._statusbar_push("File saved!", sec=5)
 
         dialog.destroy()
 
@@ -592,7 +697,21 @@ class TegakiTrain(object):
         return self._global_actions.get_action("Save").get_sensitive()
 
     def _on_train(self, widget):
-        pass
+        dialog = TrainDialog(self._window)
+        dialog.connect("response", self._on_train_done)
+        dialog.run()
+
+    def _on_train_done(self, dialog, response):
+        if response == gtk.RESPONSE_OK:
+            if len(self._charcol.get_all_characters()) > 0:
+                meta = dialog.get_meta()
+                engine = dialog.get_engine()
+                trainer_class = Trainer.get_available_trainers()[engine]
+                trainer = trainer_class()
+                trainer.train(self._charcol, meta)
+                self._statusbar_push("Model trained!", sec=5)
+
+        dialog.destroy()
 
     def _on_quit(self, widget):
         if not self._save_is_enabled() or self._confirm_continue():
@@ -770,6 +889,14 @@ class TegakiTrain(object):
             dialog.set_character(char)
 
         dialog.destroy()
+
+    def _statusbar_push(self, msg, sec=-1):
+        msgid = self._statusbar.push(0, msg)
+        if sec != -1:
+            def myfunc():
+                self._statusbar.remove(0, msgid)
+                return False
+            glib.timeout_add_seconds(sec, myfunc)
 
     def _create_menu(self):
         self._uimanager = gtk.UIManager()
