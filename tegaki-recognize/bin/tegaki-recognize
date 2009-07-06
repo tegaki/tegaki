@@ -38,6 +38,7 @@ class TegakiRecognize(object):
         self._position = None
         self._hide = options.hide
         self._simple = options.simple
+        self._dont_quit = options.dont_quit
         self._init_icon()
         self._create_window()
         self._size = None
@@ -71,6 +72,16 @@ class TegakiRecognize(object):
         rw.connect("commit-string", self._on_commit)
         self._window.connect("delete-event", self._on_delete_event)
 
+        # add quit button if the option "don't quit" is passed
+        if self._dont_quit:
+            vbox = rw.get_toolbar_vbox()
+            button = gtk.Button()
+            image = gtk.image_new_from_stock(gtk.STOCK_QUIT, 
+                                             gtk.ICON_SIZE_BUTTON)
+            button.set_image(image)
+            button.connect("clicked", lambda x: gtk.main_quit())
+            vbox.pack_start(button, expand=False)
+
         if not self._hide:
             self._window.show_all()
 
@@ -84,9 +95,12 @@ class TegakiRecognize(object):
             self._window.move(*self._position)
 
     def _on_delete_event(self, widget, event):
-        self._save_window_position()
-        self._window.hide()
-        return True # don't propagate the event
+        if self._dont_quit:
+            self._save_window_position()
+            self._window.hide()
+            return True # don't propagate the event
+        else:
+            gtk.main_quit()
 
     def _on_activate(self, widget):
         if self._window.get_property("visible"):
@@ -118,6 +132,9 @@ parser.add_option("", "--hide",
 parser.add_option("-s", "--simple",
                   action="store_true", dest="simple", default=False,
                   help="use simple recognizer instead of the smart one")
+parser.add_option("-d", "--dont-quit",
+                  action="store_true", dest="dont_quit", default=False,
+                  help="don't quit when main window is closed")
 
 (options, args) = parser.parse_args()
 
