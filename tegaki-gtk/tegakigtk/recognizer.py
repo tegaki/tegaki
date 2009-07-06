@@ -382,8 +382,8 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         if candidates:
             candidate_list = CandidateList(candidates)
 
-            if self._search_on_stroke and canvas == self._last_completed_canvas:
-                # update the current character if search on stroke activated
+            if canvas == self._last_completed_canvas:
+                # update the current character if the same canvas was used
                 last = len(self.get_characters()) - 1
                 self.replace_character(last, candidate_list)
                 self._writings[last] = writing
