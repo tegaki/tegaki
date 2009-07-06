@@ -303,7 +303,7 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
         writing = self._canvas.get_writing()
 
         if writing.get_n_strokes() > 0:
-            candidates = self._recognizer.recognize(writing)
+            candidates = self._recognizer.recognize(writing, n=9)
             candidates = [char for char, prob in candidates]
             self._chartable.set_characters(candidates)
 
@@ -594,7 +594,8 @@ class CandidatePopup(gtk.Window):
         self._chartable.add_events(gdk.BUTTON_PRESS_MASK)
         self._chartable.set_characters(self._candidates)
         self._chartable.set_layout(CharTable.LAYOUT_HORIZONTAL)
-        self._chartable.set_size_request(100, 110)
+        max_width, max_height = self._chartable.get_max_char_size()
+        self._chartable.set_size_request(max_width*3, max_height*3)
         frame.add(self._chartable)
 
         self.connect("button-press-event", self._on_button_press)

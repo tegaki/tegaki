@@ -37,7 +37,7 @@ class CharTable(gtk.Widget):
     LAYOUT_HORIZONTAL = 2
     LAYOUT_VERTICAL = 3
 
-    DEFAULT_FONT_SCALE = 2
+    DEFAULT_FONT_SCALE = 2.0 #pango.SCALE_XX_LARGE
 
     __gsignals__ = {
         "character_selected" : (gobject.SIGNAL_RUN_LAST,
@@ -112,7 +112,7 @@ class CharTable(gtk.Widget):
         # Font
         font_desc = self.style.font_desc.copy()
         size = font_desc.get_size()
-        font_desc.set_size(size * self.DEFAULT_FONT_SCALE)
+        font_desc.set_size(int(size * self.DEFAULT_FONT_SCALE))
         self.modify_font(font_desc)
 
     def do_unrealize(self):
@@ -138,7 +138,7 @@ class CharTable(gtk.Widget):
         char_width = metrics.get_approximate_char_width()
         digit_width = metrics.get_approximate_digit_width()
         char_pixels = pango.PIXELS(int(max(char_width, digit_width) *
-                                        pango.SCALE_XX_LARGE))
+                                        self.DEFAULT_FONT_SCALE))
         requisition.width = char_pixels + self._padding * 2
 
         # height
@@ -223,7 +223,7 @@ class CharTable(gtk.Widget):
     def do_button_release_event(self, event):
         return False
 
-    def _get_char_frame_size(self):
+    def get_max_char_size(self):
         context = self.get_pango_context()
         metrics = context.get_metrics(self.style.font_desc,
                                       context.get_language())
@@ -232,21 +232,24 @@ class CharTable(gtk.Widget):
         char_width = metrics.get_approximate_char_width()
         digit_width = metrics.get_approximate_digit_width()
         max_char_width = pango.PIXELS(int(max(char_width, digit_width) *
-                                           pango.SCALE_XX_LARGE))
+                                           self.DEFAULT_FONT_SCALE))
 
         # height
         ascent = metrics.get_ascent()
         descent = metrics.get_descent()
-        max_char_height = pango.PIXELS(ascent + descent)
+        max_char_height = pango.PIXELS(int((ascent + descent) *
+                                            self.DEFAULT_FONT_SCALE))
 
+        return (max_char_width, max_char_height)
+
+    def _get_char_frame_size(self):
         sizes = [layout.get_pixel_size() for layout in self._layouts]
 
         if len(sizes) > 0:
             inner_width = max([size[0] for size in sizes])
             inner_height = max([size[1] for size in sizes])
         else:
-            inner_width = max_char_width
-            inner_height = max_char_height
+            inner_width, inner_height = self.get_max_char_size()
 
         outer_width = inner_width + 2 * self._padding
         outer_height = inner_height + 2 * self._padding
