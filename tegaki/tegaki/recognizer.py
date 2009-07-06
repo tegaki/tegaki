@@ -104,8 +104,11 @@ class Recognizer:
         f = open(meta_file)
         ret = {}
         for line in f.readlines():
-            key, value = [s.strip() for s in line.strip().split("=")]
-            ret[key] = value
+            try:
+                key, value = [s.strip() for s in line.strip().split("=")]
+                ret[key] = value
+            except ValueError:
+                continue
         f.close()
         return ret
 
