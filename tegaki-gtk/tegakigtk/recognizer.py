@@ -30,6 +30,8 @@ from tegaki.recognizer import Recognizer
 
 class RecognizerWidgetBase(gtk.HBox):
 
+    DEFAULT_CANVAS_WIDTH = 250
+
     __gsignals__ = {
 
         "commit-string" :         (gobject.SIGNAL_RUN_LAST, 
@@ -119,7 +121,8 @@ class RecognizerWidgetBase(gtk.HBox):
 
     def _create_canvas(self, canvas_name):
         canvas = Canvas()
-        canvas.set_size_request(250, 250)
+        canvas.set_size_request(self.DEFAULT_CANVAS_WIDTH,
+                                self.DEFAULT_CANVAS_WIDTH)
 
         canvas.connect("button-press-event",
                        self._on_canvas_button_press,
