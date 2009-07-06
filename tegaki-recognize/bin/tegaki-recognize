@@ -47,10 +47,10 @@ class TegakiRecognize(object):
         loader = gdk.PixbufLoader()
         loader.write(data)
         loader.close()
-        pixbuf = loader.get_pixbuf()
+        self._pixbuf = loader.get_pixbuf()
 
         self._status_icon = gtk.StatusIcon()
-        self._status_icon.set_from_pixbuf(pixbuf)
+        self._status_icon.set_from_pixbuf(self._pixbuf)
 
         self._status_icon.connect("activate", self._on_activate)
         self._status_icon.connect("popup-menu", self._on_popup)
@@ -59,6 +59,7 @@ class TegakiRecognize(object):
 
     def _create_window(self):
         self._window = gtk.Window()
+        self._window.set_icon(self._pixbuf)
         self._window.set_position(gtk.WIN_POS_CENTER)
         self._window.set_title("Tegaki")
         if self._simple:
