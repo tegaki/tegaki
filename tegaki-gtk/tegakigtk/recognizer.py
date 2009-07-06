@@ -226,6 +226,8 @@ class RecognizerWidgetBase(gtk.HBox):
         except IndexError:
             self._ready = False
 
+    def get_toolbar_vbox(self):
+        return self._toolbar
 
 class SimpleRecognizerWidget(RecognizerWidgetBase):
 
