@@ -23,7 +23,7 @@ from optparse import OptionParser
 import gtk
 from gtk import gdk
 
-from tegakigtk.recognizer import SmartRecognizerWidget
+from tegakigtk.recognizer import SmartRecognizerWidget, SimpleRecognizerWidget
 
 ICON = \
 """iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAyUlE
@@ -34,9 +34,10 @@ MFyDekWegYHhv7+j6H+kaCM6QS2GGkSSxiEKAPRgTUcK1FgfAAAAAElFTkSuQmCC"""
 
 class TegakiRecognize(object):
 
-    def __init__(self, hide):
+    def __init__(self, options):
         self._position = None
-        self._hide = hide
+        self._hide = options.hide
+        self._simple = options.simple
         self._init_icon()
         self._create_window()
         self._size = None
@@ -60,7 +61,10 @@ class TegakiRecognize(object):
         self._window = gtk.Window()
         self._window.set_position(gtk.WIN_POS_CENTER)
         self._window.set_title("Tegaki")
-        rw = SmartRecognizerWidget()
+        if self._simple:
+            rw = SimpleRecognizerWidget()
+        else:
+            rw = SmartRecognizerWidget()
         self._window.add(rw)
 
         rw.connect("commit-string", self._on_commit)
@@ -110,11 +114,13 @@ parser = OptionParser()
 parser.add_option("", "--hide",
                   action="store_true", dest="hide", default=False,
                   help="don't show window on startup")
+parser.add_option("-s", "--simple",
+                  action="store_true", dest="simple", default=False,
+                  help="use simple recognizer instead of the smart one")
 
 (options, args) = parser.parse_args()
 
-
-TegakiRecognize(options.hide).run()
+TegakiRecognize(options).run()
 
 
 
