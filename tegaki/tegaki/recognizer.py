@@ -65,12 +65,25 @@ class Recognizer:
     def _get_available_models(recognizer):
         available_models = SortedDict()
 
+        try:
+            # UNIX
+            homedir = os.environ['HOME']
+        except KeyError:
+            # Windows
+            homedir = os.environ['USERPROFILE']
+
         # FIXME: use $prefix defined in setup
         for directory in (os.path.join("/usr/local/share/tegaki/models/",
                                        recognizer),
                           os.path.join("/usr/share/tegaki/models/",
                                        recognizer),
-                          os.path.join(os.environ['HOME'], ".tegaki", "models",
+                          # for Maemo
+                          os.path.join("/media/mmc1/tegaki/models/",
+                                       recognizer),
+                          os.path.join("/media/mmc2/tegaki/models/",
+                                       recognizer),
+                          # personal directory
+                          os.path.join(homedir, ".tegaki", "models",
                                        recognizer)):
 
             if not os.path.exists(directory):
