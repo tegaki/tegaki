@@ -283,7 +283,7 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
         self._chartable.clear() 
 
     def get_drawing_stopped_time(self):
-        self._canvas.get_drawing_stopped_time()
+        return self._canvas.get_drawing_stopped_time()
 
     def set_drawing_stopped_time(self, time_msec):
         self._search_on_stroke = False
