@@ -25,6 +25,8 @@ from gtk import gdk
 
 from tegakigtk.recognizer import SmartRecognizerWidget, SimpleRecognizerWidget
 
+VERSION = '0.2'
+
 ICON = \
 """iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAyUlE
 QVR42mNgoAL4z8DAIEuJAfJQQ/4zMDBYUcMgigyxgBpCjLf/MzAw+OGSxKv593Pr/5+2+f5nYGD4

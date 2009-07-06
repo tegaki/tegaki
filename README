@@ -9,6 +9,7 @@ Tegaki is composed of the following subprojects:
 * tegaki-lab: Handwriting recognition experimentation.
 * tegaki-models: Handwriting recognition data models.
 * tegaki-recognize: Tegaki integration in the desktop.
+* tegaki-train: Train Tegaki with your own handwriting.
 * tegaki-webcanvas: Canvas for the browser.
 
 In order to download the latest source code, please use git.

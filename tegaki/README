@@ -7,7 +7,7 @@ Requirements
 ------------
 
 Python       2.4    http://www.python.org
-Zinnia *     0.02   http://zinnia.sourceforge.net/
+Zinnia *     0.05   http://zinnia.sourceforge.net/
 
 [*] The Python bindings are also required.
 

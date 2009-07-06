@@ -26,6 +26,8 @@ N_ = lambda x : x
 
 from tegakigtk.recognizer import SmartRecognizerWidget
 
+VERSION = '0.1'
+
 class TegakiHelper(scim.HelperAgent):
 
     def __init__(self, helper_info):
