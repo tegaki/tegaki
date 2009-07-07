@@ -23,7 +23,6 @@ DATABASE_PORT = ''   # Set to empty string for localhost.
 import os
 TEGAKIDB_ROOT = '/path/to/hwr/tegaki-db'
 WEBCANVAS_ROOT = '/path/to/hwr/tegaki-webcanvas/webcanvas'
-DOJO_ROOT = '/path/to/dojo-release-1.3.1'
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -105,6 +104,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+
+    'tegakidb.dojango',
                 
     'tegakidb.hwdb',    
     'tegakidb.news',

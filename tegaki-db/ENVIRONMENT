@@ -76,16 +76,17 @@ Alias /webcanvas/ /vol/shufa/hwr/tegaki-webcanvas/webcanvas/
     Allow from all
 </Directory>
 
+
 <Location "/tegaki" >
     SetHandler python-program
     PythonHandler django.core.handlers.modpython
     SetEnv DJANGO_SETTINGS_MODULE tegakidb.settings
     SetEnv PYTHON_EGG_CACHE /vol/shufa/.python-eggs
-    PythonOption django.root /django
     PythonDebug On
-    PythonPath "['/vol/shufa/hwr/tegaki-db'] + sys.path"
+    PythonPath "['/vol/shufa/hwr/tegaki-db'] + ['/vol/shufa/hwr/tegaki-db/tegakidb'] +  sys.path"
     PythonInterpreter tegaki
 </Location>
+
 ===
 
 #restart apache:
