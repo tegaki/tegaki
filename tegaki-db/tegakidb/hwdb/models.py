@@ -112,7 +112,7 @@ class HandWritingSample(models.Model):
     compressed = models.IntegerField(default=0) #(NON_COMPRESSED=0, GZIP=1, BZ2=2)
     date = models.DateField(default=datetime.today())
     n_proofread = models.IntegerField(default=0)
-    proofread_by = models.ManyToManyField(TegakiUser, related_name='user', blank=True)
+    proofread_by = models.ManyToManyField(TegakiUser, related_name='tegaki_user', blank=True)
     device_used = models.IntegerField(default=0) #(MOUSE, TABLET, PDA)
     model = models.BooleanField(default=False)
     stroke_order_incorrect = models.BooleanField(default=False)

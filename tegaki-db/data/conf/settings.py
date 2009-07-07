@@ -20,8 +20,7 @@ DATABASE_HOST = 'localhost' # Set to empty string for localhost.
 DATABASE_PORT = ''   # Set to empty string for localhost. 
                      # Not used with sqlite3.       
 
-CUSTOM_USER_MODEL = 'users.TegakiUser'
-
+import os
 TEGAKIDB_ROOT = '/path/to/hwr/tegaki-db'
 WEBCANVAS_ROOT = '/path/to/hwr/tegaki-webcanvas/webcanvas'
 DOJO_ROOT = '/path/to/dojo-release-1.3.1'
@@ -46,7 +45,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = TEGAKIDB_ROOT + '/data/www/'
+MEDIA_ROOT = os.path.join(TEGAKIDB_ROOT, 'data/www/')
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
@@ -73,6 +72,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
+    'dojango.middleware.DojoAutoRequireMiddleware',
+)
+
+AUTH_PROFILE_MODULE = 'users.TegakiUser'
+
+DOJANGO_DATAGRID_ACCESS = (
+    'users.TegakiUser',
+    'hwdb.HandwritingSample',
 )
 
 LOGIN_URL = '/tegaki/login/'
@@ -84,12 +91,12 @@ TEMPLATE_DIRS = (
     TEGAKIDB_ROOT + '/data/templates/',
 )
 
-FIXTURE_DIRS = (
-    TEGAKIDB_ROOT + '/data/fixtures/',
+TEMPLATE_DIRS = (
+    os.path.join(TEGAKIDB_ROOT, 'data/templates/'),
 )
 
 FIXTURE_DIRS = (
-    TEGAKIDB_ROOT + '/data/fixtures/',
+    os.path.join(TEGAKIDB_ROOT, 'data/fixtures/'),
 )
 
 INSTALLED_APPS = (

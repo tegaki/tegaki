@@ -3,6 +3,7 @@
 {% block title %}Tegaki-db - {{user.username}}{% endblock %}
 
 {% block content %}
-<h1>{{user.username}}</h1>
+<h1>{{tegaki_user.user.username}}</h1>
+description: {{ tegaki_user.description }}
 
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+
+
+{% load dojango_grid %}
+
+{% block content %}
+
+<h1> Users:</h1>
+<div >
+    {% datagrid users TegakiUser %}
+        label = {'n_handwriting_smaples':'# of Handwriting Samples'}
+        height='500px'
+    {% enddatagrid %}
+</div>
+
+
+{% endblock %}
+

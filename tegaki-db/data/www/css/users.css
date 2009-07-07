@@ -1,0 +1,13 @@
+label {
+    background:#DEDEDE none repeat scroll 0 0;
+    clear:left;
+    float:left;
+    margin: 2px 5px 0 0;
+    padding: 3px 0 7px;
+    width:200px;
+}
+
+input {
+    display: block;
+    margin: 10px 0;
+}

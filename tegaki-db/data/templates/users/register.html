@@ -1,0 +1,31 @@
+{% extends "base/base.html" %}
+
+{% block title %}Tegaki-db Register{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/users.css"/>
+{% endblock %}
+
+{% block content %}
+
+<h1>Register:</h1>
+
+<form method="post" action=".">
+
+<label for="id_username">{{form.username.label}}:</label> {{form.username}}
+<label for="id_password1">{{form.password1.label}}:</label> {{form.password1}}
+<label for="id_password2">{{form.password2.label}}:</label> {{form.password2}}
+
+
+<label for="id_country">{{form.country.label}}:</label> {{form.country}}
+<label for="id_lang">{{form.lang.label}}:</label> {{form.lang}}
+<label for="id_description">{{form.description.label}}:</label> {{form.description}}
+<label for="id_show_handwriting_samples">{{form.show_handwriting_samples.label}}:</label> {{form.show_handwriting_samples}}
+
+<br>
+<input type="submit" value="Register" />
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+{% endblock %}
+
