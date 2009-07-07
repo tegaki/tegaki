@@ -14,6 +14,9 @@ from tegakidb.users.models import TegakiUser
 
 import simplejson
 
+#tell dojango to include dojox function we need
+from dojango.util.dojo_collector import add_module
+add_module("dojox.gfx.createSurface")
 
 def index(request):
     return render_to_response('hwdb/index.html', {'utf8': ""})
