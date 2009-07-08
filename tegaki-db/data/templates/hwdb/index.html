@@ -8,7 +8,6 @@
 <script type="text/javascript" src="/webcanvas/character.js"></script>
 
 <script type="text/javascript">
-dojo.require('dojo.gfx');
 var ricepaper;
 
 function load()
@@ -16,6 +15,7 @@ function load()
     ricepaper = new Ricepaper("ricepaper");
     ricepaper.init();
 }
+dojo.addOnLoad(load);
 
 function submitDrawing(){
     w = ricepaper.character.get_writing();
@@ -35,27 +35,32 @@ function submitDrawing(){
 
 }
 
+function clearAll()
+{
+    ricepaper.clear();
+    csdiv = document.getElementById("charactersDiv");
+    csdiv.innerHTML = "";
+}
+
 </script>
 {% endblock %}
 
-{% block onload %}load();{% endblock %}
-
 {% block content %}
-<h1>Ricepaper</h1>
+<h1>Recognize</h1>
 
 
 <div id="ricepaper" class="ricepaper"></div>
+        <br class="clear"/>
+	<br />
+	<input type="button" id="submitBut" name="submit" value="Submit" onclick="submitDrawing();">
+	<input type="button" id="clearBut" name="clear" onclick="clearAll();" value="Clear">
 
 <!--
 <div id="stele" class="steleDiv"></div>
 -->
 <div id="charContainer">
 	<div id="charactersDiv"></div>
-	<br class="clear"/>
-	<br />
-	<input type="button" id="submitBut" name="submit" value="Submit" onclick="submitDrawing();">
-	<input type="button" id="clearBut" name="clear" onclick="ricepaper.clear();" value="Clear">
-	
+		
 </div>	
 	
 {% endblock %}

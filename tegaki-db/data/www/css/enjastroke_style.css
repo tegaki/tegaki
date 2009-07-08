@@ -36,10 +36,9 @@
 }
 #charactersDiv {
 	float:left;
-	height:350px;
+	height:500px;
 	margin-left:10px;
 	padding:5px;
-	width:165px;
 	overflow:auto;
 }
 

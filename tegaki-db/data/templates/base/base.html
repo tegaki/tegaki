@@ -72,20 +72,35 @@
                         <script type="text/javascript" src="{{ DOJANGO.DOJANGO_SRC_FILE }}"></script>
                 {% endif %}
 
-
-
-
+    <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
+    
     {% block extrahead %} {% endblock %}
 </head>
 {% endspaceless %}
 
 
 <body onload="{% block onload %}{% endblock %}" class="{{ DOJANGO.THEME }}">
+
+<div id="site_wrapper">
+    <div id="header">
+        {% block display_header %}
+        {% if user.username %}
+            Welcome: {{ user.username }}<br>
+            <a href="/tegaki/logout">Logout</a>
+        {% else %}
+            <a href="/tegaki/login/?next={{ request.path }}">Login</a> <a href="/tegaki/users/register/?next={{ request.path }}">Register</a>
+        {% endif %}
+        {% endblock %}
+    </div>
+
+
+    <div id="content_wrapper">
     <div id="sidebar">
         {% block sidebar %}
         <ul>
             <li><a href="/tegaki/">Home</a></li>
             <li><a href="/tegaki/news/">News</a></li>
+            <li><a href="/tegaki/hwdb/">HWDB</a></li>
             <li><a href="/tegaki/users/">Users</a></li>
         </ul>
         {% endblock %}
@@ -94,7 +109,9 @@
     <div id="content">
         {% block content %}{% endblock %}
     </div>
-
+    <div style="clear:both"></div>
+    </div>
+</div>
         {% block dojango_require %}
                 <script type="text/javascript">
                         {% for require in DOJANGO.COLLECTOR %}

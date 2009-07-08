@@ -1,0 +1,14 @@
+
+#header {
+
+}
+
+#sidebar {
+    float:left;
+    width:100px;
+}
+
+#content {
+    float:left;
+    width:450px;
+}

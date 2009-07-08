@@ -13,13 +13,11 @@ from tegakidb.hwdb.models import HandWritingSample, Character, CharacterSet
 from tegakidb.users.models import TegakiUser
 
 import simplejson
+from tegakidb.util import render_to
 
-#tell dojango to include dojox function we need
-from dojango.util.dojo_collector import add_module
-add_module("dojox.gfx.createSurface")
-
+@render_to('hwdb/index.html')
 def index(request):
-    return render_to_response('hwdb/index.html', {'utf8': ""})
+    return {'utf8': ""}
 
 @login_required         #utilize django's built in login magic
 def input(request):
@@ -44,9 +42,10 @@ def input(request):
     w.save() 
     return HttpResponse("%s" % w.id)
 
+@render_to('hwdb/sample.html')
 def sample(request):
     sample = "sample"
-    return render_to_response('hwdb/sample.html', {'sample':sample})
+    return {'sample':sample}
 
 @login_required
 def select_charset(request):

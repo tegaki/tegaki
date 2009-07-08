@@ -104,9 +104,9 @@ function zinniaStroke(stroke)
 function getStyle(element,attribute,isInt){
     /*if isInt is set to 1, then return the found style as an int*/
     var a;
-    console.log(element);
-    console.log(attribute);
-    console.log(window.getComputedStyle(element,attribute));
+    //console.log(element);
+    //console.log(attribute);
+    //console.log(window.getComputedStyle(element,attribute));
     if(window.getComputedStyle)
     {
         a = window.getComputedStyle(element,attribute).getPropertyValue(attribute);

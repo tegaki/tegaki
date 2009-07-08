@@ -20,9 +20,11 @@ def register(request):
             new_user = form.save()
             user = authenticate(username=form.cleaned_data["username"], password=form.cleaned_data["password2"])
             login(request, user)
-            return HttpResponseRedirect('/tegaki/news/')
+            return HttpResponseRedirect('/tegaki/news/') #TODO: add support for next redirection
     else:
         form = RegisterForm()
+        #TODO: add support for next redirection
+    
     return {'form':form}
 
 @login_required
