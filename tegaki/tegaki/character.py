@@ -24,6 +24,8 @@ import cStringIO
 import gzip as gzipm
 import bz2 as bz2m
 from math import floor, atan, sin, cos, pi
+import os
+import re
 
 try:
     # lxml is used for DTD validation
@@ -851,6 +853,42 @@ class CharacterCollection(_XmlBase):
 
     def __init__(self):
         self._characters = SortedDict()
+
+    @staticmethod
+    def from_character_directory(directory,
+                                 extensions=["xml", "bz2", "gz"], 
+                                 recursive=True):
+        """
+        Creates a character collection from a directory containing
+        individual character files.
+        """
+        regexp = re.compile("\.(%s)$" % "|".join(extensions))
+        charcol = CharacterCollection()
+        
+        for name in os.listdir(directory):
+            full_path = os.path.join(directory, name)
+            if os.path.isdir(full_path) and recursive:
+                charcol += CharacterCollection.from_character_directory(
+                               full_path, extensions)
+            elif regexp.search(full_path):
+                char = Character()
+                gzip = False; bz2 = False
+                if full_path.endswith(".gz"): gzip = True
+                if full_path.endswith(".bz2"): bz2 = True
+                
+                try:
+                    char.read(full_path, gzip=gzip, bz2=bz2)
+                except ValueError:
+                    continue # ignore malformed XML files
+
+                utf8 = char.get_utf8()
+                if utf8 is None: utf8 = "Unknown"
+
+                charcol.add_set(utf8)
+                if not char in charcol.get_characters(utf8):
+                    charcol.append_character(utf8, char)
+                
+        return charcol
 
     def __add__(self, other):
         new = CharacterCollection()

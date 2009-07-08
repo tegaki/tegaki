@@ -732,3 +732,18 @@ class CharacterCollectionTest(unittest.TestCase):
         self.assertEquals(len(charcol3.get_characters("c")), 1)
         self.assertEquals(len(charcol3.get_characters("d")), 0)
 
+    def testFromCharDirRecursive(self):
+        directory = os.path.join(self.currdir, "data")
+        charcol = CharacterCollection.from_character_directory(directory)
+        self.assertEquals(charcol.get_set_list(), ["防", "三", "一", "二"])
+        self.assertEquals(len(charcol.get_characters("一")), 3)
+        self.assertEquals(len(charcol.get_characters("三")), 2)
+        self.assertEquals(len(charcol.get_characters("二")), 1)
+        self.assertEquals(len(charcol.get_characters("防")), 1)
+
+    def testFromCharDirNotRecursive(self):
+        directory = os.path.join(self.currdir, "data")
+        charcol = CharacterCollection.from_character_directory(directory,
+                                        recursive=False)
+        self.assertEquals(charcol.get_set_list(), ["防"])
+        self.assertEquals(len(charcol.get_characters("防")), 1)
