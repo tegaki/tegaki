@@ -21,6 +21,7 @@
 # - Mathieu Blondel
 
 import os
+from optparse import OptionParser
 
 import glib
 import gtk
@@ -1118,5 +1119,9 @@ class TegakiTrain(object):
 
     def run(self):
         gtk.main()
+
+parser = OptionParser(version="%prog " + VERSION)
+
+(options, args) = parser.parse_args()
 
 TegakiTrain().run()

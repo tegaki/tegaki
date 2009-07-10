@@ -28,6 +28,7 @@ from tegaki.character import CharacterCollection
 from tegaki.recognizer import Recognizer, RecognizerError
 
 from tegakitools.utils import tomoe_dict_to_character_collection
+
 VERSION = '0.2'
 
 def harmonic_mean(x1, x2):
@@ -236,7 +237,7 @@ recognizer        a recognizer available on the system
 model             a model name available for that recognizer on the system OR
                   the direct file path to the model
 """
-parser = OptionParser(usage=usage)
+parser = OptionParser(usage=usage, version="%prog " + VERSION)
 
 parser.add_option("-v", "--verbosity-level",
                   type="int", dest="verbosity_level", default=0,

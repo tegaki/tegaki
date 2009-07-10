@@ -28,6 +28,8 @@ from tegaki.character import CharacterCollection
 
 from tegakitools.utils import tomoe_dict_to_character_collection
 
+VERSION = '0.2'
+
 class TegakiConvertError(Exception):
     pass
 
@@ -72,7 +74,8 @@ class TegakiConvert(object):
             if self._output_path.endswith(".bz2"): bz2 = True
             charcol.write(self._output_path, gzip=gzip, bz2=bz2)
 
-parser = OptionParser(usage="usage: %prog [options] [output-path]")
+parser = OptionParser(usage="usage: %prog [options] [output-path]",
+                      version="%prog " + VERSION)
 
 parser.add_option("-d", "--directory",
                   action="append", type="string", dest="directories",

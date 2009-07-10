@@ -130,7 +130,7 @@ class TegakiRecognize(object):
     def run(self):
         gtk.main()
 
-parser = OptionParser()
+parser = OptionParser(version="%prog " + VERSION)
 parser.add_option("", "--hide",
                   action="store_true", dest="hide", default=False,
                   help="don't show window on startup")
