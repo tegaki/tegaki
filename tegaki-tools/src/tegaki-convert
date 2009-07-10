@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2009 The Tegaki project contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Contributors to this file:
+# - Mathieu Blondel
+
+import sys
+import os
+from optparse import OptionParser
+
+from tegaki.character import CharacterCollection
+
+from tegakitools.utils import tomoe_dict_to_character_collection
+
+class TegakiConvertError(Exception):
+    pass
+
+class TegakiConvert(object):
+
+    def __init__(self, options, args):
+        self._directories = options.directories
+        self._charcols = options.charcols
+        self._tomoe = options.tomoe
+
+        try:
+            self._output_path = args[0]
+        except:
+            self._output_path = None
+
+    def run(self):
+        charcol = CharacterCollection()
+
+        # add the directories provided
+        for directory in self._directories:
+            charcol += CharacterCollection.from_character_directory(directory)
+
+        # add the character collections provided
+        for charcol_path in self._charcols:
+            _charcol = CharacterCollection()
+            gzip = False; bz2 = False
+            if charcol_path.endswith(".gz"): gzip = True
+            if charcol_path.endswith(".bz2"): bz2 = True
+            _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
+            charcol += _charcol
+
+        # add tomoe dictionaries provided
+        for tomoe in self._tomoe:
+            charcol += tomoe_dict_to_character_collection(tomoe)
+
+        if not self._output_path:
+            # outputs to stdout if not output path specified
+            print charcol.to_xml()
+        else:
+            gzip = False; bz2 = False
+            if self._output_path.endswith(".gz"): gzip = True
+            if self._output_path.endswith(".bz2"): bz2 = True
+            charcol.write(self._output_path, gzip=gzip, bz2=bz2)
+
+parser = OptionParser(usage="usage: %prog [options] [output-path]")
+
+parser.add_option("-d", "--directory",
+                  action="append", type="string", dest="directories",
+                  default=[],
+                  help="directory containing individual XML character files")
+parser.add_option("-c", "--charcol",
+                  action="append", type="string", dest="charcols",
+                  default=[],
+                  help="character collection XML files")
+parser.add_option("-t", "--tomoe-dict",
+                  action="append", type="string", dest="tomoe",
+                  default=[],
+                  help="Tomoe XML dictionary files")
+
+(options, args) = parser.parse_args()
+
+try:
+    TegakiConvert(options, args).run()
+except TegakiConvertError, e:
+    sys.stderr.write(str(e) + "\n\n")
+    parser.print_help()
+    sys.exit(1)

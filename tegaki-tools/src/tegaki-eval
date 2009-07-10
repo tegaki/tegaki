@@ -27,6 +27,7 @@ from optparse import OptionParser
 from tegaki.character import CharacterCollection
 from tegaki.recognizer import Recognizer, RecognizerError
 
+from tegakitools.utils import tomoe_dict_to_character_collection
 VERSION = '0.2'
 
 def harmonic_mean(x1, x2):
@@ -46,6 +47,7 @@ class TegakiEval(object):
         self._verbosity_level = options.verbosity_level
         self._directories = options.directories
         self._charcols = options.charcols
+        self._tomoe = options.tomoe
         self._recognizer = args[0]
         self._model = args[1]
 
@@ -64,6 +66,10 @@ class TegakiEval(object):
             if charcol_path.endswith(".bz2"): bz2 = True
             _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
             charcol += _charcol
+
+        # add tomoe dictionaries provided
+        for tomoe in self._tomoe:
+            charcol += tomoe_dict_to_character_collection(tomoe)
 
         all_chars = charcol.get_all_characters()
 
@@ -243,6 +249,10 @@ parser.add_option("-c", "--charcol",
                   action="append", type="string", dest="charcols",
                   default=[],
                   help="character collection XML files")
+parser.add_option("-t", "--tomoe-dict",
+                  action="append", type="string", dest="tomoe",
+                  default=[],
+                  help="Tomoe XML dictionary files")
 
 (options, args) = parser.parse_args()
 
