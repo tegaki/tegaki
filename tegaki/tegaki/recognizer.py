@@ -132,15 +132,23 @@ class Recognizer:
         return self._model
 
     def set_model(self, model_name):
+        """
+        Sets a model with a model available on the system.
+        model_name must exist for that recognizer.
+        """
         if not model_name in self.__class__.get_available_models():
             raise RecognizerError, "Model does not exist"
 
         self._model = model_name
 
-        model = self.__class__.get_available_models()[model_name]["path"]
+        path = self.__class__.get_available_models()[model_name]["path"]
 
-        if not self._recognizer.open(model):
-            raise RecognizerError, "Could not open model"      
+        if not self._recognizer.open(path):
+            raise RecognizerError, "Could not open model" 
+
+    def set_model_from_file(self, path):
+        if not self._recognizer.open(path):
+            raise RecognizerError, "Could not open model" 
 
     # To be implemented by child class
     def recognize(self, writing, n=10):
@@ -172,7 +180,7 @@ try:
                 for x, y in stroke:
                     s.add(i, x, y)
 
-            result = self._recognizer.classify(s, n)
+            result = self._recognizer.classify(s, n+1)
             size = result.size()
 
             return [(result.value(i), result.score(i)) \
