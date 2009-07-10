@@ -1,0 +1,27 @@
+tegaki-tools
+============
+
+A set of command-line tools for Tegaki.
+
+Requirements
+------------
+
+tegaki    0.2
+
+Install
+-------
+
+($ su)
+# python setup.py install
+
+License
+-------
+
+This package is distributed under the terms of the GNU General Public
+License. See the COPYING file for more information.
+
+Homepage
+--------
+
+http://tegaki.sourceforge.net
+

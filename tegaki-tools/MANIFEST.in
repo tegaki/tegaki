@@ -1,0 +1,2 @@
+include AUTHORS COPYING COPYRIGHT README TODO MANIFEST.in
+exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST
