@@ -1,0 +1,257 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2009 The Tegaki project contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Contributors to this file:
+# - Mathieu Blondel
+
+import sys
+import os
+from optparse import OptionParser
+
+from tegaki.character import CharacterCollection
+from tegaki.recognizer import Recognizer, RecognizerError
+
+VERSION = '0.2'
+
+def harmonic_mean(x1, x2):
+    if x1 == 0.0 and x2 == 0.0:
+        return 0.0
+    else:
+        return 2 * float(x1 * x2) / float(x1 + x2)
+
+class TegakiEvalError(Exception):
+    pass
+
+class TegakiEval(object):
+
+    MATCH_RESULTS = (1, 5, 10)
+
+    def __init__(self, options, args):
+        self._verbosity_level = options.verbosity_level
+        self._directories = options.directories
+        self._charcols = options.charcols
+        self._recognizer = args[0]
+        self._model = args[1]
+
+    def run(self):
+        charcol = CharacterCollection()
+
+        # add the directories provided
+        for directory in self._directories:
+            charcol += CharacterCollection.from_character_directory(directory)
+
+        # add the character collections provided
+        for charcol_path in self._charcols:
+            _charcol = CharacterCollection()
+            gzip = False; bz2 = False
+            if charcol_path.endswith(".gz"): gzip = True
+            if charcol_path.endswith(".bz2"): bz2 = True
+            _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
+            charcol += _charcol
+
+        all_chars = charcol.get_all_characters()
+
+        if len(all_chars) == 0:
+            raise TegakiEvalError, "No character samples to evaluate!"
+
+        recognizer_class = self._get_recognizer_class()
+        recognizer = self._get_recognizer(recognizer_class)
+
+        self._eval(recognizer, all_chars)
+
+    def _get_recognizer_class(self):
+        avail_recognizers = Recognizer.get_available_recognizers()
+
+        if not self._recognizer in avail_recognizers:
+            err = "Not an available recognizer!\n"
+            err += "Available ones include: %s" % \
+                ", ".join(avail_recognizers.keys())
+            raise TegakiEvalError, err
+
+        return avail_recognizers[self._recognizer]
+
+    def _get_recognizer(self, recognizer_class):
+        recognizer = recognizer_class()
+        if os.path.exists(self._model):
+            # the path exists so we consider the parameter to be a model path
+            method = recognizer.set_model_from_file
+        else:
+            # otherwise we consider the parameter to be a model name
+            avail_models = recognizer_class.get_available_models()
+            if not self._model in avail_models:
+                err = "Not an available model!\n"
+                err += "Available ones include: %s" % \
+                    ", ".join(["\"%s\"" % k for k in avail_models.keys()])
+                raise TegakiEvalError, err
+
+            method = recognizer.set_model
+        try:
+            method(self._model)
+        except RecognizerError, e:
+            raise TegakiEvalError, str(e)
+
+        return recognizer
+
+    def _eval(self, recognizer, all_chars):
+        # number of samples present per character
+        n_samples = {}
+        # number of correctly predicted samples per character
+        n_corr_pred = {}
+        # number of times a character was predicted (correctly or not)
+        n_pred = {}
+
+        for n in self.MATCH_RESULTS:
+            n_corr_pred[n] = {}
+            n_pred[n] = {}
+
+        # calculate our statistics for each character
+
+        canddict = {} # store ALL the candidate results for verbosity >= 2
+
+        for char in all_chars:
+            utf8 = char.get_utf8()
+            if not utf8:
+                continue
+
+            n_samples[utf8] = n_samples.get(utf8, 0) + 1
+
+            cand = recognizer.recognize(char.get_writing(), 
+                                        n=max(self.MATCH_RESULTS))
+            cand = [char for char, prob in cand] # we don't need the probability
+
+            if self._verbosity_level >= 2:
+                if utf8 not in canddict: canddict[utf8] = []
+                canddict[utf8].append(cand)
+
+            for n in self.MATCH_RESULTS:
+                if utf8 in cand[0:n]:
+                    n_corr_pred[n][utf8] = n_corr_pred[n].get(utf8, 0) + 1
+                for c in cand[0:n]:
+                    n_pred[n][c] = n_pred[n].get(c, 0) + 1
+
+        # Calculate accuracy/recall and precision for each character
+        # Print the overall results
+        print "Overall results"
+        print "\tNumber of characters evaluated: %d\n" % len(all_chars)
+
+        total_samples = sum(n_samples.values())
+        recall = {}
+        precision = {}
+        for n in self.MATCH_RESULTS:
+            recall[n] = {}
+            precision[n] = {}
+
+        for n in self.MATCH_RESULTS:
+            total_corr_pred = sum(n_corr_pred[n].values())
+            #total_pred = sum(n_pred[n].values())
+
+            recall_sum = 0
+            precision_sum = 0
+
+            for k in n_samples.keys():
+
+                # recall accounts for the recognizer "completeness"
+                # i.e. number of correct predictions / number of samples
+                recall[n][k] = float(n_corr_pred[n].get(k, 0)) / \
+                               float(n_samples[k])
+                recall_sum += recall[n][k]
+
+                # i.e. number of correct predictions / number of predictions
+                try:
+                    precision[n][k] = float(n_corr_pred[n].get(k, 0)) / \
+                                       float(n_pred[n][k])
+                except KeyError:
+                    precision[n][k] = 0
+
+                precision_sum += precision[n][k]
+            
+            recall_sum *= 100 / float(len(n_samples))
+            precision_sum *= 100 / float(len(n_samples))
+
+            print "\tmatch%d" % n
+            print "\t\tAccuracy/Recall: %0.2f" % recall_sum
+            if n == 1:
+                # Precision doesn't make sense for n > 1
+                print "\t\tPrecision: %0.2f" % precision_sum
+                print "\t\tF1 score: %0.2f" % harmonic_mean(recall_sum, 
+                                                            precision_sum)
+            print ""
+
+        # verbosity level 1
+        if self._verbosity_level < 1:
+            return
+
+        print "Result details"
+        for k in n_samples.keys():
+            print "\tCharacter: %s" %k
+            print "\tNumber of samples: %d\n" % n_samples[k]
+
+            for n in self.MATCH_RESULTS:
+                print "\t\tmatch%d" % n
+                print "\t\tAccuracy/Recall: %0.2f" % (recall[n][k] * 100)
+                if n == 1:
+                    # Precision doesn't make sense for n > 1
+                    print "\t\tPrecision: %0.2f" % (precision[n][k] * 100)
+                    f1s = harmonic_mean(recall[n][k], precision[n][k]) * 100
+                    print "\t\tF1 score: %0.2f" % f1s
+                print ""
+
+            if self._verbosity_level < 2:
+                continue
+            
+            # verbosity level 2
+            print "\tCandidates:"
+            i = 0
+            for cand in canddict[k]:
+                print "\tsample%d: %s" % (i, ", ".join(cand))
+                i += 1
+            print ""
+
+usage = """usage: %prog [options] recognizer model
+
+recognizer        a recognizer available on the system
+
+model             a model name available for that recognizer on the system OR
+                  the direct file path to the model
+"""
+parser = OptionParser(usage=usage)
+
+parser.add_option("-v", "--verbosity-level",
+                  type="int", dest="verbosity_level", default=0,
+                  help="verbosity level between 0 and 2")
+parser.add_option("-d", "--directory",
+                  action="append", type="string", dest="directories",
+                  default=[],
+                  help="directory containing individual XML character files")
+parser.add_option("-c", "--charcol",
+                  action="append", type="string", dest="charcols",
+                  default=[],
+                  help="character collection XML files")
+
+(options, args) = parser.parse_args()
+
+try:
+    if len(args) < 2:
+        raise TegakiEvalError, "Needs a recognizer and a model!"
+
+    TegakiEval(options, args).run()
+except TegakiEvalError, e:
+    sys.stderr.write(str(e) + "\n\n")
+    parser.print_help()
+    sys.exit(1)
