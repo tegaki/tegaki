@@ -3,6 +3,23 @@ tegaki-zinnia-simplified-chinese
 
 Simplified Chinese handwriting model for Zinnia.
 
+Requirements
+------------
+
+Build-dependency only:
+
+tegaki-tools 0.2
+
+Build
+-----
+
+/!\ This step is optional, you can skip it without risk.
+
+We provide a pre-built model file (.model) for convenience but if you need to,
+you can rebuild the model file from its original source (.xml) like so:
+
+$ tegaki-build -t handwriting-zh_CN.xml zinnia handwriting-zh_CN.meta
+
 Install
 -------
 
