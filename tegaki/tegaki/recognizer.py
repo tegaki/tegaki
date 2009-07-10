@@ -128,6 +128,12 @@ class Recognizer:
         f.close()
         return ret
 
+    def open(self, path):
+        """
+        raises RecognizerError if could not open
+        """
+        raise NotImplementedError
+
     def get_model(self):
         return self._model
 
@@ -143,12 +149,7 @@ class Recognizer:
 
         path = self.__class__.get_available_models()[model_name]["path"]
 
-        if not self._recognizer.open(path):
-            raise RecognizerError, "Could not open model" 
-
-    def set_model_from_file(self, path):
-        if not self._recognizer.open(path):
-            raise RecognizerError, "Could not open model" 
+        self.open(path)
 
     # To be implemented by child class
     def recognize(self, writing, n=10):
@@ -166,6 +167,10 @@ try:
         def __init__(self):
             Recognizer.__init__(self)
             self._recognizer = zinnia.Recognizer()
+
+        def open(self, path):
+            ret = self._recognizer.open(path) 
+            if not ret: raise RecognizerError, "Could not open!"
 
         def recognize(self, writing, n=10):
             s = zinnia.Character()

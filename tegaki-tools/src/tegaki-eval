@@ -97,7 +97,7 @@ class TegakiEval(object):
         recognizer = recognizer_class()
         if os.path.exists(self._model):
             # the path exists so we consider the parameter to be a model path
-            method = recognizer.set_model_from_file
+            method = recognizer.open
         else:
             # otherwise we consider the parameter to be a model name
             avail_models = recognizer_class.get_available_models()
