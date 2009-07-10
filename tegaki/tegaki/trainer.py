@@ -51,7 +51,8 @@ class Trainer:
             - name: full name (mandatory)
             - shortname: name with less than 3 characters (mandatory)
             - language: model language (optional)
-            - path: output path (optional)
+        path: path to the ouput model
+              (if None, the personal directory is assumed)
         """
         raise NotImplementedError
 
@@ -73,7 +74,7 @@ try:
         def __init__(self):
             Trainer.__init__(self)
 
-        def train(self, charcol, meta):
+        def train(self, charcol, meta, path=None):
             self._check_meta(meta)
 
             trainer = zinnia.Trainer()
@@ -86,13 +87,15 @@ try:
                     else:
                         trainer.add(zinnia_char)
 
-            if "path" in meta:
-                path = meta["path"]
-            else:
-                path = os.path.join(os.environ['HOME'], ".tegaki", "models",
-                                    "zinnia", meta["name"] + ".model")
+            if not path:
+                if "path" in meta:
+                    path = meta["path"]
+                else:
+                    path = os.path.join(os.environ['HOME'], ".tegaki", "models",
+                                        "zinnia", meta["name"] + ".model")
 
             meta_file = path.replace(".model", ".meta")
+            if not meta_file.endswith(".meta"): meta_file += ".meta"
             
             trainer.train(path)
             self._write_meta_file(meta, meta_file)

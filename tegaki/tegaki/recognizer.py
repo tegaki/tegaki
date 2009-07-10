@@ -95,7 +95,7 @@ class Recognizer:
             meta_files = glob.glob(os.path.join(directory, "*.meta"))
 
             for meta_file in meta_files:
-                meta = Recognizer._read_meta_file(meta_file)
+                meta = Recognizer.read_meta_file(meta_file)
 
                 if not meta.has_key("name") or \
                     not meta.has_key("shortname"):
@@ -116,7 +116,7 @@ class Recognizer:
         return available_models
 
     @staticmethod
-    def _read_meta_file(meta_file):
+    def read_meta_file(meta_file):
         f = open(meta_file)
         ret = {}
         for line in f.readlines():
