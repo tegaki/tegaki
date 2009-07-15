@@ -62,6 +62,7 @@ class Canvas(gtk.Widget):
 
         self._drawing_stopped_time = 0
         self._drawing_stopped_id = 0
+        self._draw_annotations = True
 
         self._handwriting_line_gc = None
         self._annotation_gc = None
@@ -527,9 +528,10 @@ class Canvas(gtk.Widget):
 
         if len(self._strokes[self._curr_stroke]) == self._curr_point + 1:
             # if we reach the stroke last point
-                           
-            self._draw_annotation(self._strokes[self._curr_stroke],
-                                                self._curr_stroke)
+                         
+            if self._draw_annotations:
+                self._draw_annotation(self._strokes[self._curr_stroke],
+                                                    self._curr_stroke)
                                                 
             self._curr_point = 1
             self._curr_stroke += 1
@@ -566,7 +568,8 @@ class Canvas(gtk.Widget):
                 n_strokes = len(strokes)
 
             for i in range(n_strokes):
-                self._draw_stroke(strokes[i], i, self._handwriting_line_gc)
+                self._draw_stroke(strokes[i], i, self._handwriting_line_gc,
+                                  draw_annotation=self._draw_annotations)
 
             if force_draw:
                 self._redraw()
@@ -578,6 +581,12 @@ class Canvas(gtk.Widget):
 
     def set_drawing_stopped_time(self, time_msec):
         self._drawing_stopped_time = time_msec
+
+    def set_draw_annotations(self, draw_annotations):
+        self._draw_annotations = draw_annotations
+
+    def get_draw_annotations(self):
+        return self._draw_annotations
 
     def refresh(self, n_strokes=None, force_draw=False):
         if self._writing:
@@ -779,6 +788,7 @@ if __name__ == "__main__":
             print "drawing stopped!"
             print widget.get_writing().to_xml()
                              
+    canvas.set_draw_annotations(False)
     canvas.set_drawing_stopped_time(1000)
     canvas.connect("drawing_stopped", on_drawing_stopped)
     
