@@ -356,11 +356,9 @@ class Canvas(gtk.Widget):
         
         p2 = (point.x, point.y)
         
-        strokes = self._writing.get_strokes()
+        strokes = self._writing.get_strokes(full=True) 
 
-        last_stroke = strokes[-1]
-
-        p1 = last_stroke[-1]
+        p1 = strokes[-1][-1].get_coordinates()
 
         self._draw_line(p1, p2, self._handwriting_line_gc, force_draw=True)
 
