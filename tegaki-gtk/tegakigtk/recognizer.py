@@ -60,12 +60,14 @@ class RecognizerWidgetBase(gtk.HBox):
         self.set_drawing_stopped_time(pm["GENERAL"]["DRAWING_STOPPED_TIME"])
         self.set_search_on_stroke(pm["GENERAL"]["SEARCH_ON_STROKE"])
         self.set_selected_model(pm["GENERAL"]["SELECTED_MODEL"])
+        self.set_draw_annotations(pm["GENERAL"]["DRAW_ANNOTATIONS"])
 
     def _save_preferences(self):
         pm = PreferenceManager()
         pm["GENERAL"]["DRAWING_STOPPED_TIME"] = self.get_drawing_stopped_time()
         pm["GENERAL"]["SEARCH_ON_STROKE"] = self.get_search_on_stroke()
         pm["GENERAL"]["SELECTED_MODEL"] = self.get_selected_model()
+        pm["GENERAL"]["DRAW_ANNOTATIONS"] = self.get_draw_annotations()
         pm.save()
 
     def _create_toolbar_separator(self):
@@ -184,6 +186,7 @@ class RecognizerWidgetBase(gtk.HBox):
 
         pref_dialog.set_search_on_stroke(self.get_search_on_stroke())
         pref_dialog.set_drawing_stopped_time(self.get_drawing_stopped_time())
+        pref_dialog.set_draw_annotations(self.get_draw_annotations())
 
         pref_dialog.run()
 
@@ -193,7 +196,7 @@ class RecognizerWidgetBase(gtk.HBox):
                 self.set_search_on_stroke(True)
             else:
                 self.set_drawing_stopped_time(dialog.get_drawing_stopped_time())
-
+            self.set_draw_annotations(dialog.get_draw_annotations())
             self._save_preferences()
 
         dialog.destroy()
@@ -296,6 +299,12 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
     def set_drawing_stopped_time(self, time_msec):
         self._search_on_stroke = False
         self._canvas.set_drawing_stopped_time(time_msec)
+
+    def get_draw_annotations(self):
+        return self._canvas.get_draw_annotations()
+
+    def set_draw_annotations(self, active):
+        self._canvas.set_draw_annotations(active)
 
     def revert_stroke(self):
         self._canvas.revert_stroke()
@@ -557,6 +566,13 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         for canvas in (self._canvas1, self._canvas2):
             canvas.set_drawing_stopped_time(time_msec)
 
+    def get_draw_annotations(self):
+        return self._canvas1.get_draw_annotations()
+
+    def set_draw_annotations(self, active):
+        for canvas in (self._canvas1, self._canvas2):
+            canvas.set_draw_annotations(active)
+
     def revert_stroke(self):
         if self._focused_canvas:
             getattr(self, self._focused_canvas).revert_stroke()
@@ -740,7 +756,8 @@ class PreferenceManager(dict):
 
         for opt, dflt, meth  in [("SEARCH_ON_STROKE", True, config.getboolean),
                                  ("DRAWING_STOPPED_TIME", 0, config.getint),
-                                 ("SELECTED_MODEL", 0, config.getint)]:
+                                 ("SELECTED_MODEL", 0, config.getint),
+                                 ("DRAW_ANNOTATIONS", 1, config.getboolean)]:
 
             try:
                 self["GENERAL"][opt] = meth("GENERAL", opt)
@@ -796,10 +813,13 @@ class PreferenceDialog(gtk.Dialog):
         self._search_after_hbox.pack_start(self._spinbutton, expand=False)
         self._search_after_hbox.pack_start(gtk.Label("[msecs]"), expand=False)
 
+        self._draw_annotations = gtk.CheckButton(label="Draw annotations")
+
         main_vbox = self.get_child()
         main_vbox.set_spacing(10)
         main_vbox.pack_start(self._search_on_stroke)
         main_vbox.pack_start(self._search_after_hbox)
+        main_vbox.pack_start(self._draw_annotations)
         self.show_all()
 
     def _on_search_on_stroke(self, radiobutton):
@@ -814,6 +834,12 @@ class PreferenceDialog(gtk.Dialog):
     def set_search_on_stroke(self, active):
         self._search_on_stroke.set_active(active)
         self._search_after.set_active(not(active))
+
+    def get_draw_annotations(self):
+        return self._draw_annotations.get_active()
+
+    def set_draw_annotations(self, active):
+        self._draw_annotations.set_active(active)
 
     def get_search_after(self):
         return self._search_after.get_active()
