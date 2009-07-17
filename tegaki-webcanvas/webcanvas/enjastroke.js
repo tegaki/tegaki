@@ -65,11 +65,11 @@ Stele.prototype.createChar = function()
     this.character = character;
 }
 
-Stele.prototype.loadChar = function(geojson)
+Stele.prototype.loadChar = function(json)
 {
     this.character = new enjCharacter();
     this.character.character_group = this.surface.createGroup();
-    this.character.load(geojson);
+    this.character.load(json);
 }
 
 function enjCharacter()
@@ -92,21 +92,23 @@ enjCharacter.prototype.init = function()
 /*
  * Loads a character from a geojson representation
  */
-enjCharacter.prototype.load = function(geojson)
+enjCharacter.prototype.load = function(json)
 {
     //console.log(geojson);
-    var coords = geojson['geometries'][0]['coordinates'];
+    var jstrokes = json['strokes'];
     //go through the lines and convert them to strokes
-    for(var i = 0; i < coords.length; i++)
+    for(var i = 0; i < jstrokes.length; i++)
     {
-        cstroke = coords[i];
+        /*
+        cstroke = jstrokes[i]['points'];
         stroke = []
         for(var j = 0; j < cstroke.length; j++)
         {
             stroke.push(geoToPoint(cstroke[j]));
         }
         this.strokes.push(stroke)
-    
+        */
+        this.strokes[i] = jstrokes[i]['points'];
         this.c_strokes[i] = this.character_group.createPolyline(this.strokes[i])
             .setStroke({color: "black", width: 4});
     }

@@ -2,7 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 
 from tegakidb.news.models import NewsItem
 
-from tegakidb.util import render_to
+from tegakidb.utils import render_to
 
 @render_to('news/index.html')
 def index(request):

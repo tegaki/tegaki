@@ -1,0 +1,38 @@
+{% extends "base/base.html" %}
+
+{% block bread_crumbs %}
+        <a href="{% url hwdb %}">HWDB</a> :: <a href="{% url hwdb-charsets %}">Character Sets</a> ::
+                <span class="active-crumb">Character Set - {{charset.name}}</span>
+{% endblock %}
+
+
+{% block title %}Edit Character Set: {{charset.name }}  - Tegaki-db{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript">
+function selectCS()
+{
+    dojo.xhrPost({
+        url: "{% url hwdb-select-charset %}",
+        postData: "id={{ charset.id }}",
+        load: function(data){
+            //console.log(data)
+        }
+    });
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class='user-edit-charset'>
+<form method='post' action='.'>
+
+{{ form.as_p }}
+
+<input type="submit" value="Update" />
+<input type="button" id="selector" name="selector" value="Select" onclick="selectCS();" />
+</form>
+</div>
+
+{% endblock %}

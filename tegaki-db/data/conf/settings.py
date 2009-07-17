@@ -80,7 +80,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
     "dojango.context_processors.config",
-    "tegakidb.util.base_url",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -124,5 +123,6 @@ INSTALLED_APPS = (
                 
     'tegakidb.hwdb',    
     'tegakidb.news',
-    'tegakidb.users'
+    'tegakidb.users',
+    'tegakidb.utils',
 )

@@ -7,7 +7,7 @@
     <title>{% block title %}Tegaki-db{% endblock %}</title>
     <link href="{{MEDIA_URL}}css/style.css" type="text/css" rel="stylesheet" />
 
-    {% include "dojango/include.html" %}
+    {% include "dojango/include_i18n.html" %}
     
     {% block extrahead %} {% endblock %}
 </head>
@@ -39,6 +39,13 @@
         </ul>
         {% endblock %}
     </div>
+
+    <div id="bread_crumbs">
+    {% block bread_crumbs %}
+            <a href="{% url index %}">Home</a>
+    {% endblock %}
+    </div>
+
 
     <div id="content">
         {% block content %}{% endblock %}

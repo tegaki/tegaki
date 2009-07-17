@@ -1,5 +1,10 @@
 {% extends "base/base.html" %}
 
+{% block bread_crumbs %}
+        <a href="{% url index %}">Home</a> ::
+                <span class="active-crumb"> Users</span>
+{% endblock %}
+
 
 {% load dojango_grid %}
 
@@ -11,9 +16,9 @@
 <div class="datagrid">
     {% datagrid %}
         json_store_url = '{% url user-list-datagrid %}'
-        list_display = ('user__username', 'country', 'lang', 'description', 'n_handwriting_samples')
-        label = { 'user__username': 'Username', 'country':'Country', 'lang':'Language', 'description':'Description', 'n_handwriting_samples': '# of Handwriting Samples'}
-        search = ('user__username__icontains', 'country__icontains', 'lang__icontains', 'description__icontains')
+        list_display = ('user__username', 'country', 'lang__description', 'description', 'n_handwriting_samples')
+        label = { 'user__username': 'Username', 'country':'Country', 'lang__description':'Language', 'description':'Description', 'n_handwriting_samples': '# of Handwriting Samples'}
+        search = ('user__username__icontains', 'country__icontains', 'lang__description__icontains', 'description__icontains')
         nosort = ['description']
         height='500px'
         id='users'

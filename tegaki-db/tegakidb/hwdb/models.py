@@ -2,7 +2,9 @@
 from django.db import models
 from django.contrib import admin
 
+from django.contrib.auth.models import User
 from tegakidb.users.models import TegakiUser
+from tegakidb.utils.models import Language
 
 from random import randint
 from datetime import datetime
@@ -10,12 +12,14 @@ from datetime import datetime
 
 class CharacterSet(models.Model):
     name = models.CharField(max_length=30)
-    lang = models.CharField(max_length=10)
+    lang = models.ForeignKey(Language)
     description = models.CharField(max_length=255)
     # characters is a string representation of character code lists
     # and/or character code ranges.
     # e.g. 8,10..15,17 is equivalent to 8,10,11,12,13,14,15,17
-    characters = models.TextField() 
+    characters = models.TextField()
+    user = models.ForeignKey(User,blank=True, null=True)
+    public = models.BooleanField(default=True) 
 
     @staticmethod
     def get_array_from_string(s):
@@ -67,6 +71,12 @@ class CharacterSet(models.Model):
                 length += ele[1] - ele[0] + 1
         return length
 
+    def get_list(self):
+        """
+        Returns the character set as a python list
+        """
+        return CharacterSet.get_array_from_string(self.characters)
+
     def get_random(self):
         """
         Returns a random character code from the set.
@@ -95,7 +105,7 @@ class CharacterSet(models.Model):
 admin.site.register(CharacterSet)
 
 class Character(models.Model):
-    lang = models.CharField(max_length=10)
+    lang = models.ForeignKey(Language)
     unicode = models.IntegerField()
     n_correct_handwriting_samples = models.IntegerField(default=0)
     n_handwriting_samples = models.IntegerField(default=0)
@@ -103,14 +113,17 @@ class Character(models.Model):
     def __unicode__(self):      #this is the display name
         return unichr(self.unicode)#.encode("UTF-8") 
 
+    def utf8(self):
+        return unichr(self.unicode)
+
 admin.site.register(Character)
 
 class HandWritingSample(models.Model):
     character = models.ForeignKey(Character)
-    user = models.ForeignKey(TegakiUser)
+    user = models.ForeignKey(User)
     data = models.TextField()
     compressed = models.IntegerField(default=0) #(NON_COMPRESSED=0, GZIP=1, BZ2=2)
-    date = models.DateField(default=datetime.today())
+    date = models.DateTimeField(default=datetime.today())
     n_proofread = models.IntegerField(default=0)
     proofread_by = models.ManyToManyField(TegakiUser, related_name='tegaki_user', blank=True)
     device_used = models.IntegerField(default=0) #(MOUSE, TABLET, PDA)

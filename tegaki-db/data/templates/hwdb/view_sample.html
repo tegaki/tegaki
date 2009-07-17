@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+
+{% block bread_crumbs %}
+        <a href="{% url hwdb %}">HWDB</a> :: <a href="{% url hwdb-samples %}">Samples</a> ::
+                <span class="active-crumb">Sample - {{char}}</span>
+{% endblock %}
+
+
+{% block title %}Tegaki-db - {{char}}{% endblock %}
+{% block extrahead %}
+<link href="{{MEDIA_URL}}css/enjastroke_style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/enjastroke.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/util.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/character.js"></script>
+
+<script type="text/javascript">
+var stele;
+
+function load()
+{
+    stele = new Stele("stele");
+    stele.init();
+    var data = {{json|safe}}
+    stele.loadChar(data);
+
+}
+dojo.addOnLoad(load);
+
+function playStele()
+{
+    stele.character.play();
+}
+
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Sample:</h1>
+<span id="char" style="font-size:5em">{{char}}</span>
+
+
+<div id="stele" class="stele"></div>
+        <br class="clear"/>
+	<br />
+        <input type="button" id="play" name="play" value="Play" onclick="playStele();">
+
+</div>
+<br class="clear">
+<div id="input-desc" style="float:left;width:500px;">
+<p>
+</p>
+</div>	
+{% endblock %}

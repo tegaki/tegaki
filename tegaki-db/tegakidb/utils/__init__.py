@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+
 def render_to(template_name):
     def renderer(func):
         def wrapper(request, *args, **kw):
@@ -47,4 +48,26 @@ def datagrid_helper(model, request):
     target=target[request.GET['start']:int(request.GET['start'])+int(request.GET['count'])]
 
     return target, num
+
+
+#opposite of cgi.escape()
+import re
+def htmldecode(text):
+        """Decode HTML entities in the given text."""
+        if type(text) is unicode:
+                uchr = unichr
+        else:
+                uchr = lambda value: value > 255 and unichr(value) or chr(value)
+        def entitydecode(match, uchr=uchr):
+                entity = match.group(1)
+                if entity.startswith('#x'):
+                        return uchr(int(entity[2:], 16))
+                elif entity.startswith('#'):
+                        return uchr(int(entity[1:]))
+                elif entity in name2codepoint:
+                        return uchr(name2codepoint[entity])
+                else:
+                        return match.group(0)
+        charrefpat = re.compile(r'&(#(\d+|x[\da-fA-F]+)|[\w.:-]+);?')
+        return charrefpat.sub(entitydecode, text)
 

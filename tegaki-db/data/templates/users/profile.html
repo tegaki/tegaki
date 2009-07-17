@@ -1,5 +1,12 @@
 {% extends "base/base.html" %}
 
+{% block bread_crumbs %}
+        <a href="{% url users %}">Users</a> :: 
+                <span class="active-crumb">User - {{tegaki_user.user.username}}</span>
+{% endblock %}
+
+
+
 {% block title %}Tegaki-db - {{tegaki_user.user.username}}{% endblock %}
 
 {% block content %}

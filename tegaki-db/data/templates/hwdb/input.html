@@ -1,0 +1,70 @@
+{% extends "base/base.html" %}
+
+{% block bread_crumbs %}
+        <a href="{% url hwdb %}">HWDB</a> ::
+                <span class="active-crumb"> Input - {{char}}</span>
+{% endblock %}
+
+
+
+{% block title %}Tegaki-db - Latest news{% endblock %}
+{% block extrahead %}
+<link href="{{MEDIA_URL}}css/enjastroke_style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/enjastroke.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/util.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/character.js"></script>
+
+<script type="text/javascript">
+var ricepaper;
+
+function load()
+{
+    ricepaper = new Ricepaper("ricepaper");
+    ricepaper.init();
+}
+dojo.addOnLoad(load);
+
+var character='{{char}}';
+
+function submitDrawing(){
+    w = ricepaper.character.get_writing();
+    xml = w.toXML();
+    //console.log(json)
+    dojo.xhrPost({
+        url: "{% url hwdb-input-submit %}",
+        postData: "utf8="+character+"&xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
+        load: function(data){
+                dojo.xhrPost({
+                    url: "{% url hwdb-random-char %}",
+                    load: function(data2){
+                        character = data2;
+                        document.getElementById('char').innerHTML=character;
+                        ricepaper.clear()
+                    }
+                });
+            }
+    });
+
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Input:</h1>
+<span id="char" style="font-size:5em">{{char}}</span>
+
+
+<div id="ricepaper" class="ricepaper"></div>
+        <br class="clear"/>
+	<br />
+	<input type="button" id="submitBut" name="submit" value="Submit" onclick="submitDrawing();">
+	<input type="button" id="clearBut" name="clear" onclick="clearAll();" value="Clear">
+
+</div>
+<br class="clear">
+<div id="input-desc" style="float:left;width:500px;">
+<p>
+Submitting your character creates a handwriting sample in the database corresponding to the displayed character. Once you submit, a new character will be automatically selected at random for you to draw
+</p>
+</div>	
+{% endblock %}

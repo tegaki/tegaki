@@ -1,66 +1,27 @@
 {% extends "base/base.html" %}
 
-{% block title %}Tegaki-db - Latest news{% endblock %}
+{% block bread_crumbs %}
+        <a href="{% url index %}">Home</a> ::
+                <span class="active-crumb">HWDB</span>
+{% endblock %}
+
+
+{% block title %}Tegaki-db - HWDB{% endblock %}
 {% block extrahead %}
-<link href="{{MEDIA_URL}}css/enjastroke_style.css" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/enjastroke.js"></script>
-<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/util.js"></script>
-<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/character.js"></script>
-
-<script type="text/javascript">
-var ricepaper;
-
-function load()
-{
-    ricepaper = new Ricepaper("ricepaper");
-    ricepaper.init();
-}
-dojo.addOnLoad(load);
-
-function submitDrawing(){
-    w = ricepaper.character.get_writing();
-    xml = w.toXML();
-    //console.log(json)
-    dojo.xhrPost({
-        url: "{% url hwdb-recognize %}",
-        postData: "xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
-        load: function(data){
-            //console.log("what?")
-            //console.log(data);
-            //console.log(document.getElementById("charactersDiv"))
-            jsonMagic(data);
-            //console.log("magic!");       
-            }
-    });
-
-}
-
-function clearAll()
-{
-    ricepaper.clear();
-    csdiv = document.getElementById("charactersDiv");
-    csdiv.innerHTML = "";
-}
-
-</script>
 {% endblock %}
 
 {% block content %}
-<h1>Recognize</h1>
+<h1>HWDB</h1>
+<p><a href="{% url hwdb-recognize %}">Recognize</a></p>
+<p><a href="{% url hwdb-samples %}">Samples</a></p>
+<p><a href="{% url hwdb-input %}">Input</a>
+{% if request.session.current_charset %}
+(Current Character Set: <a href="{% url hwdb-view-charset %}?id={{ request.session.current_charset.id }}">{{request.session.current_charset}}</a> )
+{% else %}
+No Character Set Selected,<a href="{% url hwdb-charsets %}">Select A Charset</a> or <a href="{% url hwdb-create-charset %}">Create A Character Set</a></p>
+{% endif %}
+</p>
+<p><a href="{% url hwdb-charsets %}">Character Sets</a></p>
 
 
-<div id="ricepaper" class="ricepaper"></div>
-        <br class="clear"/>
-	<br />
-	<input type="button" id="submitBut" name="submit" value="Submit" onclick="submitDrawing();">
-	<input type="button" id="clearBut" name="clear" onclick="clearAll();" value="Clear">
-
-<!--
-<div id="stele" class="steleDiv"></div>
--->
-<div id="charContainer">
-	<div id="charactersDiv"></div>
-		
-</div>	
-	
 {% endblock %}

@@ -1,5 +1,11 @@
 {% extends "base/base.html" %}
 
+{% block bread_crumbs %}
+        <a href="{% url users %}">Users</a> ::
+                <span class="active-crumb">User - {{tegaki_user.user.username}}</span>
+{% endblock %}
+
+
 {% block title %}Tegaki-db - {{tegaki_user.user.username}}{% endblock %}
 
 {% block content %}
@@ -9,6 +15,8 @@
 <p>Username: {{ tegaki_user.user.username }}</p>
 
 {{ form.as_p }}
+
+# of Handwriting Samples: {{ tegaki_user.n_handwriting_samples}}<br>
 
 <input type="submit" value="Update" />
 </form>

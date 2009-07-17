@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 
 #@render_to: decorator for render_to_response
-from tegakidb.util import render_to, datagrid_helper
+from tegakidb.utils import render_to, datagrid_helper
 
 from dojango.util import to_dojo_data
 from dojango.decorators import json_response
@@ -84,7 +84,7 @@ def user_list_datagrid(request):
         if u.country:
             djob['country'] = u.country
         if u.lang:
-            djob['lang'] = u.lang
+            djob['lang__description'] = u.lang.description
         if u.description:
             djob['description'] = u.description
         if u.show_handwriting_samples:  #only if they publicly display their samples
