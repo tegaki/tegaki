@@ -14,6 +14,7 @@ Django          0.96
 
 Setting the development environment
 -----------------------------------
+#See ENVIRONMENT text file for alternative build
 
 $ cp data/conf/settings.py tegakidb/
 

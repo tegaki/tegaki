@@ -10,19 +10,20 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'postgresql_psycopg2' # 'postgresql_psycopg2', 'postgresql',
-                                        # 'mysql', 'sqlite3' or 'ado_mssql'.
-DATABASE_NAME = 'tegakidb' # Or path to database file if using sqlite3
-DATABASE_USER = 'tegaki' # Not used with sqlite3
-DATABASE_PASSWORD = '' # Not used with sqlite3
-DATABASE_HOST = 'localhost' # Set to empty string for localhost. 
-                            # Not used with sqlite3.
-DATABASE_PORT = ''   # Set to empty string for localhost. 
-                     # Not used with sqlite3.       
-
 import os
 TEGAKIDB_ROOT = '/path/to/hwr/tegaki-db'
 WEBCANVAS_ROOT = '/path/to/hwr/tegaki-webcanvas/webcanvas'
+
+
+DATABASE_ENGINE = 'sqlite3'     # 'postgresql_psycopg2', 'postgresql',
+                                # 'mysql', 'sqlite3' or 'ado_mssql'.
+DATABASE_NAME = os.path.join(TEGAKIDB_ROOT, 'db.db') # Or path to database file if using sqlite3
+DATABASE_USER = ''              # Not used with sqlite3
+DATABASE_PASSWORD = ''          # Not used with sqlite3
+DATABASE_HOST = ''              # Set to empty string for localhost. 
+                                # Not used with sqlite3.
+DATABASE_PORT = ''              # Set to empty string for localhost. 
+                                # Not used with sqlite3.       
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -50,7 +51,13 @@ MEDIA_ROOT = os.path.join(TEGAKIDB_ROOT, 'data/www/')
 # Example: "http://media.lawrence.com"
 # This should of course point to the actual domain using to host (see usage
 # guide for setting up apache)
-MEDIA_URL = 'http://localhost/static/'
+MEDIA_URL = 'http://localhost:8000/static/'
+
+#if you are hosting site like mydomain.com/tegaki/
+#set BASE_URL = 'tegaki/'
+#or for http://db.tegaki.com/
+#set BASE_URL = ''
+BASE_URL = ''
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -72,15 +79,16 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.request",
+    "dojango.context_processors.config",
+    "tegakidb.util.base_url",
 )
-
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    'dojango.middleware.DojoAutoRequireMiddleware',
+    'dojango.middleware.DojoCollector',
 )
 
 AUTH_PROFILE_MODULE = 'users.TegakiUser'
@@ -90,14 +98,12 @@ DOJANGO_DATAGRID_ACCESS = (
     'hwdb.HandwritingSample',
 )
 
-LOGIN_URL = '/tegaki/login/'
-LOGIN_REDIRECT_URL = '/tegaki/'
+DOJANGO_DOJO_THEME="soria"
 
 ROOT_URLCONF = 'tegakidb.urls'
 
-TEMPLATE_DIRS = (
-    TEGAKIDB_ROOT + '/data/templates/',
-)
+LOGIN_URL =  '/%slogin/' % BASE_URL
+LOGIN_REDIRECT_URL = '/%s' % BASE_URL
 
 TEMPLATE_DIRS = (
     os.path.join(TEGAKIDB_ROOT, 'data/templates/'),
@@ -114,7 +120,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
 
-    'tegakidb.dojango',
+    'dojango',
                 
     'tegakidb.hwdb',    
     'tegakidb.news',

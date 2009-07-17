@@ -1,0 +1,17 @@
+{% extends "base/base.html" %}
+
+{% block title %}Tegaki-db - {{tegaki_user.user.username}}{% endblock %}
+
+{% block content %}
+
+<div class='user-edit-profile'>
+<form method='post' action='.'>
+<p>Username: {{ tegaki_user.user.username }}</p>
+
+{{ form.as_p }}
+
+<input type="submit" value="Update" />
+</form>
+</div>
+
+{% endblock %}

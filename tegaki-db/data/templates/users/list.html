@@ -7,10 +7,33 @@
 
 <h1> Users:</h1>
 <div >
-    {% datagrid users TegakiUser %}
-        label = {'n_handwriting_smaples':'# of Handwriting Samples'}
+
+<div class="datagrid">
+    {% datagrid %}
+        json_store_url = '{% url user-list-datagrid %}'
+        list_display = ('user__username', 'country', 'lang', 'description', 'n_handwriting_samples')
+        label = { 'user__username': 'Username', 'country':'Country', 'lang':'Language', 'description':'Description', 'n_handwriting_samples': '# of Handwriting Samples'}
+        search = ('user__username__icontains', 'country__icontains', 'lang__icontains', 'description__icontains')
+        nosort = ['description']
         height='500px'
+        id='users'
     {% enddatagrid %}
+
+<script type="text/javascript">
+
+dojo.addOnLoad(function(){
+    dg = dojango._datagrid.users
+    dg.selection.onSelected = function(idx) {
+        item = dg.getItem(idx);
+        {% url user-profile 1 as up %}
+        window.location = "{{ up|cut:"1/" }}" + item.i.id;
+    };
+})
+
+</script>
+
+
+
 </div>
 
 

@@ -1,4 +1,5 @@
-from django import forms
+#from django import forms
+from dojango import forms
 
 from tegakidb.users.models import TegakiUser
 from django.contrib.auth.models import User
@@ -21,6 +22,12 @@ class TegakiUserForm(forms.ModelForm):
 class SelfTUForm(TegakiUserForm):
     class Meta(TegakiUserForm.Meta):
         exclude = ('user', 'n_handwriting_samples')
+
+#we only want to show public info about users
+#class PublicTUForm(TegakiUserForm):
+#    class Meta(TegakiUserForm.Meta):
+#        exclude = ('user', 'n_handwriting_samples')
+
 
 class RegisterForm(SelfTUForm):
     username = forms.CharField(label="Username")

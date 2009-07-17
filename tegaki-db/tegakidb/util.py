@@ -11,3 +11,40 @@ def render_to(template_name):
         return wrapper
     return renderer
 
+
+from tegakidb import settings 
+ 
+#custom template processor that allows us to host the tegaki-db project
+#from different locations i.e. http://mydomain.com/tegaki/ or http://tegaki.com/
+def base_url(request):
+    return {'BASE_URL':settings.BASE_URL}
+
+
+### Dojango helper for our custom views ###
+from django.db import models
+from dojango.views import AVAILABLE_OPTS
+import operator
+
+#handles the dojango magic for doing queries on models to pass back and forth to dojo
+def datagrid_helper(model, request):
+     # start with a very broad query set
+    target = model.objects.all()
+
+    # modify query set based on the GET params, dont do the start/count splice
+    # until after all clauses added
+    if request.GET.has_key('sort'):
+        target = target.order_by(request.GET['sort'])
+
+    if request.GET.has_key('search') and request.GET.has_key('search_fields'):
+        ored = [models.Q(**{str(k).strip(): str(request.GET['search'])} ) for k in request.GET['search_fields'].split(",")]
+        target = target.filter(reduce(operator.or_, ored))
+
+    # custom options passed from "query" param in datagrid
+    for key in [ d for d in request.GET.keys() if not d in AVAILABLE_OPTS]:
+        target = target.filter(**{str(key):request.GET[key]})
+    num = target.count()
+    # get only the limit number of models with a given offset
+    target=target[request.GET['start']:int(request.GET['start'])+int(request.GET['count'])]
+
+    return target, num
+

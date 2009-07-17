@@ -2,10 +2,10 @@
 
 {% block title %}Tegaki-db - Latest news{% endblock %}
 {% block extrahead %}
-<link href="/static/css/enjastroke_style.css" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="/webcanvas/enjastroke.js"></script>
-<script type="text/javascript" src="/webcanvas/util.js"></script>
-<script type="text/javascript" src="/webcanvas/character.js"></script>
+<link href="{{MEDIA_URL}}css/enjastroke_style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/enjastroke.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/util.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}webcanvas/character.js"></script>
 
 <script type="text/javascript">
 var ricepaper;
@@ -22,7 +22,7 @@ function submitDrawing(){
     xml = w.toXML();
     //console.log(json)
     dojo.xhrPost({
-        url: "/tegaki/hwdb/recognize/",
+        url: "{% url hwdb-recognize %}",
         postData: "xml=<?xml version=\"1.0\" encoding=\"UTF-8\"?><character>" + xml + "</character>",
         load: function(data){
             //console.log("what?")

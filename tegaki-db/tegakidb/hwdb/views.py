@@ -12,7 +12,7 @@ from tegaki.recognizer import Recognizer
 from tegakidb.hwdb.models import HandWritingSample, Character, CharacterSet
 from tegakidb.users.models import TegakiUser
 
-import simplejson
+from django.utils import simplejson
 from tegakidb.util import render_to
 
 @render_to('hwdb/index.html')

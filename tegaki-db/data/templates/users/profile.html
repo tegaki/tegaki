@@ -3,7 +3,15 @@
 {% block title %}Tegaki-db - {{tegaki_user.user.username}}{% endblock %}
 
 {% block content %}
-<h1>{{tegaki_user.user.username}}</h1>
-description: {{ tegaki_user.description }}
+
+<div class='user-profile'>
+<p>Username: {{ tegaki_user.user.username }}</p>
+<p>Country: {{tegaki_user.country}}</p>
+<p>Language: {{tegaki_user.lang}}</p>
+<p>Description: {{tegaki_user.description}}</p>
+{% if tegaki_user.show_handwriting_samples %}
+<p># of Handwriting Samples: {{tegaki_user.n_handwriting_samples}}</p>
+{% endif %}
+</div>
 
 {% endblock %}

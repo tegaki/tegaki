@@ -1,3 +1,9 @@
+TODO List:
+==========
+add wsgi capability and document
+update README to reflect dependencies
+write tests
+
 Folder structure
 ================
 
