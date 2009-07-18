@@ -51,13 +51,6 @@ svn checkout http://dojango.googlecode.com/svn/trunk/dojango/ dojango
 /etc/apache2/httpd.conf
 
 ===
-Alias /static/ /vol/shufa/hwr/tegaki-db/data/www/
-<Directory "/vol/shufa/hwr/tegaki-db/data/www/" >
-    AllowOverride None
-    Options Indexes FollowSymLinks Multiviews
-    Order allow,deny
-    Allow from all
-</Directory>
 
 Alias /static/webcanvas/ /vol/shufa/hwr/tegaki-webcanvas/webcanvas/
 <Directory "/vol/shufa/hwr/tegaki-webcanvas/webcanvas/" >
@@ -67,6 +60,13 @@ Alias /static/webcanvas/ /vol/shufa/hwr/tegaki-webcanvas/webcanvas/
     Allow from all
 </Directory>
 
+Alias /static/ /vol/shufa/hwr/tegaki-db/data/www/
+<Directory "/vol/shufa/hwr/tegaki-db/data/www/" >
+    AllowOverride None
+    Options Indexes FollowSymLinks Multiviews
+    Order allow,deny
+    Allow from all
+</Directory>
 
 <Location "/tegaki" >
     SetHandler python-program
