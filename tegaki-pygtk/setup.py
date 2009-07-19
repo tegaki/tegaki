@@ -17,8 +17,8 @@ def getversion():
 # python setup.py install   
 
 setup(
-    name = 'tegaki-gtk',
-    description = 'Tegaki GTK library',
+    name = 'tegaki-pygtk',
+    description = 'Tegaki pygtk library',
     author = 'Mathieu Blondel',
     author_email = 'mathieu ÂT mblondel DÔT org',
     url = 'http://tegaki.sourceforge.net',
