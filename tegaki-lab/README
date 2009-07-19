@@ -8,10 +8,10 @@ Placeholder for experiments with new recognition engines.
 Requirements
 ------------
 
-Python       2.4    http://www.python.org
-GHMM *       SVN    http://ghmm.sourceforge.net
-tegaki       0.1
-tegaki-gtk   0.1
+Python              2.4    http://www.python.org
+GHMM *              SVN    http://ghmm.sourceforge.net
+tegaki-python       0.1
+tegaki-pygtk        0.1
 
 [*] The Python bindings are also required.
 

@@ -6,7 +6,7 @@ Tegaki project integration in the desktop.
 Requirements
 ------------
 
-tegaki-gtk    0.2
+tegaki-pygtk    0.2
 
 Install
 -------

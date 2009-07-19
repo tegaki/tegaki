@@ -1,14 +1,14 @@
-tegaki-gtk
-==========
+tegaki-pygtk
+============
 
 Base user interface library for the Tegaki project.
 
 Requirements
 ------------
 
-Python       2.4    http://www.python.org
-pygtk        2.10   http://www.pygtk.org
-tegaki       0.2
+Python              2.4    http://www.python.org
+pygtk               2.10   http://www.pygtk.org
+tegaki-python       0.2
 
 Install
 -------

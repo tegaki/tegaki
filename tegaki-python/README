@@ -1,7 +1,7 @@
-tegaki
-======
+tegaki-python
+=============
 
-Base library for the Tegaki project.
+Base Python library for the Tegaki project.
 
 Requirements
 ------------
