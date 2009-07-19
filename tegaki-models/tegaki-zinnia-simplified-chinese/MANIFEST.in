@@ -1,2 +1,2 @@
-include *.meta *.model README COPYING MANIFEST.in
+include *.meta *.model *.xml README COPYING MANIFEST.in
 exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST
