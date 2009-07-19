@@ -37,7 +37,7 @@ def datagrid_helper(model, request):
         target = target.order_by(request.GET['sort'])
 
     if request.GET.has_key('search') and request.GET.has_key('search_fields'):
-        ored = [models.Q(**{str(k).strip(): str(request.GET['search'])} ) for k in request.GET['search_fields'].split(",")]
+        ored = [django.db.models.Q(**{str(k).strip(): str(request.GET['search'])} ) for k in request.GET['search_fields'].split(",")]
         target = target.filter(reduce(operator.or_, ored))
 
     # custom options passed from "query" param in datagrid
