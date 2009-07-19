@@ -11,7 +11,7 @@ setup(
     author = 'Mathieu Blondel',
     author_email = 'mathieu ÂT mblondel DÔT org',
     url = 'http://tegaki.sourceforge.net',
-    version = '0.1',
+    version = '0.2',
     license='LGPL',
     data_files=[('share/tegaki/models/zinnia/',
                  ['handwriting-ja.model', 'handwriting-ja.meta'])]
