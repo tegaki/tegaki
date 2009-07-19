@@ -21,7 +21,7 @@ setup(
     description = 'Tegaki integration in the desktop',
     author = 'Mathieu Blondel',
     author_email = 'mathieu ÂT mblondel DÔT org',
-    url = 'http://tegaki.sourceforge.net',
+    url = 'http://www.tegaki.org',
     version = getversion(),
     license='GPL',
     scripts = ['bin/tegaki-recognize'],

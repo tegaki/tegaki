@@ -24,7 +24,7 @@ cd python
 python setup.py install
 
 #install tegaki
-#http://tegaki.sourceforge.net/
+#http://www.tegaki.org
 #because of my setup on Amazon Web Services I have a particular directory structure
 #you can match it by just creating /vol/shufa
 cd /vol/shufa

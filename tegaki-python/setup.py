@@ -21,7 +21,7 @@ setup(
     description = 'Tegaki Python library',
     author = 'Mathieu Blondel',
     author_email = 'mathieu ÂT mblondel DÔT org',
-    url = 'http://tegaki.sourceforge.net',
+    url = 'http://www.tegaki.org',
     version = getversion(),
     license='GPL',
     packages = ['tegaki'],
