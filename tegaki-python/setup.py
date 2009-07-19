@@ -17,8 +17,8 @@ def getversion():
 # python setup.py install  
 
 setup(
-    name = 'tegaki',
-    description = 'Tegaki library',
+    name = 'tegaki-python',
+    description = 'Tegaki Python library',
     author = 'Mathieu Blondel',
     author_email = 'mathieu ÂT mblondel DÔT org',
     url = 'http://tegaki.sourceforge.net',
