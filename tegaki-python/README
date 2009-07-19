@@ -24,7 +24,7 @@ If you intend to contribute to Tegaki, the most convenient way to install it
 is to add the following to your ~/.bashrc file.
 
 tegakiroot=/path/to/hwr/
-export PYTHONPATH=$tegakiroot/tegaki:$tegakiroot/tegaki-gtk
+export PYTHONPATH=$tegakiroot/tegaki-python:$tegakiroot/tegaki-pygtk
 
 In order to download the latest source code, please use git.
 
