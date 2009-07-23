@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2008 The Tegaki project contributors
+# Copyright (C) 2008-2009 The Tegaki project contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,57 +19,16 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-import glob
 import os
 
-from dictutils import SortedDict
-
-class TrainerError(Exception):
-    pass
-
-class Trainer:
-
-    def __init__(self):
-        pass
-   
-    @staticmethod
-    def get_available_trainers():
-        trainers = SortedDict()
-
-        try:
-            trainers["zinnia"] = ZinniaTrainer
-        except NameError:
-            pass
-
-        return trainers   
-
-    # To be implemented by child class
-    def train(self, character_collection, meta):
-        """
-        character_collection: a tegaki.character.CharacterCollection object
-        meta: a dictionary containing the following keys
-            - name: full name (mandatory)
-            - shortname: name with less than 3 characters (mandatory)
-            - language: model language (optional)
-        path: path to the ouput model
-              (if None, the personal directory is assumed)
-        """
-        raise NotImplementedError
-
-    def _check_meta(self, meta):
-        if not meta.has_key("name") or not meta.has_key("shortname"):
-            raise TrainerError, "meta must contain a name and a shortname"
-
-    def _write_meta_file(self, meta, meta_file):
-        f = open(meta_file, "w")
-        for k,v in meta.items():
-            f.write("%s = %s\n" % (k,v))
-        f.close()
+from tegaki.trainer import Trainer, TrainerError
 
 try:
     import zinnia
 
     class ZinniaTrainer(Trainer):
+
+        TRAINER_NAME = "zinnia"
 
         def __init__(self):
             Trainer.__init__(self)
@@ -94,12 +53,15 @@ try:
                     path = os.path.join(os.environ['HOME'], ".tegaki", "models",
                                         "zinnia", meta["name"] + ".model")
 
+            os.makedirs(os.path.dirname(path))
+
             meta_file = path.replace(".model", ".meta")
             if not meta_file.endswith(".meta"): meta_file += ".meta"
             
             trainer.train(path)
             self._write_meta_file(meta, meta_file)
 
+    TRAINER_CLASS = ZinniaTrainer
+
 except ImportError:
     pass
-

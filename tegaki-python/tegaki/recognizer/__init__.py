@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2008 The Tegaki project contributors
+# Copyright (C) 2008-2009 The Tegaki project contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,27 +21,59 @@
 
 import glob
 import os
+import imp
 
-from dictutils import SortedDict
+from tegaki.dictutils import SortedDict
 
 class RecognizerError(Exception):
     pass
 
-class Recognizer:
+class Recognizer(object):
 
     def __init__(self):
         self._model = None
    
-    @staticmethod
-    def get_available_recognizers():
-        recognizers = SortedDict()
+    @classmethod
+    def get_available_recognizers(cls):
+        if not "available_recognizers" in cls.__dict__:
+            cls._load_available_recognizers()
+        return cls.available_recognizers
+
+    @classmethod
+    def _load_available_recognizers(cls):
+        cls.available_recognizers  = SortedDict()
+
+        currdir = os.path.dirname(os.path.abspath(__file__))
 
         try:
-            recognizers["zinnia"] = ZinniaRecognizer
-        except NameError:
-            pass
+            # UNIX
+            homedir = os.environ['HOME']
+        except KeyError:
+            # Windows
+            homedir = os.environ['USERPROFILE']
 
-        return recognizers   
+        # FIXME: use $prefix defined in setup
+        for directory in ("/usr/local/share/tegaki/recognizers/",
+                          "/usr/share/tegaki/recognizers/",
+                          # for Maemo
+                          "/media/mmc1/tegaki/recognizers/",
+                          "/media/mmc2/tegaki/recognizers/",
+                          # personal directory
+                          os.path.join(homedir, ".tegaki", "recognizers"),     
+                          currdir):
+            for f in glob.glob(os.path.join(directory, "*.py")):
+                if f.endswith("__init__.py"):
+                    continue
+
+                module_name = os.path.basename(f).replace(".py", "")
+                module_name += "recognizer"
+                module = imp.load_source(module_name, f)
+
+                try:
+                    name = module.RECOGNIZER_CLASS.RECOGNIZER_NAME
+                    cls.available_recognizers[name] = module.RECOGNIZER_CLASS
+                except AttributeError:
+                    pass       
 
     @staticmethod
     def get_all_available_models():
@@ -56,12 +88,11 @@ class Recognizer:
 
     @classmethod
     def get_available_models(cls):
-        if "available_models" in cls.__dict__:
+        if "available_models" in cls.__dict__: 
             return cls.available_models
         else:
-            # change ZinniaRecognizer to zinnia
-            name = cls.__name__.replace("Recognizer", "").lower()
-            cls.__dict__["available_models"] = cls._get_available_models(name)
+            name = cls.RECOGNIZER_NAME
+            cls.available_models = cls._get_available_models(name)
             return cls.__dict__["available_models"]
 
     @staticmethod
@@ -159,40 +190,6 @@ class Recognizer:
         """
         raise NotImplementedError
 
-try:
-    import zinnia
-
-    class ZinniaRecognizer(Recognizer):
-
-        def __init__(self):
-            Recognizer.__init__(self)
-            self._recognizer = zinnia.Recognizer()
-
-        def open(self, path):
-            ret = self._recognizer.open(path) 
-            if not ret: raise RecognizerError, "Could not open!"
-
-        def recognize(self, writing, n=10):
-            s = zinnia.Character()
-
-            s.set_width(writing.get_width())
-            s.set_height(writing.get_height())
-
-            strokes = writing.get_strokes()
-            for i in range(len(strokes)):
-                stroke = strokes[i]
-
-                for x, y in stroke:
-                    s.add(i, x, y)
-
-            result = self._recognizer.classify(s, n+1)
-            size = result.size()
-
-            return [(result.value(i), result.score(i)) \
-                        for i in range(0, (size - 1))]
-
-except ImportError:
-    pass
 
 if __name__ == "__main__":
     import sys
