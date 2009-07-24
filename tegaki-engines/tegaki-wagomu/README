@@ -1,0 +1,37 @@
+tegaki-wagomu
+=============
+
+A simple handwriting recognition engine based on DTW and k-NN.
+
+Requirements
+------------
+
+Python        2.4    http://www.python.org
+tegaki-python 0.3   
+
+Install
+-------
+
+$ python setup.py build
+($ su)
+# python setup.py install
+
+Developer
+---------
+
+If you intend to contribute to this engine, the most convenient way to install
+it is to add the following to your ~/.bashrc file.
+
+tegakiroot=/path/to/hwr/
+export PYTHONPATH=$tegakiroot/tegaki-engines/tegaki-wagomu/src:$PYTHONPATH
+
+License
+-------
+
+This package is distributed under the terms of the GNU General Public
+License. See the COPYING file for more information.
+
+Homepage
+--------
+
+http://www.tegaki.org
