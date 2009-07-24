@@ -53,14 +53,23 @@ class Trainer(object):
             homedir = os.environ['USERPROFILE']
 
         # FIXME: use $prefix defined in setup
-        for directory in ("/usr/local/share/tegaki/engines/",
-                          "/usr/share/tegaki/engines/",
-                          # for Maemo
-                          "/media/mmc1/tegaki/engines/",
-                          "/media/mmc2/tegaki/engines/",
-                          # personal directory
-                          os.path.join(homedir, ".tegaki", "engines"),     
-                          os.path.join(currdir, "engines")):
+        search_path = ["/usr/local/share/tegaki/engines/",
+                       "/usr/share/tegaki/engines/",
+                       # for Maemo
+                       "/media/mmc1/tegaki/engines/",
+                       "/media/mmc2/tegaki/engines/",
+                       # personal directory
+                       os.path.join(homedir, ".tegaki", "engines"),     
+                       os.path.join(currdir, "engines")]
+
+        if 'TEGAKI_ENGINE_PATH' in os.environ and \
+            os.environ['TEGAKI_ENGINE_PATH'].strip() != "":
+            search_path += os.environ['TEGAKI_ENGINE_PATH'].strip().split(":")
+
+        for directory in search_path:
+            if not os.path.exists(directory):
+                continue
+
             for f in glob.glob(os.path.join(directory, "*.py")):
                 if f.endswith("__init__.py"):
                     continue

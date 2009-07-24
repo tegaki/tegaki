@@ -53,14 +53,23 @@ class Recognizer(object):
             homedir = os.environ['USERPROFILE']
 
         # FIXME: use $prefix defined in setup
-        for directory in ("/usr/local/share/tegaki/engines/",
-                          "/usr/share/tegaki/engines/",
-                          # for Maemo
-                          "/media/mmc1/tegaki/engines/",
-                          "/media/mmc2/tegaki/engines/",
-                          # personal directory
-                          os.path.join(homedir, ".tegaki", "engines"),     
-                          os.path.join(currdir, "engines")):
+        search_path = ["/usr/local/share/tegaki/engines/",
+                       "/usr/share/tegaki/engines/",
+                       # for Maemo
+                       "/media/mmc1/tegaki/engines/",
+                       "/media/mmc2/tegaki/engines/",
+                       # personal directory
+                       os.path.join(homedir, ".tegaki", "engines"),     
+                       os.path.join(currdir, "engines")]
+
+        if 'TEGAKI_ENGINE_PATH' in os.environ and \
+            os.environ['TEGAKI_ENGINE_PATH'].strip() != "":
+            search_path += os.environ['TEGAKI_ENGINE_PATH'].strip().split(":")
+
+        for directory in search_path:
+            if not os.path.exists(directory):
+                continue
+
             for f in glob.glob(os.path.join(directory, "*.py")):
                 if f.endswith("__init__.py"):
                     continue
@@ -107,18 +116,20 @@ class Recognizer(object):
             homedir = os.environ['USERPROFILE']
 
         # FIXME: use $prefix defined in setup
-        for directory in (os.path.join("/usr/local/share/tegaki/models/",
-                                       recognizer),
-                          os.path.join("/usr/share/tegaki/models/",
-                                       recognizer),
-                          # for Maemo
-                          os.path.join("/media/mmc1/tegaki/models/",
-                                       recognizer),
-                          os.path.join("/media/mmc2/tegaki/models/",
-                                       recognizer),
-                          # personal directory
-                          os.path.join(homedir, ".tegaki", "models",
-                                       recognizer)):
+        search_path = ["/usr/local/share/tegaki/models/",
+                       "/usr/share/tegaki/models/",
+                       # for Maemo
+                       "/media/mmc1/tegaki/models/",
+                       "/media/mmc2/tegaki/models/",
+                       # personal directory
+                       os.path.join(homedir, ".tegaki", "models")]
+
+        if 'TEGAKI_MODEL_PATH' in os.environ and \
+            os.environ['TEGAKI_MODEL_PATH'].strip() != "":
+            search_path += os.environ['TEGAKI_MODEL_PATH'].strip().split(":")
+
+        for directory in search_path:
+            directory = os.path.join(directory, recognizer)
 
             if not os.path.exists(directory):
                 continue
