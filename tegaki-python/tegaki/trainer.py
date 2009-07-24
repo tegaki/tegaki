@@ -28,7 +28,7 @@ from tegaki.dictutils import SortedDict
 class TrainerError(Exception):
     pass
 
-class Trainer:
+class Trainer(object):
 
     def __init__(self):
         pass
@@ -53,14 +53,14 @@ class Trainer:
             homedir = os.environ['USERPROFILE']
 
         # FIXME: use $prefix defined in setup
-        for directory in ("/usr/local/share/tegaki/trainers/",
-                          "/usr/share/tegaki/trainers/",
+        for directory in ("/usr/local/share/tegaki/engines/",
+                          "/usr/share/tegaki/engines/",
                           # for Maemo
-                          "/media/mmc1/tegaki/trainers/",
-                          "/media/mmc2/tegaki/trainers/",
+                          "/media/mmc1/tegaki/engines/",
+                          "/media/mmc2/tegaki/engines/",
                           # personal directory
-                          os.path.join(homedir, ".tegaki", "trainers"),     
-                          currdir):
+                          os.path.join(homedir, ".tegaki", "engines"),     
+                          os.path.join(currdir, "engines")):
             for f in glob.glob(os.path.join(directory, "*.py")):
                 if f.endswith("__init__.py"):
                     continue

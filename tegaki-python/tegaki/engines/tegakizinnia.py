@@ -21,10 +21,44 @@
 
 import os
 
+from tegaki.recognizer import Recognizer, RecognizerError
 from tegaki.trainer import Trainer, TrainerError
 
 try:
-    import zinnia
+    import zinnia    
+
+    class ZinniaRecognizer(Recognizer):
+
+        RECOGNIZER_NAME = "zinnia"
+
+        def __init__(self):
+            Recognizer.__init__(self)
+            self._recognizer = zinnia.Recognizer()
+
+        def open(self, path):
+            ret = self._recognizer.open(path) 
+            if not ret: raise RecognizerError, "Could not open!"
+
+        def recognize(self, writing, n=10):
+            s = zinnia.Character()
+
+            s.set_width(writing.get_width())
+            s.set_height(writing.get_height())
+
+            strokes = writing.get_strokes()
+            for i in range(len(strokes)):
+                stroke = strokes[i]
+
+                for x, y in stroke:
+                    s.add(i, x, y)
+
+            result = self._recognizer.classify(s, n+1)
+            size = result.size()
+
+            return [(result.value(i), result.score(i)) \
+                        for i in range(0, (size - 1))]
+
+    RECOGNIZER_CLASS = ZinniaRecognizer
 
     class ZinniaTrainer(Trainer):
 
@@ -53,7 +87,8 @@ try:
                     path = os.path.join(os.environ['HOME'], ".tegaki", "models",
                                         "zinnia", meta["name"] + ".model")
 
-            os.makedirs(os.path.dirname(path))
+            if not os.path.exists(os.path.dirname(path)):
+                os.makedirs(os.path.dirname(path))
 
             meta_file = path.replace(".model", ".meta")
             if not meta_file.endswith(".meta"): meta_file += ".meta"
@@ -65,3 +100,4 @@ try:
 
 except ImportError:
     pass
+
