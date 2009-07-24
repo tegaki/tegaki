@@ -41,10 +41,22 @@ class TegakiBuild(object):
         self._directories = options.directories
         self._charcols = options.charcols
         self._tomoe = options.tomoe
-        self._trainer = args[0]
-        self._meta = args[1]
+        self._list = options.list
+        if not self._list:
+            self._trainer = args[0]
+            self._meta = args[1]
 
     def run(self):
+        if self._list:
+            self._list_trainers()
+        else:
+            self._train()
+
+    def _list_trainers(self):
+        avail_trainers = Trainer.get_available_trainers()
+        print "\n".join(["- " + key for key in avail_trainers.keys()])
+
+    def _train(self):
         charcol = CharacterCollection()
 
         # read meta file
@@ -112,11 +124,14 @@ parser.add_option("-t", "--tomoe-dict",
                   action="append", type="string", dest="tomoe",
                   default=[],
                   help="Tomoe XML dictionary files")
+parser.add_option("-l", "--list",
+                  action="store_true",dest="list", default=False,
+                  help="List available trainers")
 
 (options, args) = parser.parse_args()
 
 try:
-    if len(args) < 2:
+    if not options.list and len(args) < 2:
         raise TegakiBuildError, "Needs a trainer and meta-file!"
 
     TegakiBuild(options, args).run()

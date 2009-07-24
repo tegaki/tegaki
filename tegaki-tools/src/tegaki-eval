@@ -49,10 +49,23 @@ class TegakiEval(object):
         self._directories = options.directories
         self._charcols = options.charcols
         self._tomoe = options.tomoe
-        self._recognizer = args[0]
-        self._model = args[1]
+        self._list = options.list
+        if not self._list:
+            self._trainer = args[0]
+            self._meta = args[1]
 
     def run(self):
+        if self._list:
+            self._list_recognizers()
+        else:
+            self._recognize()
+
+    def _list_recognizers(self):
+        avail_recognizers = Recognizer.get_all_available_models()
+        print "\n".join(["- %s (%s)" % (model, recog) for recog, model, meta \
+                         in avail_recognizers])
+
+    def _recognize(self):
         charcol = CharacterCollection()
 
         # add the directories provided
@@ -254,11 +267,14 @@ parser.add_option("-t", "--tomoe-dict",
                   action="append", type="string", dest="tomoe",
                   default=[],
                   help="Tomoe XML dictionary files")
+parser.add_option("-l", "--list",
+                  action="store_true",dest="list", default=False,
+                  help="List available recognizers and models")
 
 (options, args) = parser.parse_args()
 
 try:
-    if len(args) < 2:
+    if not options.list and len(args) < 2:
         raise TegakiEvalError, "Needs a recognizer and a model!"
 
     TegakiEval(options, args).run()
