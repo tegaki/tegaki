@@ -51,8 +51,8 @@ class TegakiEval(object):
         self._tomoe = options.tomoe
         self._list = options.list
         if not self._list:
-            self._trainer = args[0]
-            self._meta = args[1]
+            self._recognizer = args[0]
+            self._model = args[1]
 
     def run(self):
         if self._list:
