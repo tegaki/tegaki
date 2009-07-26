@@ -22,6 +22,7 @@
 
 import sys
 import os
+import time
 from optparse import OptionParser
 
 from tegaki.character import CharacterCollection
@@ -144,6 +145,8 @@ class TegakiEval(object):
 
         canddict = {} # store ALL the candidate results for verbosity >= 2
 
+        start_time = time.time()
+
         for char in all_chars:
             utf8 = char.get_utf8()
             if not utf8:
@@ -165,10 +168,16 @@ class TegakiEval(object):
                 for c in cand[0:n]:
                     n_pred[n][c] = n_pred[n].get(c, 0) + 1
 
+        end_time = time.time()
+
         # Calculate accuracy/recall and precision for each character
         # Print the overall results
         print "Overall results"
+        print "\tRecognizer: %s" % self._recognizer
         print "\tNumber of characters evaluated: %d\n" % len(all_chars)
+        print "\tTotal time: %0.2f sec" % float(end_time - start_time)
+        print "\tAverage time per character: %0.2f sec\n" % \
+            (float((end_time - start_time)) / len(all_chars))
 
         total_samples = sum(n_samples.values())
         recall = {}
