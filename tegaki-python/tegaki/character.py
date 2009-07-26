@@ -808,7 +808,8 @@ class Character(_XmlBase):
                     del self.__dict__[s]
 
         if name == "stroke":
-            self._writing.append_stroke(self._stroke)
+            if len(self._stroke) > 0:
+                self._writing.append_stroke(self._stroke)
             self._stroke = None
 
         self._tag = None
@@ -1047,7 +1048,8 @@ class CharacterCollection(_XmlBase):
             self._curr_chars.append(self._curr_char)
 
         if name == "stroke":
-            self._curr_writing.append_stroke(self._curr_stroke)
+            if len(self._curr_stroke) > 0:
+                self._curr_writing.append_stroke(self._curr_stroke)
             self._stroke = None
 
         self._tag = None
