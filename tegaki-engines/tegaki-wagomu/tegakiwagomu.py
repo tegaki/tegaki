@@ -177,7 +177,7 @@ try:
         def recognize(self, writing, n=10):
             feat = get_features(writing)
             nfeat = len(feat) 
-            nvectors = nfeat / 2
+            nvectors = nfeat / self._recognizer.get_dimension()
             floatarr = wagomu.FloatArray(nfeat)
 
             for i in range(nfeat):

@@ -104,6 +104,14 @@ bool Recognizer::open(char *path) {
     return true;
 }
 
+unsigned long Recognizer::get_n_characters() {
+    return n_characters;
+}
+
+unsigned short Recognizer::get_dimension() {
+    return dimension;
+}
+
 float Recognizer::euclidean_distance(float *v1, float *v2) {
     float diff, sum = 0;
 

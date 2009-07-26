@@ -60,6 +60,8 @@ public:
     Results *recognize(float *points, 
                        unsigned short n_vectors, 
                        unsigned short n_results);
+    unsigned long get_n_characters();
+    unsigned short get_dimension();
     char *get_error_message();
 
 private:
