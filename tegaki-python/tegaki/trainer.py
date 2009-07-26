@@ -71,7 +71,7 @@ class Trainer(object):
                 continue
 
             for f in glob.glob(os.path.join(directory, "*.py")):
-                if f.endswith("__init__.py"):
+                if f.endswith("__init__.py") or f.endswith("setup.py"):
                     continue
 
                 module_name = os.path.basename(f).replace(".py", "")
