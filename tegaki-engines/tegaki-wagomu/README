@@ -16,15 +16,6 @@ $ python setup.py build
 ($ su)
 # python setup.py install
 
-Developer
----------
-
-If you intend to contribute to this engine, the most convenient way to install
-it is to add the following to your ~/.bashrc file.
-
-tegakiroot=/path/to/hwr/
-export PYTHONPATH=$tegakiroot/tegaki-engines/tegaki-wagomu/src:$PYTHONPATH
-
 License
 -------
 

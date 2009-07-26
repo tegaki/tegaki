@@ -97,12 +97,14 @@ def dtw(s, t, d, f=euclidean_distance):
         
     for i in range(1, n):
         DTW[(i, 0)] = infinity
+
+    DTW[(0, 0)] = 0.0
        
-    for i in range(0, n):
+    for i in range(1, n):
         # retrieve 1st d-dimension vector
         v1 = s[i*d:i*d+d]
 
-        for j in range(0, m):
+        for j in range(1, m):
             # retrieve 2nd d-dimension vector
             v2 = t[j*d:j*d+d]
             # distance function
@@ -118,7 +120,8 @@ def dtw(s, t, d, f=euclidean_distance):
 
 def get_features(writing):
     writing.downsample_threshold(DOWNSAMPLE_THRESHOLD)
-    return array_flatten(FEATURE_EXTRACTION_FUNCTION(writing))
+    flat = array_flatten(FEATURE_EXTRACTION_FUNCTION(writing))
+    return [float(f) for f in flat]
 
 def argmin(arr):
     return arr.index(min(arr))
@@ -155,54 +158,90 @@ write_float = write_floats
 
 # Recognizer
 
-class WagomuRecognizer(Recognizer):
+try:
+    import wagomu
 
-    RECOGNIZER_NAME = "wagomu"
+    # Extension-based version
+    class WagomuRecognizer(Recognizer):
 
-    def __init__(self):
-        Recognizer.__init__(self)
-        self._reprdict = {}
-        self._dimension = None
+        RECOGNIZER_NAME = "wagomu"
 
-    def open(self, path):
-        f = open(path, "rb")
+        def __init__(self):
+            Recognizer.__init__(self)
+            self._recognizer = wagomu.Recognizer()
 
-        magic_number = read_ushort(f)
-        if magic_number != MAGIC_NUMBER:
-            raise RecognizerError, "Incorrect model"
+        def open(self, path):
+            ret = self._recognizer.open(path)
+            if not ret: raise RecognizerError, recognizer.get_error_message()
 
-        n_characters = read_ulong(f)
-        self._dimension = read_ushort(f)
+        def recognize(self, writing, n=10):
+            feat = get_features(writing)
+            nfeat = len(feat) 
+            nvectors = nfeat / 2
+            floatarr = wagomu.FloatArray(nfeat)
 
-        for i in range(n_characters):
-            strlen = read_ushort(f)
-            utf8 = f.read(strlen)
-            n_vectors = read_ushort(f)
-            feat = read_floats(f, n_vectors*self._dimension)
-            self._reprdict[utf8] = feat
+            for i in range(nfeat):
+                floatarr[i] = feat[i]
 
-        f.close()
+            res = self._recognizer.recognize(floatarr, nvectors, n)
 
-    def recognize(self, writing, n=10):
-        feat = get_features(writing)
+            candidates = []
+            for i in range(res.get_size()):
+                candidates.append((res.get_utf8(i), res.get_distance(i)))
 
-        results = []
-        for utf8, template in self._reprdict.items():
-            results.append((utf8, dtw(feat, template, self._dimension)))
-        results.sort(cmp=lambda x,y: cmp(x[1],y[1]))
+            return candidates
 
-        candidates = []
-        already = []
-        # we don't just return the first n results because
-        # a character may have several template variants (allographes)
-        for utf8, dist in results:
-            if not utf8 in already:
-                candidates.append((utf8, dist))
-                already.append(utf8)
-            if len(candidates) >= n:
-                break
-        
-        return candidates
+except ImportError:
+    # Pure python version
+    class WagomuRecognizer(Recognizer):
+
+        RECOGNIZER_NAME = "wagomu"
+
+        def __init__(self):
+            Recognizer.__init__(self)
+            self._reprdict = SortedDict()
+            self._dimension = None
+
+        def open(self, path):
+            f = open(path, "rb")
+
+            magic_number = read_ushort(f)
+            if magic_number != MAGIC_NUMBER:
+                raise RecognizerError, "Incorrect model"
+
+            n_characters = read_ulong(f)
+            self._dimension = read_ushort(f)
+
+            for i in range(n_characters):
+                strlen = read_ushort(f)
+                utf8 = f.read(strlen)
+                n_vectors = read_ushort(f)
+                feat = read_floats(f, n_vectors*self._dimension)
+                self._reprdict[utf8] = feat
+
+            f.close()
+
+        def recognize(self, writing, n=10):
+            feat = get_features(writing)
+
+            results = []
+            for utf8, template in self._reprdict.items():
+                results.append((utf8, dtw(feat, template, self._dimension)))
+            results.sort(cmp=lambda x,y: cmp(x[1],y[1]))
+
+            candidates = []
+            already = []
+            # we don't just return the first n results because
+            # a character may have several template variants (allographes)
+            for utf8, dist in results:
+                utf8 = utf8[0:-1] # remove \0 at the end
+                if not utf8 in already:
+                    candidates.append((utf8, dist))
+                    already.append(utf8)
+                if len(candidates) >= n:
+                    break
+            
+            return candidates
 
 RECOGNIZER_CLASS = WagomuRecognizer
 
@@ -298,6 +337,7 @@ class WagomuTrainer(Trainer):
         for utf8, feat in reprdict.values():
             # char utf8's value stored in pascal-string 
             # (string prefixed by its length)
+            utf8 += "\0"
             write_ushort(f, len(utf8))
             f.write(utf8)
 
@@ -306,7 +346,7 @@ class WagomuTrainer(Trainer):
 
             # flat list of vectors
             # e.g. [[x1, y1], [x2, y2]] is stored as [x1, y1, x2, y2]
-            write_floats(f, *[float(v) for v in feat])
+            write_floats(f, *[v for v in feat])
 
         f.close()
             
