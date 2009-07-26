@@ -175,8 +175,7 @@ Results *Recognizer::recognize(float *points,
 
     unsigned short utf8len, n_vectors_template;
     char *cursor = data + 8; // skip magic_number, n_characters, dimension
-    unsigned int i, j, size;
-    bool already;
+    unsigned int i, size;
     
     for (i=0; i < n_characters; i++) {
         utf8len = *(unsigned short *)cursor;
@@ -200,19 +199,8 @@ Results *Recognizer::recognize(float *points,
 
     Results *results = new Results(size);
 
-    for(i=0; i < size; ) {
-        already = false;
-        for (j=0; j < i; j++) {
-            if (strcmp(distm[i].utf8, distm[j].utf8) == 0) {
-                already = true;
-                break;
-            }
-        }
-        if (!already) {
-            results->add(i, strdup(distm[i].utf8), distm[i].dist);
-            i++;
-        }
-    }
+    for(i=0; i < size; i++)
+        results->add(i, strdup(distm[i].utf8), distm[i].dist);
 
     return results;
 }
