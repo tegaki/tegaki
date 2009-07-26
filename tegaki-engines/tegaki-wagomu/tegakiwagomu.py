@@ -39,7 +39,7 @@ from tegaki.mathutils import euclidean_distance
 DOWNSAMPLE_THRESHOLD = 50
 
 # Features used
-FEATURE_EXTRACTION_FUNCTION = "get_xy_features"
+FEATURE_EXTRACTION_FUNCTION = "get_delta_features"
 FEATURE_VECTOR_DIMENSION = 2
 
 #######################
@@ -51,7 +51,28 @@ MAGIC_NUMBER = 0x7777 # All lucky 7s!
 # Features
 
 def get_xy_features(writing):
+    """
+    Returns (x,y) for each point.
+    """
     return writing.get_strokes()
+
+def get_delta_features(writing):   
+    """
+    Returns (delta x, delta y) for each point.
+    """
+    strokes = writing.get_strokes()
+    vectors = [(x,y) for stroke in strokes for x,y in stroke]
+
+    arr = []
+
+    for i in range(1, len(vectors)):
+        ((x1, y1), (x2, y2)) = (vectors[i-1], vectors[i])
+        deltax = float(abs(x2 - x1))
+        deltay = float(abs(y2 - y1))
+
+        arr.append((deltax, deltay))
+
+    return arr
 
 FEATURE_EXTRACTION_FUNCTION = eval(FEATURE_EXTRACTION_FUNCTION)
 
@@ -119,6 +140,7 @@ def dtw(s, t, d, f=euclidean_distance):
 # Small utils
 
 def get_features(writing):
+    writing.normalize()
     writing.downsample_threshold(DOWNSAMPLE_THRESHOLD)
     flat = array_flatten(FEATURE_EXTRACTION_FUNCTION(writing))
     return [float(f) for f in flat]
