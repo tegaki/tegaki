@@ -31,14 +31,11 @@
 
 #define MAGIC_NUMBER 0x7777
 
-#ifndef MIN
-#  define MIN(a,b) ((a) < (b) ? (a) : (b))
-#endif
+#undef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
 
-#ifndef MIN3
-#  define MIN3(a,b,c) (MIN((a),MIN((b),(c))))
-#endif
-
+#undef MIN3
+#define MIN3(a,b,c) (MIN((a),MIN((b),(c))))
 
 namespace wagomu {
 
@@ -113,14 +110,18 @@ unsigned short Recognizer::get_dimension() {
 }
 
 inline float Recognizer::euclidean_distance(float *v1, float *v2) {
-    float diff, sum = 0;
+    /*float diff, sum = 0;
 
     for (int i=0; i < dimension; i++) {
         diff = v2[i] - v1[i];
         sum += diff * diff;
     }
 
-    return sqrtf(sum);
+    return sqrtf(sum);*/
+    float sum;
+    for (int i=0; i < dimension; i++)
+        sum += fabsf(v2[i] - v1[i]);
+    return sum;
 }
 
 inline float Recognizer::dtw(float *s, unsigned short n, 
