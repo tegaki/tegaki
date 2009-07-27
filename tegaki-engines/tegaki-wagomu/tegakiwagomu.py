@@ -40,7 +40,6 @@ DOWNSAMPLE_THRESHOLD = 50
 
 # Features used
 FEATURE_EXTRACTION_FUNCTION = "get_delta_features"
-FEATURE_VECTOR_DIMENSION = 2
 
 #######################
 #      END CONFIG     #
@@ -55,6 +54,8 @@ def get_xy_features(writing):
     Returns (x,y) for each point.
     """
     return writing.get_strokes()
+
+get_xy_features.DIMENSION = 2
 
 def get_delta_features(writing):   
     """
@@ -74,7 +75,10 @@ def get_delta_features(writing):
 
     return arr
 
+get_delta_features.DIMENSION = 2
+
 FEATURE_EXTRACTION_FUNCTION = eval(FEATURE_EXTRACTION_FUNCTION)
+FEATURE_VECTOR_DIMENSION = FEATURE_EXTRACTION_FUNCTION.DIMENSION
 
 # DTW
 
