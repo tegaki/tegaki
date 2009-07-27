@@ -35,7 +35,9 @@ public:
     Results(int size);
     ~Results();
 
+#ifndef SWIG
     void add(int i, char *utf8, float dist);
+#endif
     char *get_utf8(int i);
     float get_distance(int i);
     int get_size();
@@ -46,10 +48,12 @@ private:
     int size;
 };
 
+#ifndef SWIG
 typedef struct {
     char *utf8;
     float dist;
 } CharDist;
+#endif
 
 class Recognizer {
 
