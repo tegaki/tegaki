@@ -1,7 +1,4 @@
 {% extends "base/base.html" %}
-{% block bread_crumbs %}
-        <a href="{% url hwdb %}">Home</a> :: <span class="active-crumb">Login</span>
-{% endblock %}
 
 {% block title %}Tegaki-db Login{% endblock %}
 

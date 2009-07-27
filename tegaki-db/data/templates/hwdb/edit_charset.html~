@@ -2,7 +2,7 @@
 
 {% block bread_crumbs %}
         <a href="{% url hwdb %}">Home</a> :: <a href="{% url hwdb-charsets %}">Character Sets</a> ::
-                <span class="active-crumb">Edit Character Set</span> <span class="active-crumb">{{charset.name}}</span>
+                <span class="active-crumb">Edit Character Set - {{charset.name}}</span>
 {% endblock %}
 
 

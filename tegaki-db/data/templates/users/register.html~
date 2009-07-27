@@ -1,9 +1,6 @@
 {% extends "base/base.html" %}
 
 {% block title %}Tegaki-db Register{% endblock %}
-{% block bread_crumbs %}
-        <a href="{% url hwdb %}">Home</a> :: <span class="active-crumb">Register</span>
-{% endblock %}
 
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/users.css"/>
@@ -11,7 +8,7 @@
 
 {% block content %}
 
-<h1>Register</h1>
+<h1>Register:</h1>
 
 <form method="post" action=".">
 {{form.as_p}}

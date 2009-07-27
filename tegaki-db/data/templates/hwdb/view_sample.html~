@@ -34,7 +34,7 @@ function playStele()
 {% endblock %}
 
 {% block content %}
-<h1>View Sample</h1>
+<h1>View Sample {{char}}</h1>
 <span id="char" style="font-size:5em">{{char}}</span>
 
 

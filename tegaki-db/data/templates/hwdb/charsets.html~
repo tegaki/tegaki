@@ -20,6 +20,7 @@
 <h1> Character Sets</h1>
 <p><a href="{% url hwdb-create-charset %}">Create A Character Set</a></p>
 <div >
+
     <div class="datagrid">
         {% datagrid %}
             json_store_url = '{% url hwdb-charset-datagrid %}'
@@ -60,6 +61,8 @@
     })
 
     </script>
+
+
     </div>
 </div>
 
