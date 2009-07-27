@@ -112,7 +112,7 @@ unsigned short Recognizer::get_dimension() {
     return dimension;
 }
 
-float Recognizer::euclidean_distance(float *v1, float *v2) {
+inline float Recognizer::euclidean_distance(float *v1, float *v2) {
     float diff, sum = 0;
 
     for (int i=0; i < dimension; i++) {
@@ -123,8 +123,8 @@ float Recognizer::euclidean_distance(float *v1, float *v2) {
     return sqrtf(sum);
 }
 
-float Recognizer::dtw(float *s, unsigned short n, 
-                      float *t, unsigned short m) {
+inline float Recognizer::dtw(float *s, unsigned short n, 
+                             float *t, unsigned short m) {
     /*
     s: first sequence
     n: number of vectors in s

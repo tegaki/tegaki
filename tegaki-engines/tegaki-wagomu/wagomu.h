@@ -75,8 +75,8 @@ private:
    
     CharDist *distm;
 
-    float dtw(float *s, unsigned short n, float *t, unsigned short m);
-    float euclidean_distance(float *v1, float *v2);
+    inline float dtw(float *s, unsigned short n, float *t, unsigned short m);
+    inline float euclidean_distance(float *v1, float *v2);
 };
 
 }
