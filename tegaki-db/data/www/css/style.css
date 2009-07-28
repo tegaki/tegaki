@@ -10,13 +10,13 @@ Tegaki CSS Structure
 
 Colors
 ------
-1. Browish - #9B8864
+1. Browish - #7A6A53
 
 
 ======================*/
 html { margin: 0; padding: 0; }
 body {
-    background:#ffffff;
+    background:#D9CEB2;
     color:#343434;
     font-family:"trebuchet ms",tahoma,arial,verdana,sans-serif !important;
     font-size:.9em;
@@ -25,16 +25,16 @@ body {
 ul {margin:0; padding:0;}
 li {list-style:none; padding:0;}
 a { 
-    border-bottom:1px dotted #336699;
-    color:#336699;
+    border-bottom:1px dotted #6B9199;
+    color:#6B9199;
     font-weight:bold;
     padding:1px 3px;
     text-decoration:none;
 }
 a:hover {
-    background:#cdcdcd;
+    background:#D5DED9;
     border:none;
-    color:#336699;
+    color:#6B9199;
     -moz-border-radius:3px;
     padding:1px 3px;
 }
@@ -63,7 +63,7 @@ Header
         font-size:3em;
     }
     #header_user_wrapper {
-        background:#9B8864;
+        background:#7A6A53;
         height:48px;
         -moz-border-radius:3px;
         padding:3px;
@@ -93,7 +93,7 @@ Content
         width:174px;
     }
         .sidebar_wrapper {
-            background:#9B8864;
+            background:#7A6A53;
             margin:0 10px 10px 0;
             -moz-border-radius:3px;
             padding:3px;        
@@ -105,7 +105,7 @@ Content
             margin:5px 0;
         }
         .sidebar_wrapper a {
-            background:#336699;
+            background:#6B9199;
             border:none;
             color:#efefef;
             -moz-border-radius:3px;
@@ -125,12 +125,12 @@ Content
             width:98%;
         }
         .sidebar_links li a:hover{
-            background:#cdcdcd;
+            background:#D5DED9;
             color:#343434;
             -moz-border-radius:3px;
         }
         .sidebar_links .cur_link a{
-            background:#cdcdcd !important;
+            background:#D5DED9 !important;
             color:#343434 !important;
             -moz-border-radius:3px;
         }       
@@ -145,7 +145,7 @@ Content
     Right Side
     ------------------*/
     #right_side_wrapper {
-        background:#9B8864;
+        background:#7A6A53;
         float:left;
         -moz-border-radius:3px;
         width:800px;
@@ -183,7 +183,7 @@ Content
         
     /*---Content-----*/
     #content h1 {
-        background:#9B8864;
+        background:#7A6A53;
         color:#efefef;
         font-size:1.7em;
         font-weight:bold;
@@ -206,7 +206,7 @@ Individual Pages
         }
         #hwdbContent p {
             background-color:#ffffff;
-            border:1px solid #cdcdcd;
+            border:1px solid #D5DED9;
             font-size:.9em;
             margin:7px;
             padding:3px;
@@ -224,7 +224,7 @@ Individual Pages
             text-align:right;
         }
             #input_header_charset a {
-                background:#336699;
+                background:#6B9199;
                 color:#efefef;
                 margin:2px 0;
                 -moz-border-radius:3px;
@@ -235,7 +235,7 @@ Individual Pages
                 color:#343434;
             }
             .cur_content_link a{
-                background:#cdcdcd !important;
+                background:#D5DED9 !important;
                 border:none !important;
                 color:#343434 !important;
                 margin:2px 0;
