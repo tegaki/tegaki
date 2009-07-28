@@ -3,3 +3,4 @@ tegakidb/settings.py
 .*.swp
 data/www/media
 tegakidb/dojango
+db.db
