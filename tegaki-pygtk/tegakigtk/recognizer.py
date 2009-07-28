@@ -617,7 +617,8 @@ class CandidatePopup(gtk.Window):
         self._chartable.set_characters(self._candidates)
         self._chartable.set_layout(CharTable.LAYOUT_HORIZONTAL)
         max_width, max_height = self._chartable.get_max_char_size()
-        self._chartable.set_size_request(max_width*3, max_height*3)
+        self._chartable.set_size_request(int(max_width*3.5),
+                                         int(max_height*3.5))
         frame.add(self._chartable)
 
         self.connect("button-press-event", self._on_button_press)
