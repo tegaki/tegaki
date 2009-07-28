@@ -74,7 +74,7 @@ function submitDrawing(){
     </div>
 
 
-    <div id="character_wrapper">
+    <div id="input_character_wrapper">
         <div id="ricepaper" class="ricepaper"></div>
         <div id="char">{{char}}</div>
         <br class="clear"/>
