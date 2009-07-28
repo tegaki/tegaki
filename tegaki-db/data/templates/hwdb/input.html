@@ -1,21 +1,11 @@
 {% extends "base/base.html" %}
 
 
-
-{% block sidebar %}
-    <li><a href="/hwdb/">Home</a></li>
-    <li><a href="/hwdb/recognize/">Recognize</a></li>
-    <li><a href="/hwdb/samples/">Samples</a></li>
-    <li class="cur_link"><a href="/hwdb/input/">Input</a></li>
-    <li><a href="/hwdb/charsets/">Character Sets</a></li>
-{% endblock %}
-
-
 {% block bread_crumbs %}
     <a href="{% url hwdb %}">Home</a> :: <span class="active-crumb"> Input </span> <span class="active-crumb"> {{char}} </span>
 {% endblock %}
 
-
+{% block input_li_class %}class="cur_link"{% endblock %}
 
 {% block title %}Tegaki-db - Latest news{% endblock %}
 {% block extrahead %}

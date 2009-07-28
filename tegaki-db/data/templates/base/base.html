@@ -53,11 +53,11 @@
                 <div id="site_links" class="sidebar_inner">
                     <ul id="hwdb_links" class="sidebar_links">
                         {% block sidebar %}
-                            <li><a href="/hwdb/recognize/">Home</a></li>
-                            <li><a href="/hwdb/recognize/">Recognize</a></li>
-                            <li><a href="/hwdb/samples/">Samples</a></li>
-                            <li><a href="/hwdb/input/">Input</a></li>
-                            <li><a href="/hwdb/charsets/">Character Sets</a></li>
+                            <li {% block home_li_class %}{% endblock %}><a href="{% url hwdb %}">Home</a></li>
+                            <li {% block recognize_li_class %}{% endblock %}><a href="{% url hwdb-recognize %}">Recognize</a></li>
+                            <li {% block samples_li_class %}{% endblock %}><a href="{% url hwdb-samples %}">Samples</a></li>
+                            <li {% block input_li_class %}{% endblock %}><a href="{% url hwdb-input %}">Input</a></li>
+                            <li {% block charsets_li_class %}{% endblock %}><a href="{% url hwdb-charsets %}">Character Sets</a></li>
                         {% endblock %}
                     </ul>
                 </div>
@@ -80,7 +80,7 @@
                 <h1>Users</h1>
                 <div id="users" class="sidebar_inner">
                     <ul id="users_list" class="sidebar_links">
-                        <li><a href="/users/">View Users</a></li>
+                        <li {% block user_li_class %}{% endblock %}><a href="{% url users %}">View Users</a></li>
                     </ul>
                 </div>
             </div>

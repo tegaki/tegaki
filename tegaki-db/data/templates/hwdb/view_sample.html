@@ -4,6 +4,7 @@
     <a href="/hwdb/">Home</a> :: <a href="{% url hwdb-samples %}">Samples</a> :: <span class="active-crumb">View Sample</span><span class="active-crumb">{{char}}</span>
 {% endblock %}
 
+{% block samples_li_class %}class="cur_link"{% endblock %}
 
 {% block title %}Tegaki-db - {{char}}{% endblock %}
 {% block extrahead %}

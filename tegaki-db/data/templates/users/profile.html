@@ -4,16 +4,9 @@
         <a href="{% url hwdb %}">Home</a> :: <a href="{% url users %}">Users</a> :: 
                 <span class="active-crumb">User</span><span class="active-crumb">{{tegaki_user.user.username}}</span>
 {% endblock %}
-{% block sidebarUsers %}
-<div id="users_wrapper" class="sidebar_wrapper">
-    <h1>Users</h1>
-    <div id="users" class="sidebar_inner">
-        <ul id="users_list" class="sidebar_links">
-            <li class="cur_link"><a href="/users/">View Users</a></li>
-        </ul>
-    </div>
-</div>
-{% endblock %}
+
+{% block user_li_class %}class="cur_link"{% endblock %}
+
 
 
 {% block title %}Tegaki-db - {{tegaki_user.user.username}}{% endblock %}
