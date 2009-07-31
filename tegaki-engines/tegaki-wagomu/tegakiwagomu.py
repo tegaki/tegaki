@@ -338,6 +338,11 @@ class WagomuTrainer(_WagomuBase, Trainer):
                 writings = [c.get_writing() for c in chars]
                 writing = self._get_representative_writing(writings)
 
+            # artificially increase the number of points
+            # this is useful when training data is made of straight lines
+            # and thus has very few points
+            writing.upsample_threshold(10)
+
             feat = self.get_features(writing)
             n_strokes = writing.get_n_strokes()
 
