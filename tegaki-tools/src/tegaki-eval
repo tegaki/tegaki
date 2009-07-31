@@ -112,6 +112,16 @@ class TegakiEval(object):
         if os.path.exists(self._model):
             # the path exists so we consider the parameter to be a model path
             method = recognizer.open
+
+            # try to find a .meta file
+            meta_file = self._model.replace(".model", ".meta")
+            if os.path.exists(meta_file) and meta_file.endswith(".meta"):
+                try:
+                    meta = Recognizer.read_meta_file(meta_file)
+                except RecognizerError, e:
+                    raise TegakiEvalError, str(e) 
+            else:
+                meta = {}
         else:
             # otherwise we consider the parameter to be a model name
             avail_models = recognizer_class.get_available_models()
@@ -119,11 +129,13 @@ class TegakiEval(object):
                 err = "Not an available model!\n"
                 err += "Available ones include: %s" % \
                     ", ".join(["\"%s\"" % k for k in avail_models.keys()])
-                raise TegakiEvalError, err
+                raise TegakiEvalError, err 
 
+            meta = avail_models[self._model]
             method = recognizer.set_model
         try:
             method(self._model)
+            recognizer.set_options(meta)
         except RecognizerError, e:
             raise TegakiEvalError, str(e)
 
