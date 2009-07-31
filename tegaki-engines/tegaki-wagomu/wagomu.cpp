@@ -217,12 +217,14 @@ Results *Recognizer::recognize(float *points,
     for (group_id=0, n_chars=0, char_id=0; group_id < n_groups; group_id++) {
         /* Only compare the input with templates which have
            +- window_size the same number of strokes as the input */
-        if (groups[group_id].n_strokes > (n_strokes + window_size))
-            break;
-        if (groups[group_id].n_strokes > window_size &&
-            groups[group_id].n_strokes < (n_strokes - window_size)) {
-            char_id += groups[group_id].n_chars;
-            continue;
+        if (n_strokes > window_size) {
+            if (groups[group_id].n_strokes > (n_strokes + window_size))
+                break;
+
+            if (groups[group_id].n_strokes < (n_strokes - window_size)) {
+                char_id += groups[group_id].n_chars;
+                continue;
+            }
         }
 
         cursor = (float *) (data + groups[group_id].offset);
