@@ -315,7 +315,7 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
         if not self._ready:
             return
 
-        writing = self._canvas.get_writing()
+        writing = self._canvas.get_writing().copy()
 
         if writing.get_n_strokes() > 0:
             candidates = self._recognizer.recognize(writing, n=9)
