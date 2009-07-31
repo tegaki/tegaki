@@ -32,27 +32,39 @@ namespace wagomu {
 class Results {
 
 public:
-    Results(int size);
+    Results(unsigned int size);
     ~Results();
 
 #ifndef SWIG
-    void add(int i, char *utf8, float dist);
+    void add(unsigned i, unsigned int unicode, float dist);
 #endif
-    char *get_utf8(int i);
-    float get_distance(int i);
-    int get_size();
+    unsigned int get_unicode(unsigned int i);
+    float get_distance(unsigned int i);
+    unsigned int get_size();
 
 private:
-    char **utf8;
+    unsigned int *unicode;
     float *dist;
     int size;
 };
 
 #ifndef SWIG
 typedef struct {
-    char *utf8;
+    unsigned int unicode;
     float dist;
 } CharDist;
+
+typedef struct {
+    unsigned int unicode;
+    unsigned int n_vectors;
+} Character;
+
+typedef struct {
+    unsigned int n_strokes;
+    unsigned int n_chars;
+    unsigned int offset;
+    char pad[4];
+} CharacterGroup;
 #endif
 
 class Recognizer {
@@ -62,24 +74,34 @@ public:
 
     bool open(char *path);
     Results *recognize(float *points, 
-                       unsigned short n_vectors, 
-                       unsigned short n_results);
-    unsigned long get_n_characters();
-    unsigned short get_dimension();
+                       unsigned int n_vectors, 
+                       unsigned int n_results);
+    unsigned int get_n_characters();
+    unsigned int get_dimension();
     char *get_error_message();
 
 private:
     GMappedFile *file;
     char *data;
 
-    unsigned long n_characters;
-    unsigned short dimension;
+    unsigned int n_characters;
+    unsigned int n_groups;
+    /* dimension contains the actual vector dimension, e.g 2,
+       while VECTOR_DIMENSION_MAX contains the vector dimension plus some
+       padding, e.g. 4 */
+    unsigned int dimension;
+    unsigned int downsample_threshold;
+
+    Character *characters;
+    CharacterGroup *groups;
+    float *strokedata;
+
     char *error_msg;
     float dtwm[4000000];
    
     CharDist *distm;
 
-    inline float dtw(float *s, unsigned short n, float *t, unsigned short m);
+    inline float dtw(float *s, unsigned int n, float *t, unsigned int m);
     inline float euclidean_distance(float *v1, float *v2);
 };
 

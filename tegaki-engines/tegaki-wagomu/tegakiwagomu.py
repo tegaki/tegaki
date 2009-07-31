@@ -45,7 +45,10 @@ FEATURE_EXTRACTION_FUNCTION = "get_delta_features"
 #      END CONFIG     #
 #######################
 
-MAGIC_NUMBER = 0x7777 # All lucky 7s!
+VECTOR_DIMENSION_MAX = 4
+INT_SIZE = 4
+FLOAT_SIZE = 4
+MAGIC_NUMBER = 0x77778888
 
 # Features
 
@@ -53,7 +56,7 @@ def get_xy_features(writing):
     """
     Returns (x,y) for each point.
     """
-    return writing.get_strokes()
+    return [(x, y, 0.0, 0.0) for x,y in writing.get_strokes()]
 
 get_xy_features.DIMENSION = 2
 
@@ -71,7 +74,8 @@ def get_delta_features(writing):
         deltax = float(abs(x2 - x1))
         deltay = float(abs(y2 - y1))
 
-        arr.append((deltax, deltay))
+        # we add two floats to make it 16 bytes
+        arr.append((deltax, deltay, 0.0, 0.0))
 
     return arr
 
@@ -152,25 +156,17 @@ def get_features(writing):
 def argmin(arr):
     return arr.index(min(arr))
 
-def read_ushorts(f, n):
-    return struct.unpack("@%dH" % n, f.read(n*2))
+# File utils
 
-def read_ushort(f):
-    return read_ushorts(f, 1)[0]
+def read_uints(f, n):
+    return struct.unpack("@%dI" % n, f.read(n*4))
 
-def write_ushorts(f, *args):
-    f.write(struct.pack("@%dH" % len(args), *args))
-write_ushort = write_ushorts
+def read_uint(f):
+    return read_uints(f, 1)[0]
 
-def read_ulongs(f, n):
-    return struct.unpack("@%dL" % n, f.read(n*4))
-
-def read_ulong(f):
-    return read_ulongs(f, 1)[0]
-
-def write_ulongs(f, *args):
-    f.write(struct.pack("@%dL" % len(args), *args))
-write_ulong = write_ulongs
+def write_uints(f, *args):
+    f.write(struct.pack("@%dI" % len(args), *args))
+write_uint = write_uints
 
 def read_floats(f, n):
     return struct.unpack("@%df" % n, f.read(n*4))
@@ -182,12 +178,15 @@ def write_floats(f, *args):
     f.write(struct.pack("@%df" % len(args), *args))
 write_float = write_floats    
 
+def get_padded_offset(offset, align):
+    padding = (align - (offset % align)) % align
+    return offset + ((align - (offset % align)) % align)
+
 # Recognizer
 
 try:
     import wagomu
 
-    # Extension-based version
     class WagomuRecognizer(Recognizer):
 
         RECOGNIZER_NAME = "wagomu"
@@ -203,7 +202,7 @@ try:
         def recognize(self, writing, n=10):
             feat = get_features(writing)
             nfeat = len(feat) 
-            nvectors = nfeat / self._recognizer.get_dimension()
+            nvectors = nfeat / VECTOR_DIMENSION_MAX
             floatarr = wagomu.FloatArray(nfeat)
 
             for i in range(nfeat):
@@ -213,63 +212,16 @@ try:
 
             candidates = []
             for i in range(res.get_size()):
-                candidates.append((res.get_utf8(i), res.get_distance(i)))
+                utf8 = unichr(res.get_unicode(i)).encode("utf8")
+                candidates.append((utf8, res.get_distance(i)))
 
             return candidates
+
+    RECOGNIZER_CLASS = WagomuRecognizer
 
 except ImportError:
-    # Pure python version
-    class WagomuRecognizer(Recognizer):
+    pass # no recognizer available here
 
-        RECOGNIZER_NAME = "wagomu"
-
-        def __init__(self):
-            Recognizer.__init__(self)
-            self._reprdict = SortedDict()
-            self._dimension = None
-
-        def open(self, path):
-            f = open(path, "rb")
-
-            magic_number = read_ushort(f)
-            if magic_number != MAGIC_NUMBER:
-                raise RecognizerError, "Incorrect model"
-
-            n_characters = read_ulong(f)
-            self._dimension = read_ushort(f)
-
-            for i in range(n_characters):
-                strlen = read_ushort(f)
-                utf8 = f.read(strlen)
-                n_vectors = read_ushort(f)
-                feat = read_floats(f, n_vectors*self._dimension)
-                self._reprdict[utf8] = feat
-
-            f.close()
-
-        def recognize(self, writing, n=10):
-            feat = get_features(writing)
-
-            results = []
-            for utf8, template in self._reprdict.items():
-                results.append((utf8, dtw(feat, template, self._dimension)))
-            results.sort(cmp=lambda x,y: cmp(x[1],y[1]))
-
-            candidates = []
-            already = []
-            # we don't just return the first n results because
-            # a character may have several template variants (allographes)
-            for utf8, dist in results:
-                utf8 = utf8[0:-1] # remove \0 at the end
-                if not utf8 in already:
-                    candidates.append((utf8, dist))
-                    already.append(utf8)
-                if len(candidates) >= n:
-                    break
-            
-            return candidates
-
-RECOGNIZER_CLASS = WagomuRecognizer
 
 # Trainer
 
@@ -299,7 +251,7 @@ class WagomuTrainer(Trainer):
         self._save_model_from_charcol(charcol, path)
         self._write_meta_file(meta, meta_file)
 
-    def _get_representative_features(self, writings):
+    def _get_representative_writing(self, writings):
         n_writings = len(writings)
         sum_ = [0] * n_writings
         features = [get_features(w) for w in writings]
@@ -316,18 +268,28 @@ class WagomuTrainer(Trainer):
         
         i = argmin(sum_)
 
-        return features[i]
+        return writings[i]
 
     def _save_model_from_charcol(self, charcol, output_path):
-        # contains the set representative for each set
-        reprdict = SortedDict() 
+        chargroups = {} 
+
+        n_chars = 1
+
+        # get non-empty set list
+        set_list = []
+        for set_name in charcol.get_set_list():
+            chars = charcol.get_characters(set_name)
+            if len(chars) == 0: continue # empty set
+
+            utf8 = chars[0].get_utf8()
+            if utf8 is None: continue
+
+            set_list.append(set_name)
 
         # each set may contain more than 1 sample per character
         # but we only need one ("the template") so we find the set
         # representative,  which we define as the sample which is, on
         # average, the closest to the other samples of that set
-        i = 1
-        set_list = charcol.get_set_list()
         for set_name in set_list:
             chars = charcol.get_characters(set_name)
             if len(chars) == 0: continue # empty set
@@ -337,42 +299,96 @@ class WagomuTrainer(Trainer):
 
             if len(chars) == 1 or len(chars) == 2:
                 # take the first one if only 1 or 2 samples available
-                feat = get_features(chars[0].get_writing())
+                writing = chars[0].get_writing()
             else:
                 # we need to find the set representative
                 writings = [c.get_writing() for c in chars]
-                feat = self._get_representative_features(writings)
+                writing = self._get_representative_writing(writings)
 
-            reprdict[set_name] = (utf8, feat)
-            print "%s (%d/%d)" % (utf8, i, len(set_list))
-            i += 1
+            feat = get_features(writing)
+            n_strokes = writing.get_n_strokes()
+
+            if not n_strokes in chargroups: chargroups[n_strokes] = []
+            chargroups[n_strokes].append((utf8, feat))
+
+            print "%s (%d/%d)" % (utf8, n_chars, len(set_list))
+            n_chars += 1
+
+        n_chars -= 1
+
+        stroke_counts = chargroups.keys()
+        stroke_counts.sort()
 
         # save model in binary format
         # this file is architecture dependent
         f = open(output_path, "wb")
 
         # magical number
-        write_ushort(f, MAGIC_NUMBER)
+        write_uint(f, MAGIC_NUMBER)
 
         # number of characters/templates
-        write_ulong(f, len(reprdict))
+        write_uint(f, n_chars)
+
+        # number of character groups
+        write_uint(f, len(chargroups))
 
         # vector dimensionality
-        write_ushort(f, FEATURE_VECTOR_DIMENSION)
+        write_uint(f, FEATURE_VECTOR_DIMENSION)
 
-        for utf8, feat in reprdict.values():
-            # char utf8's value stored in pascal-string 
-            # (string prefixed by its length)
-            utf8 += "\0"
-            write_ushort(f, len(utf8))
-            f.write(utf8)
+        # downsample threshold
+        write_uint(f, DOWNSAMPLE_THRESHOLD)
 
-            # number of vectors
-            write_ushort(f, len(feat) / FEATURE_VECTOR_DIMENSION)
+        strokedatasize = {}
 
-            # flat list of vectors
-            # e.g. [[x1, y1], [x2, y2]] is stored as [x1, y1, x2, y2]
-            write_floats(f, *[v for v in feat])
+        # character information
+        for sc in stroke_counts:
+            strokedatasize[sc] = 0
+
+            for utf8, feat in chargroups[sc]:
+                # unicode integer
+                write_uint(f, ord(unicode(utf8, "utf-8")))
+                
+                # n_vectors
+                write_uint(f, len(feat) / VECTOR_DIMENSION_MAX)
+
+                strokedatasize[sc] += len(feat)
+
+        offset = 5 * INT_SIZE # header
+        offset += n_chars * 2 * INT_SIZE # character information 
+        offset += len(chargroups) * 4 * INT_SIZE # character group
+        poffset = get_padded_offset(offset, VECTOR_DIMENSION_MAX * FLOAT_SIZE)
+        pad = poffset - offset
+
+        # character group information
+        for sc in stroke_counts:
+            # number of strokes
+            write_uint(f, sc)
+    
+            # number of characters
+            write_uint(f, len(chargroups[sc]))
+
+            # offset from the start of the file
+            write_uint(f, poffset)
+
+            # padding
+            f.write("".join(["\0"] * 4))
+
+            poffset += strokedatasize[sc]
+
+        # padding
+        if pad > 0:
+            f.write("".join(["\0"] * pad))
+
+        assert(f.tell() % VECTOR_DIMENSION_MAX * FLOAT_SIZE == 0)
+
+        # stroke data
+        for sc in stroke_counts:
+            for utf8, feat in chargroups[sc]:
+                assert(f.tell() % VECTOR_DIMENSION_MAX * FLOAT_SIZE == 0)
+
+                # stroke data as flat list of vectors
+                # e.g. [[x1, y1], [x2, y2]] is stored as [x1, y1, x2, y2]
+                write_floats(f, *feat)
 
         f.close()
             

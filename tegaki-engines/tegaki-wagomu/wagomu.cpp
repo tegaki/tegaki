@@ -29,7 +29,8 @@
 
 #include "wagomu.h"
 
-#define MAGIC_NUMBER 0x7777
+#define MAGIC_NUMBER 0x77778888
+#define VECTOR_DIMENSION_MAX 4
 
 #undef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -39,35 +40,35 @@
 
 namespace wagomu {
 
-Results::Results(int s) {
+Results::Results(unsigned int s) {
     size = s;
     if (size > 0) {
-        utf8 = (char **) malloc(size * sizeof(char *));
+        unicode = (unsigned int*) malloc(size * sizeof(unsigned int));
         dist = (float *) malloc(size * sizeof(float));
     }
 }
 
 Results::~Results() {
     if (size > 0) {
-        if (utf8) free(utf8);
+        if (unicode) free(unicode);
         if (dist) free(dist);
     }
 }
 
-void Results::add(int i, char *u, float d) {
-    utf8[i] = u;
+void Results::add(unsigned int i, unsigned int u, float d) {
+    unicode[i] = u;
     dist[i] = d;
 }
 
-char *Results::get_utf8(int i) {
-    return utf8[i];
+unsigned int Results::get_unicode(unsigned int i) {
+    return unicode[i];
 }
 
-float Results::get_distance(int i) {
+float Results::get_distance(unsigned int i) {
     return dist[i];
 }
 
-int Results::get_size() {
+unsigned int Results::get_size() {
     return size;
 }
 
@@ -79,6 +80,9 @@ Recognizer::~Recognizer() {
 }
 
 bool Recognizer::open(char *path) {
+    unsigned int *header;
+    char *cursor;
+
     file = g_mapped_file_new(path, FALSE, NULL);
 
     if (!file) {
@@ -88,24 +92,41 @@ bool Recognizer::open(char *path) {
 
     data = g_mapped_file_get_contents(file);
 
-    if (*(unsigned short *)data != MAGIC_NUMBER) {
+    header = (unsigned int *)data;
+
+    if (header[0] != MAGIC_NUMBER) {
         error_msg = (char *) "Not a valid file";
         return false;
     }
 
-    n_characters =  *(unsigned long *)(data+2);
-    dimension = *(unsigned short *)(data+6);
+    n_characters =  header[1];
+    n_groups = header[2];
+    dimension = header[3];
+    downsample_threshold = header[4];
+
+    if (n_characters == 0 || n_groups == 0) {
+        error_msg = (char *) "No characters in this model";
+        return false;
+    }
+    
+    cursor = data + 5 * sizeof(unsigned int);
+    characters = (Character *)cursor;
+
+    cursor += n_characters * sizeof(Character);
+    groups = (CharacterGroup *)cursor;
+
+    strokedata = (float *)(data + groups[0].offset);
 
     distm = (CharDist *) malloc(n_characters * sizeof(CharDist));
 
     return true;
 }
 
-unsigned long Recognizer::get_n_characters() {
+unsigned int Recognizer::get_n_characters() {
     return n_characters;
 }
 
-unsigned short Recognizer::get_dimension() {
+unsigned int Recognizer::get_dimension() {
     return dimension;
 }
 
@@ -118,21 +139,22 @@ inline float Recognizer::euclidean_distance(float *v1, float *v2) {
     }
 
     return sqrtf(sum);*/
+
     float sum;
-    for (int i=0; i < dimension; i++)
+    for (unsigned int i=0; i < dimension; i++)
         sum += fabsf(v2[i] - v1[i]);
     return sum;
 }
 
-inline float Recognizer::dtw(float *s, unsigned short n, 
-                             float *t, unsigned short m) {
+inline float Recognizer::dtw(float *s, unsigned int n, 
+                             float *t, unsigned int m) {
     /*
     s: first sequence
     n: number of vectors in s
     t: second sequence
     n: number of vectors in t
     */
-    int k, i, j;
+    unsigned int k, i, j;
     float cost;
     float *t_start;
 
@@ -146,19 +168,19 @@ inline float Recognizer::dtw(float *s, unsigned short n,
 
     dtwm[0] = 0;
 
-    s += dimension;
+    s += VECTOR_DIMENSION_MAX;
    
     for (i=1; i < n; i++) {
-        t = t_start + dimension;
+        t = t_start + VECTOR_DIMENSION_MAX;
 
         for (j=1; j < m; j++) {
             k = j * n + i;
             cost = euclidean_distance(s, t);
             dtwm[k] = cost + MIN3(dtwm[k-1],dtwm[k-n-1],dtwm[k-n]);
-            t += dimension;
+            t += VECTOR_DIMENSION_MAX;
         }
 
-        s += dimension;
+        s += VECTOR_DIMENSION_MAX;
     }
     
     return dtwm[k];
@@ -171,23 +193,16 @@ static int char_dist_cmp(CharDist *a, CharDist *b) {
 }
 
 Results *Recognizer::recognize(float *points, 
-                              unsigned short n_vectors, 
-                              unsigned short n_results) {
+                              unsigned int n_vectors, 
+                              unsigned int n_results) {
 
-    unsigned short utf8len, n_vectors_template;
-    char *cursor = data + 8; // skip magic_number, n_characters, dimension
     unsigned int i, size;
-    
+    float *cursor = strokedata;
+
     for (i=0; i < n_characters; i++) {
-        utf8len = *(unsigned short *)cursor;
-        cursor += 2;
-        distm[i].utf8 = cursor;
-        cursor += utf8len;
-        n_vectors_template =  *(unsigned short *)cursor;
-        cursor += 2;
-        distm[i].dist = dtw(points, n_vectors, 
-                            (float *)cursor, n_vectors_template);
-        cursor += n_vectors_template * dimension * 4;
+        distm[i].unicode = characters[i].unicode;
+        distm[i].dist = dtw(points, n_vectors, cursor, characters[i].n_vectors);
+        cursor += characters[i].n_vectors * VECTOR_DIMENSION_MAX;
     }
 
     /* sort the results with glibc's quicksort */
@@ -201,7 +216,7 @@ Results *Recognizer::recognize(float *points,
     Results *results = new Results(size);
 
     for(i=0; i < size; i++)
-        results->add(i, strdup(distm[i].utf8), distm[i].dist);
+        results->add(i, distm[i].unicode, distm[i].dist);
 
     return results;
 }
