@@ -197,9 +197,11 @@ try:
 
         def open(self, path):
             ret = self._recognizer.open(path)
-            if not ret: raise RecognizerError, recognizer.get_error_message()
+            if not ret: 
+                raise RecognizerError, self._recognizer.get_error_message()
 
         def recognize(self, writing, n=10):
+            n_strokes = writing.get_n_strokes()
             feat = get_features(writing)
             nfeat = len(feat) 
             nvectors = nfeat / VECTOR_DIMENSION_MAX
@@ -208,7 +210,7 @@ try:
             for i in range(nfeat):
                 floatarr[i] = feat[i]
 
-            res = self._recognizer.recognize(floatarr, nvectors, n)
+            res = self._recognizer.recognize(floatarr, nvectors, n_strokes, n)
 
             candidates = []
             for i in range(res.get_size()):
@@ -273,7 +275,7 @@ class WagomuTrainer(Trainer):
     def _save_model_from_charcol(self, charcol, output_path):
         chargroups = {} 
 
-        n_chars = 1
+        n_chars = 0
 
         # get non-empty set list
         set_list = []
@@ -314,8 +316,6 @@ class WagomuTrainer(Trainer):
             print "%s (%d/%d)" % (utf8, n_chars, len(set_list))
             n_chars += 1
 
-        n_chars -= 1
-
         stroke_counts = chargroups.keys()
         stroke_counts.sort()
 
@@ -351,7 +351,7 @@ class WagomuTrainer(Trainer):
                 # n_vectors
                 write_uint(f, len(feat) / VECTOR_DIMENSION_MAX)
 
-                strokedatasize[sc] += len(feat)
+                strokedatasize[sc] += len(feat) * FLOAT_SIZE
 
         offset = 5 * INT_SIZE # header
         offset += n_chars * 2 * INT_SIZE # character information 
@@ -373,7 +373,7 @@ class WagomuTrainer(Trainer):
             # padding
             f.write("".join(["\0"] * 4))
 
-            poffset += strokedatasize[sc]
+            poffset += strokedatasize[sc] 
 
         # padding
         if pad > 0:

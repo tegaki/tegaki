@@ -38,6 +38,8 @@
 #undef MIN3
 #define MIN3(a,b,c) (MIN((a),MIN((b),(c))))
 
+#define WINDOW_SIZE 4
+
 namespace wagomu {
 
 Results::Results(unsigned int s) {
@@ -143,6 +145,7 @@ inline float Recognizer::euclidean_distance(float *v1, float *v2) {
     float sum;
     for (unsigned int i=0; i < dimension; i++)
         sum += fabsf(v2[i] - v1[i]);
+
     return sum;
 }
 
@@ -177,6 +180,7 @@ inline float Recognizer::dtw(float *s, unsigned int n,
             k = j * n + i;
             cost = euclidean_distance(s, t);
             dtwm[k] = cost + MIN3(dtwm[k-1],dtwm[k-n-1],dtwm[k-n]);
+
             t += VECTOR_DIMENSION_MAX;
         }
 
@@ -194,24 +198,42 @@ static int char_dist_cmp(CharDist *a, CharDist *b) {
 
 Results *Recognizer::recognize(float *points, 
                               unsigned int n_vectors, 
+                              unsigned int n_strokes,
                               unsigned int n_results) {
 
-    unsigned int i, size;
+    unsigned int group_id, i, size, n_chars, char_id;
     float *cursor = strokedata;
 
-    for (i=0; i < n_characters; i++) {
-        distm[i].unicode = characters[i].unicode;
-        distm[i].dist = dtw(points, n_vectors, cursor, characters[i].n_vectors);
-        cursor += characters[i].n_vectors * VECTOR_DIMENSION_MAX;
+    for (group_id=0, n_chars=0, char_id=0; group_id < n_groups; group_id++) {
+        /* Only compare the input with templates which have
+           +- WINDOW_SIZE the same number of strokes as the input */
+        if (groups[group_id].n_strokes > (n_strokes + WINDOW_SIZE))
+            break;
+        if (groups[group_id].n_strokes > WINDOW_SIZE &&
+            groups[group_id].n_strokes < (n_strokes - WINDOW_SIZE)) {
+            char_id += groups[group_id].n_chars;
+            continue;
+        }
+
+        cursor = (float *) (data + groups[group_id].offset);
+
+        for (i=0; i < groups[group_id].n_chars; i++) {
+            distm[n_chars].unicode = characters[char_id].unicode;
+            distm[n_chars].dist = dtw(points, n_vectors, 
+                                      cursor, characters[char_id].n_vectors);
+            cursor += characters[char_id].n_vectors * VECTOR_DIMENSION_MAX;
+            char_id++;
+            n_chars++;
+        }
     }
 
     /* sort the results with glibc's quicksort */
     qsort ((void *) distm, 
-           (size_t) n_characters, 
+           (size_t) n_chars, 
            sizeof (CharDist), 
            (int (*) (const void *, const void*)) char_dist_cmp);
 
-    size = MIN(n_characters, n_results);
+    size = MIN(n_chars, n_results);
 
     Results *results = new Results(size);
 

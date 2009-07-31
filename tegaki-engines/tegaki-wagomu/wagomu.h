@@ -74,7 +74,8 @@ public:
 
     bool open(char *path);
     Results *recognize(float *points, 
-                       unsigned int n_vectors, 
+                       unsigned int n_vectors,
+                       unsigned int n_strokes,
                        unsigned int n_results);
     unsigned int get_n_characters();
     unsigned int get_dimension();
