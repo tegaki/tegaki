@@ -379,12 +379,12 @@ class WagomuTrainer(Trainer):
         if pad > 0:
             f.write("".join(["\0"] * pad))
 
-        assert(f.tell() % VECTOR_DIMENSION_MAX * FLOAT_SIZE == 0)
+        assert(f.tell() % (VECTOR_DIMENSION_MAX * FLOAT_SIZE) == 0)
 
         # stroke data
         for sc in stroke_counts:
             for utf8, feat in chargroups[sc]:
-                assert(f.tell() % VECTOR_DIMENSION_MAX * FLOAT_SIZE == 0)
+                assert(f.tell() % (VECTOR_DIMENSION_MAX * FLOAT_SIZE) == 0)
 
                 # stroke data as flat list of vectors
                 # e.g. [[x1, y1], [x2, y2]] is stored as [x1, y1, x2, y2]
