@@ -38,8 +38,6 @@
 #undef MIN3
 #define MIN3(a,b,c) (MIN((a),MIN((b),(c))))
 
-#define WINDOW_SIZE 4
-
 namespace wagomu {
 
 Results::Results(unsigned int s) {
@@ -74,11 +72,23 @@ unsigned int Results::get_size() {
     return size;
 }
 
+Recognizer::Recognizer() {
+    window_size = 3;
+}
+
 Recognizer::~Recognizer() {
     if (file)
         g_mapped_file_free(file);
     if (distm)
         free(distm);
+}
+
+unsigned int Recognizer::get_window_size() {
+    return window_size;
+}
+
+void Recognizer::set_window_size(unsigned int size) {
+    window_size = size;
 }
 
 bool Recognizer::open(char *path) {
@@ -206,11 +216,11 @@ Results *Recognizer::recognize(float *points,
 
     for (group_id=0, n_chars=0, char_id=0; group_id < n_groups; group_id++) {
         /* Only compare the input with templates which have
-           +- WINDOW_SIZE the same number of strokes as the input */
-        if (groups[group_id].n_strokes > (n_strokes + WINDOW_SIZE))
+           +- window_size the same number of strokes as the input */
+        if (groups[group_id].n_strokes > (n_strokes + window_size))
             break;
-        if (groups[group_id].n_strokes > WINDOW_SIZE &&
-            groups[group_id].n_strokes < (n_strokes - WINDOW_SIZE)) {
+        if (groups[group_id].n_strokes > window_size &&
+            groups[group_id].n_strokes < (n_strokes - window_size)) {
             char_id += groups[group_id].n_chars;
             continue;
         }

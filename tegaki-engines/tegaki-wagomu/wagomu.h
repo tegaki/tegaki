@@ -70,6 +70,7 @@ typedef struct {
 class Recognizer {
 
 public:
+    Recognizer();
     ~Recognizer();
 
     bool open(char *path);
@@ -79,6 +80,8 @@ public:
                        unsigned int n_results);
     unsigned int get_n_characters();
     unsigned int get_dimension();
+    unsigned int get_window_size();
+    void set_window_size(unsigned int size);
     char *get_error_message();
 
 private:
@@ -101,6 +104,8 @@ private:
     float dtwm[4000000];
    
     CharDist *distm;
+
+    unsigned int window_size;
 
     inline float dtw(float *s, unsigned int n, float *t, unsigned int m);
     inline float euclidean_distance(float *v1, float *v2);

@@ -29,22 +29,6 @@ from tegaki.arrayutils import array_flatten
 from tegaki.dictutils import SortedDict
 from tegaki.mathutils import euclidean_distance
 
-#######################
-#       CONFIG        #
-#######################
-
-# the bigger the threshold, the fewer points the algorithm has to compare
-# however, the fewer points, the more the character quality deteriorates
-# The value is a distance in a 1000 * 1000 square
-DOWNSAMPLE_THRESHOLD = 50
-
-# Features used
-FEATURE_EXTRACTION_FUNCTION = "get_delta_features"
-
-#######################
-#      END CONFIG     #
-#######################
-
 VECTOR_DIMENSION_MAX = 4
 INT_SIZE = 4
 FLOAT_SIZE = 4
@@ -52,11 +36,13 @@ MAGIC_NUMBER = 0x77778888
 
 # Features
 
+FEATURE_EXTRACTION_FUNCTIONS = ["get_xy_features", "get_delta_features"]
+
 def get_xy_features(writing):
     """
     Returns (x,y) for each point.
     """
-    return [(x, y, 0.0, 0.0) for x,y in writing.get_strokes()]
+    return [(x, y, 0.0, 0.0) for s in writing.get_strokes() for x,y in s]
 
 get_xy_features.DIMENSION = 2
 
@@ -80,9 +66,6 @@ def get_delta_features(writing):
     return arr
 
 get_delta_features.DIMENSION = 2
-
-FEATURE_EXTRACTION_FUNCTION = eval(FEATURE_EXTRACTION_FUNCTION)
-FEATURE_VECTOR_DIMENSION = FEATURE_EXTRACTION_FUNCTION.DIMENSION
 
 # DTW
 
@@ -147,12 +130,6 @@ def dtw(s, t, d, f=euclidean_distance):
 
 # Small utils
 
-def get_features(writing):
-    writing.normalize()
-    writing.downsample_threshold(DOWNSAMPLE_THRESHOLD)
-    flat = array_flatten(FEATURE_EXTRACTION_FUNCTION(writing))
-    return [float(f) for f in flat]
-
 def argmin(arr):
     return arr.index(min(arr))
 
@@ -182,17 +159,69 @@ def get_padded_offset(offset, align):
     padding = (align - (offset % align)) % align
     return offset + ((align - (offset % align)) % align)
 
+class _WagomuBase(object):
+
+    def __init__(self):
+        # The bigger the threshold, the fewer points the algorithm has to
+        # compare. However, the fewer points, the more the character
+        # quality deteriorates. 
+        # The value is a distance in a 1000 * 1000 square
+        self._downsample_threshold = 50
+
+        self._feature_extraction_function = eval("get_delta_features")
+        self._vector_dimension = self._feature_extraction_function.DIMENSION
+
+        if isinstance(self, Recognizer):
+            self._error = RecognizerError
+        else:
+            self._error = TrainerError
+
+    def get_features(self, writing):
+        writing.normalize()
+        writing.downsample_threshold(self._downsample_threshold)
+        flat = array_flatten(self._feature_extraction_function(writing))
+        return [float(f) for f in flat]
+
+    def set_options(self, opt):
+        if "downsample_threshold" in opt:
+            try:
+                self._downsample_threshold = int(opt["downsample_threshold"])
+            except ValueError:
+                raise self._error, "downsample_threshold must be an integer"
+
+        if "feature_extraction_function" in opt:
+            if not opt["feature_extraction_function"] in \
+                FEATURE_EXTRACTION_FUNCTIONS:
+                raise self._error, "The feature function does not exist"
+            else:
+                self._feature_extraction_function = \
+                    eval(opt["feature_extraction_function"])
+                self._vector_dimension = \
+                    self._feature_extraction_function.DIMENSION
+
+        if "window_size" in opt:
+            try:
+                ws = int(opt["window_size"])
+                if ws < 0: raise ValueError
+                if isinstance(self, Recognizer):
+                    self._recognizer.set_window_size(ws)
+            except ValueError:
+                raise self._error, "window_size must be a positive integer"    
+       
+
 # Recognizer
 
 try:
     import wagomu
 
-    class WagomuRecognizer(Recognizer):
+    class WagomuRecognizer(_WagomuBase, Recognizer):
 
         RECOGNIZER_NAME = "wagomu"
 
         def __init__(self):
             Recognizer.__init__(self)
+            _WagomuBase.__init__(self)
+
             self._recognizer = wagomu.Recognizer()
 
         def open(self, path):
@@ -202,7 +231,7 @@ try:
 
         def recognize(self, writing, n=10):
             n_strokes = writing.get_n_strokes()
-            feat = get_features(writing)
+            feat = self.get_features(writing)
             nfeat = len(feat) 
             nvectors = nfeat / VECTOR_DIMENSION_MAX
             floatarr = wagomu.FloatArray(nfeat)
@@ -227,12 +256,13 @@ except ImportError:
 
 # Trainer
 
-class WagomuTrainer(Trainer):
+class WagomuTrainer(_WagomuBase, Trainer):
 
     TRAINER_NAME = "wagomu"
 
     def __init__(self):
         Trainer.__init__(self)
+        _WagomuBase.__init__(self)
 
     def train(self, charcol, meta, path=None):
         self._check_meta(meta)
@@ -250,13 +280,14 @@ class WagomuTrainer(Trainer):
         meta_file = path.replace(".model", ".meta")
         if not meta_file.endswith(".meta"): meta_file += ".meta"
         
+        self.set_options(meta)
         self._save_model_from_charcol(charcol, path)
         self._write_meta_file(meta, meta_file)
 
     def _get_representative_writing(self, writings):
         n_writings = len(writings)
         sum_ = [0] * n_writings
-        features = [get_features(w) for w in writings]
+        features = [self.get_features(w) for w in writings]
 
         # dtw is a symmetric distance so d(i,j) = d(j,i)
         # we only need to compute the values on the right side of the
@@ -264,7 +295,7 @@ class WagomuTrainer(Trainer):
         for i in range(n_writings):
             for j in range (i+1, n_writings):
                 distance = dtw(features[i], features[j],
-                                FEATURE_VECTOR_DIMENSION)
+                                self._vector_dimension)
                 sum_[i] += distance
                 sum_[j] += distance
         
@@ -307,13 +338,13 @@ class WagomuTrainer(Trainer):
                 writings = [c.get_writing() for c in chars]
                 writing = self._get_representative_writing(writings)
 
-            feat = get_features(writing)
+            feat = self.get_features(writing)
             n_strokes = writing.get_n_strokes()
 
             if not n_strokes in chargroups: chargroups[n_strokes] = []
             chargroups[n_strokes].append((utf8, feat))
 
-            print "%s (%d/%d)" % (utf8, n_chars, len(set_list))
+            print "%s (%d/%d)" % (utf8, n_chars+1, len(set_list))
             n_chars += 1
 
         stroke_counts = chargroups.keys()
@@ -333,10 +364,10 @@ class WagomuTrainer(Trainer):
         write_uint(f, len(chargroups))
 
         # vector dimensionality
-        write_uint(f, FEATURE_VECTOR_DIMENSION)
+        write_uint(f, self._vector_dimension)
 
         # downsample threshold
-        write_uint(f, DOWNSAMPLE_THRESHOLD)
+        write_uint(f, self._downsample_threshold)
 
         strokedatasize = {}
 
