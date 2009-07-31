@@ -22,6 +22,7 @@
 import glob
 import os
 import imp
+from cStringIO import StringIO
 
 from tegaki.dictutils import SortedDict
 
@@ -108,7 +109,18 @@ class Trainer(object):
             raise TrainerError, "meta must contain a name and a shortname"
 
     def _write_meta_file(self, meta, meta_file):
-        f = open(meta_file, "w")
+        io = StringIO()
         for k,v in meta.items():
-            f.write("%s = %s\n" % (k,v))
+            io.write("%s = %s\n" % (k,v))
+
+        if os.path.exists(meta_file):
+            f = open(meta_file)
+            contents = f.read() 
+            f.close()
+            # don't rewrite the file if same
+            if io.getvalue() == contents:
+                return
+
+        f = open(meta_file, "w")
+        f.write(io.getvalue())
         f.close()

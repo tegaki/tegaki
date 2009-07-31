@@ -160,7 +160,7 @@ class Recognizer(object):
     @staticmethod
     def read_meta_file(meta_file):
         f = open(meta_file)
-        ret = {}
+        ret = SortedDict()
         for line in f.readlines():
             try:
                 key, value = [s.strip() for s in line.strip().split("=")]
