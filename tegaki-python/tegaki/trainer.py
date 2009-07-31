@@ -84,6 +84,12 @@ class Trainer(object):
                 except AttributeError:
                     pass         
 
+    def set_options(self, options):
+        """
+        Process trainer/model specific options.
+        """
+        pass
+
     # To be implemented by child class
     def train(self, character_collection, meta):
         """

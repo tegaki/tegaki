@@ -176,6 +176,12 @@ class Recognizer(object):
         """
         raise NotImplementedError
 
+    def set_options(self, options):
+        """
+        Process recognizer/model specific options.
+        """
+        pass
+
     def get_model(self):
         return self._model
 
@@ -189,7 +195,11 @@ class Recognizer(object):
 
         self._model = model_name
 
-        path = self.__class__.get_available_models()[model_name]["path"]
+        meta = self.__class__.get_available_models()[model_name]
+
+        self.set_options(meta)
+
+        path = meta["path"]
 
         self.open(path)
 
