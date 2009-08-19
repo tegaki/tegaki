@@ -24,6 +24,6 @@ setup(
     url = 'http://www.tegaki.org',
     version = getversion(),
     license='GPL',
-    packages = ['tegaki'],
-    package_dir = {'tegaki':'tegaki/'}
+    packages = ['tegaki', 'tegaki.engines'],
+    package_dir = {'tegaki':'tegaki/', 'tegaki.engines':'tegaki/engines/'}
 )
