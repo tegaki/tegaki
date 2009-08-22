@@ -29,6 +29,23 @@
 
 namespace wagomu {
 
+class Character {
+
+public:
+    Character(unsigned int n_vectors, unsigned int n_strokes);
+    ~Character();
+
+    float *get_points();
+    unsigned int get_n_vectors();
+    unsigned int get_n_strokes();
+    void set_value(unsigned int i, float value);
+
+private:
+    float *points;
+    unsigned int n_vectors;
+    unsigned int n_strokes;
+};
+
 class Results {
 
 public:
@@ -36,6 +53,7 @@ public:
     ~Results();
 
 #ifndef SWIG
+    /* This method is public but is not meant to be called from Python */ 
     void add(unsigned i, unsigned int unicode, float dist);
 #endif
     unsigned int get_unicode(unsigned int i);
@@ -45,7 +63,7 @@ public:
 private:
     unsigned int *unicode;
     float *dist;
-    int size;
+    unsigned int size;
 };
 
 #ifndef SWIG
@@ -57,7 +75,7 @@ typedef struct {
 typedef struct {
     unsigned int unicode;
     unsigned int n_vectors;
-} Character;
+} CharacterInfo;
 
 typedef struct {
     unsigned int n_strokes;
@@ -65,7 +83,17 @@ typedef struct {
     unsigned int offset;
     char pad[4];
 } CharacterGroup;
+
+#ifdef __SSE__
+typedef float v4sf __attribute__ ((vector_size (4*sizeof(float))));
+
+typedef union {
+    v4sf v;
+    float s[4];
+} wg_v4sf;
 #endif
+
+#endif /* SWIG */
 
 class Recognizer {
 
@@ -74,10 +102,7 @@ public:
     ~Recognizer();
 
     bool open(char *path);
-    Results *recognize(float *points, 
-                       unsigned int n_vectors,
-                       unsigned int n_strokes,
-                       unsigned int n_results);
+    Results *recognize(Character *ch, unsigned int n_results);
     unsigned int get_n_characters();
     unsigned int get_dimension();
     unsigned int get_window_size();
@@ -96,19 +121,44 @@ private:
     unsigned int dimension;
     unsigned int downsample_threshold;
 
-    Character *characters;
+    CharacterInfo *characters;
     CharacterGroup *groups;
     float *strokedata;
 
+#ifdef __SSE__
+    wg_v4sf *dtw1v;
+    wg_v4sf *dtw2v;
+#endif
+
+    float *dtw1;
+    float *dtw2;
+
     char *error_msg;
-    float dtwm[4000000];
-   
+
     CharDist *distm;
 
     unsigned int window_size;
 
+    unsigned int get_max_n_vectors();
+
+    inline float local_distance(float *v1, float *v2);
+
     inline float dtw(float *s, unsigned int n, float *t, unsigned int m);
-    inline float euclidean_distance(float *v1, float *v2);
+
+#ifdef __SSE__
+    inline wg_v4sf local_distance4(float *s,
+                                   float *t0,
+                                   float *t1,
+                                   float *t2,
+                                   float *t3);
+
+    inline wg_v4sf dtw4(float *s, unsigned int n, 
+                        float *t0, unsigned int m0,
+                        float *t1, unsigned int m1,
+                        float *t2, unsigned int m2,
+                        float *t3, unsigned int m3);
+#endif
+
 };
 
 }

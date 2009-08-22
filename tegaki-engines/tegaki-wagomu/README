@@ -9,10 +9,21 @@ Requirements
 Python        2.4    http://www.python.org
 tegaki-python 0.3   
 
-Install
+Compile
 -------
 
 $ python setup.py build
+
+Better performance may be obtained by increasing the level of optimization:
+$ CFLAGS="-O3" python setup.py build
+
+On Intel/AMD, better performance can be obtained by turning on SIMD (SSE)
+instructions:
+$ CFLAGS="-O3 -msse" python setup.py build
+
+Install
+-------
+
 ($ su)
 # python setup.py install
 

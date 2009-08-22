@@ -234,12 +234,12 @@ try:
             feat = self.get_features(writing)
             nfeat = len(feat) 
             nvectors = nfeat / VECTOR_DIMENSION_MAX
-            floatarr = wagomu.FloatArray(nfeat)
 
+            ch = wagomu.Character(nvectors, n_strokes)
             for i in range(nfeat):
-                floatarr[i] = feat[i]
+                ch.set_value(i, feat[i])
 
-            res = self._recognizer.recognize(floatarr, nvectors, n_strokes, n)
+            res = self._recognizer.recognize(ch, n)
 
             candidates = []
             for i in range(res.get_size()):
@@ -354,6 +354,10 @@ class WagomuTrainer(_WagomuBase, Trainer):
 
         stroke_counts = chargroups.keys()
         stroke_counts.sort()
+
+        # Sort templates in stroke groups by length
+        for sc in stroke_counts:
+            chargroups[sc].sort(lambda x,y: cmp(len(x),len(y)))
 
         # save model in binary format
         # this file is architecture dependent
