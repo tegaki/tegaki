@@ -357,7 +357,7 @@ class WagomuTrainer(_WagomuBase, Trainer):
 
         # Sort templates in stroke groups by length
         for sc in stroke_counts:
-            chargroups[sc].sort(lambda x,y: cmp(len(x),len(y)))
+            chargroups[sc].sort(lambda x,y: cmp(len(x[1]),len(y[1])))
 
         # save model in binary format
         # this file is architecture dependent
