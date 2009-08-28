@@ -53,11 +53,10 @@
 #define MAX4(a,b,c,d) (MAX((a),MAX3((b),(c),(d))))
 
 #ifdef __SSE__
-#undef MINVEC
-#define MINVEC(a,b) (__builtin_ia32_minps((a),(b)))
 
 #undef MIN3VEC
-#define MIN3VEC(a,b,c) (MINVEC((a),MINVEC((b),(c))))
+#define MIN3VEC(a,b,c) (_mm_min_ps((a),_mm_min_ps((b),(c))))
+
 #endif
 
 #undef SWAP
@@ -229,19 +228,20 @@ unsigned int Recognizer::get_dimension() {
     return dimension;
 }
 
-
 /* The euclidean distance is replaced by the sum of absolute
    differences for performance reasons... */
 
 inline float Recognizer::local_distance(float *v1, float *v2) {
     float sum = 0;
 #ifdef __SSE__
-    wg_v4sf res;
+    wg_v4sf res, v_;
+    v_.v = _mm_set_ps1(-0.0);
     
-    res.v = ((wg_v4sf *)v2)->v - ((wg_v4sf *)v1)->v;
+    res.v = _mm_sub_ps(((wg_v4sf *)v2)->v, ((wg_v4sf *)v1)->v);
+    res.v = _mm_andnot_ps(v_.v,res.v); // absolute value
 
     for (unsigned int i=0; i < dimension; i++)
-        sum += fabsf(res.s[i]);
+        sum += res.s[i];
 #else
     for (unsigned int i=0; i < dimension; i++) 
         sum += fabs(v2[i] - v1[i]);
@@ -336,16 +336,26 @@ inline wg_v4sf Recognizer::local_distance4(float *s,
                                            float *t1,
                                            float *t2,
                                            float *t3) {
-    wg_v4sf res;
-    res.s[0] = local_distance(s, t0);
-    res.s[1] = local_distance(s, t1);
-    res.s[2] = local_distance(s, t2);
-    res.s[3] = local_distance(s, t3);
-    return res;
+    wg_v4sf v_, v0, v1, v2, v3;
+    v_.v = _mm_set_ps1(-0.0);
+    v0.v = _mm_sub_ps(((wg_v4sf *)t0)->v, ((wg_v4sf *)s)->v);
+    v0.v = _mm_andnot_ps(v_.v,v0.v); // absolute value
+    v1.v = _mm_sub_ps(((wg_v4sf *)t1)->v, ((wg_v4sf *)s)->v);
+    v1.v = _mm_andnot_ps(v_.v,v1.v); // absolute value
+    v2.v = _mm_sub_ps(((wg_v4sf *)t2)->v, ((wg_v4sf *)s)->v);
+    v2.v = _mm_andnot_ps(v_.v,v2.v); // absolute value
+    v3.v = _mm_sub_ps(((wg_v4sf *)t3)->v, ((wg_v4sf *)s)->v);
+    v3.v = _mm_andnot_ps(v_.v,v3.v); // absolute value
+    // convert row vectors to column vectors
+    _MM_TRANSPOSE4_PS(v0.v, v1.v, v2.v, v3.v);
+    v3.v = _mm_add_ps(v3.v, v2.v);
+    v3.v = _mm_add_ps(v3.v, v1.v);
+    v3.v = _mm_add_ps(v3.v, v0.v);
+    return v3;
 }
 
 #define DTW4_PROCESS_REMAINING(n, m, t) \
-{ \
+do { \
     for (j=common; j < m; j++) { \
         costf = local_distance(s, t); \
         dtw2v[j].s[n] = costf + MIN3(dtw2v[j-1].s[n], \
@@ -353,7 +363,7 @@ inline wg_v4sf Recognizer::local_distance4(float *s,
                                      dtw1v[j-1].s[n]); \
         t += VEC_DIM_MAX; \
     } \
-}
+} while(0)
 
 inline wg_v4sf Recognizer::dtw4(float *s, unsigned int n, 
                                 float *t0, unsigned int m0,
@@ -383,15 +393,11 @@ inline wg_v4sf Recognizer::dtw4(float *s, unsigned int n,
     t_start0 = t0; t_start1 = t1; t_start2 = t2; t_start3 = t3;
 
     /* Initialize the edge cells */
-    dtw1v[0].s[0] = 0; dtw1v[0].s[1] = 0; dtw1v[0].s[2] = 0; dtw1v[0].s[3] = 0;
+    dtw1v[0].v = _mm_set_ps1(0);
+    dtw2v[0].v = _mm_set_ps1(FLT_MAX);
 
-    dtw2v[0].s[0] = FLT_MAX; dtw2v[0].s[1] = FLT_MAX;
-    dtw2v[0].s[2] = FLT_MAX; dtw2v[0].s[3] = FLT_MAX;
-
-    for (i=1; i < MAX4(m0,m1,m2,m3); i++) {
-        dtw1v[i].s[0] = FLT_MAX; dtw1v[i].s[1] = FLT_MAX;
-        dtw1v[i].s[2] = FLT_MAX; dtw1v[i].s[3] = FLT_MAX;
-    }
+    for (i=1; i < MAX4(m0,m1,m2,m3); i++)
+        dtw1v[i].v = _mm_set_ps1(FLT_MAX);
 
     s += VEC_DIM_MAX;
    
@@ -407,7 +413,8 @@ inline wg_v4sf Recognizer::dtw4(float *s, unsigned int n,
         for (j=1; j < common; j++) {
             cost = local_distance4(s, t0, t1, t2, t3);
             /* Inductive step */
-            dtw2v[j].v = cost.v + MIN3VEC(dtw2v[j-1].v,dtw1v[j].v,dtw1v[j-1].v);
+            dtw2v[j].v = _mm_add_ps(cost.v,
+                                MIN3VEC(dtw2v[j-1].v,dtw1v[j].v,dtw1v[j-1].v));
 
             t0 += VEC_DIM_MAX; t1 += VEC_DIM_MAX;
             t2 += VEC_DIM_MAX; t3 += VEC_DIM_MAX;
@@ -420,8 +427,7 @@ inline wg_v4sf Recognizer::dtw4(float *s, unsigned int n,
         DTW4_PROCESS_REMAINING(3, m3, t3);
 
         SWAP(dtw1v,dtw2v,tmp);
-        dtw2v[0].s[0] = FLT_MAX; dtw2v[0].s[1] = FLT_MAX;
-        dtw2v[0].s[2] = FLT_MAX; dtw2v[0].s[3] = FLT_MAX;
+        dtw2v[0].v = _mm_set_ps1(FLT_MAX);
 
         s += VEC_DIM_MAX;
     }

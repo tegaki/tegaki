@@ -27,6 +27,10 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
+#ifdef __SSE__
+#include <xmmintrin.h>
+#endif
+
 namespace wagomu {
 
 class Character {
@@ -85,10 +89,8 @@ typedef struct {
 } CharacterGroup;
 
 #ifdef __SSE__
-typedef float v4sf __attribute__ ((vector_size (4*sizeof(float))));
-
 typedef union {
-    v4sf v;
+    __m128 v;
     float s[4];
 } wg_v4sf;
 #endif
