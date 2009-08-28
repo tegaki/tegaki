@@ -19,6 +19,8 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
+VERSION = '0.3'
+
 import os
 import struct
 from array import array

@@ -1,7 +1,7 @@
 tegaki-wagomu
 =============
 
-A simple handwriting recognition engine based on DTW and k-NN.
+Simple handwriting recognition engine based on DTW.
 
 Requirements
 ------------
