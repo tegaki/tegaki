@@ -187,9 +187,12 @@ class TegakiEval(object):
         print "Overall results"
         print "\tRecognizer: %s" % self._recognizer
         print "\tNumber of characters evaluated: %d\n" % len(all_chars)
-        print "\tTotal time: %0.2f sec" % float(end_time - start_time)
-        print "\tAverage time per character: %0.2f sec\n" % \
-            (float((end_time - start_time)) / len(all_chars))
+        total_time = end_time - start_time
+        print "\tTotal time: %0.2f sec" % float(total_time)
+        print "\tAverage time per character: %0.2f sec" % \
+            (float(total_time) / len(all_chars))
+        print "\tRecognition speed: %0.2f char/sec\n" % \
+            (len(all_chars) / float(total_time))
 
         total_samples = sum(n_samples.values())
         recall = {}
