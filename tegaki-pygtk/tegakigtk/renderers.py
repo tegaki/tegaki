@@ -21,8 +21,10 @@
 
 import math
 import cairo
+from math import pi
 
 from tegaki.character import *
+from tegaki.mathutils import euclidean_distance
 
 class _CairoRendererBase(object):
 
@@ -31,19 +33,42 @@ class _CairoRendererBase(object):
         self._init_colors()
         self.writing = writing
         self.draw_annotations = False
+        self.draw_circles = False
         self.stroke_width = 8
+        self.area_changed_cb = None
+        self.stroke_added_cb = None
+
+    def set_area_changed_callback(self, cb):
+        self.area_changed_cb = cb
+
+    def set_stroke_added_callback(self, cb):
+        self.stroke_added_cb = cb
+
+    def _area_changed(self, x, y, w, h, delay_ms):
+        if self.area_changed_cb:
+            sx = float(self.width) / self.writing.get_width() # scale x
+            sy = float(self.height) / self.writing.get_height() # scale y
+            self.area_changed_cb(int(sx*x), int(sy*y), 
+                                 int(sx*w), int(sy*h), delay_ms)
 
     def _init_colors(self):
         self.handwriting_line_color = (0x0000, 0x0000, 0x0000, 1.0)
         self.axis_line_color = (0, 0, 0, 0.2)
-        self.annotations_color = (0x00, 0x00, 0x00ff, 0.5)
+        self.annotations_color = (255, 0, 0, 0.8)
         self.stroke_line_color = (255, 0, 0, 0.5)
         self.border_line_color = (0, 0, 0, 1.0)
+        self.circle_color = (0, 0, 255, 0.5)
 
     def _with_handwriting_line(self):
         self.cr.set_line_width(self.stroke_width)
         self.cr.set_line_cap(cairo.LINE_CAP_ROUND)
         self.cr.set_line_join(cairo.LINE_JOIN_ROUND)
+
+    def _with_circle_line(self):
+        self.cr.set_line_width(self.stroke_width)
+        self.cr.set_line_cap(cairo.LINE_CAP_ROUND)
+        self.cr.set_line_join(cairo.LINE_JOIN_ROUND)
+        self.cr.set_source_rgba (*self.circle_color)
 
     def _with_axis_line(self):
         self.cr.set_source_rgba (*self.axis_line_color)
@@ -63,13 +88,26 @@ class _CairoRendererBase(object):
         self.annotation_font_size = 30 # user space units
         self.cr.set_font_size(self.annotation_font_size)
 
+    def _draw_small_circle(self, x, y):
+        self.cr.save()
+        self._with_circle_line()
+        self.cr.arc(x, y, 10, 0, 2*pi)
+        self.cr.fill_preserve()
+        self.cr.stroke()
+        self.cr.restore()
+
+    def set_draw_circles(self, draw_circles):
+        self.draw_circles = draw_circles
+
     def set_draw_annotations(self, draw_annotations):
         self.draw_annotations = draw_annotations
 
     def set_stroke_width(self, stroke_width):
         self.stroke_width = stroke_width
 
-    def draw_stroke(self, stroke, index, color, draw_annotation=False):
+    def draw_stroke(self, stroke, index, color, 
+                    draw_annotation=False, draw_circle=False):
+
         l = len(stroke)
 
         self.cr.save()
@@ -78,13 +116,46 @@ class _CairoRendererBase(object):
         self.cr.set_source_rgba(*color)
 
         point0 = stroke[0]
+
+        if draw_circle: self._draw_small_circle(point0.x, point0.y)
+
         self.cr.move_to(point0.x, point0.y)
+        last_point = point0
+        n_points = len(stroke)
+
+        i = 1
 
         for point in stroke[1:]:
             self.cr.line_to(point.x, point.y)
+            self.cr.stroke()
+            self.cr.move_to(point.x, point.y)
+
+            dist = euclidean_distance(point.get_coordinates(),
+                                      last_point.get_coordinates())
+
+            if  dist > 50 or i == n_points - 1:
+                win = 100 # window size
+                x1 = last_point.x - win; y1 = last_point.y - win
+                x2 = point.x + win; y2 = point.y + win
+                if x1 > x2: x1, x2 = x2, x1
+                if y1 > y2: y1, y2 = y2, y1
+                w = x2 - x1; h = y2 - y1
+                if point.timestamp and last_point.timestamp:
+                    delay = point.timestamp - last_point.timestamp
+                else:
+                    delay = None
+                if w > 0 and h > 0:
+                    self._area_changed(x1, y1, w, h, delay) 
+
+                last_point = point
+
+            i += 1
 
         self.cr.stroke()
         self.cr.restore()
+
+        if self.stroke_added_cb:
+            self.stroke_added_cb()
 
         if draw_annotation:
             self._draw_annotation(stroke, index)
@@ -126,6 +197,8 @@ class _CairoRendererBase(object):
         self.cr.move_to(x, y)
         self.cr.show_text(num)
         self.cr.stroke()
+        
+        self._area_changed(x-50, y-50, 100, 100, 0) 
 
         self.cr.restore()
 
@@ -180,6 +253,24 @@ class _ImageRendererBase(_SurfaceRendererBase):
 
     def get_data(self):
         return self.surface.get_data()
+
+    def get_area_data(self, x, y, width, height):
+        data = self.get_data()
+        stride = self.surface.get_stride() # number of bytes per line
+        bpp = stride / self.surface.get_width() # bytes per pixel
+        start = 0
+        if y > 0:
+            start += y * stride
+        if x > 0:
+            start += x * bpp
+        buf = ""
+        for i in range(height):
+            buf += data[start:start+width*bpp]
+            start += stride
+        return buf
+
+    def get_stride(self):
+        return self.surface.get_stride()
     
 class WritingCairoRenderer(_CairoRendererBase):
 
@@ -195,7 +286,8 @@ class WritingCairoRenderer(_CairoRendererBase):
             self.draw_stroke(strokes[i],
                              i,
                              self.handwriting_line_color,
-                             draw_annotation=self.draw_annotations)
+                             draw_annotation=self.draw_annotations,
+                             draw_circle=self.draw_circles)
 
 class WritingStepsCairoRenderer(_CairoRendererBase):
 
@@ -229,7 +321,7 @@ class WritingStepsCairoRenderer(_CairoRendererBase):
 
         n_stroke_groups = len(self.stroke_groups)
 
-        if not self.length or start + self.length > n_stroke_groups:
+        if not self.length or self.start + self.length > n_stroke_groups:
             self.length = n_stroke_groups - self.start
 
         # interval groups are used to know which strokes are grouped together
@@ -248,7 +340,7 @@ class WritingStepsCairoRenderer(_CairoRendererBase):
             self.n_rows = 1
             self.n_cols = self.length
         else:
-            self.n_cols = n_chars_per_row
+            self.n_cols = self.n_chars_per_row
             self.n_rows = int(math.ceil(float(self.length) / self.n_cols))
 
         # this factor is a multiplication factor used to determine
@@ -284,10 +376,11 @@ class WritingStepsCairoRenderer(_CairoRendererBase):
         for i in range(self.start, self.start + self.length):
             if i != self.start:
                 if self.n_rows > 1 and i % self.n_cols == 0:
-                    self.cr.translate((-self.n_cols+1) * Writing.WIDTH *
-                                      self.FACTOR, Writing.HEIGHT * self.FACTOR)
+                    self.cr.translate((-self.n_cols+1) *
+                                       self.writing.get_width() * self.FACTOR,
+                                       self.writing.get_height() * self.FACTOR)
                 else:
-                    self.cr.translate(Writing.WIDTH * self.FACTOR, 0) 
+                    self.cr.translate(self.writing.get_width() * self.FACTOR,0) 
                 
             # draw the character step
             for j in range(n_strokes):
@@ -296,14 +389,17 @@ class WritingStepsCairoRenderer(_CairoRendererBase):
                 if interval_min <= j and j <= interval_max:
                     color = self.handwriting_line_color
                     draw_annotation = self.draw_annotations
+                    draw_circle = self.draw_circles
                 else:
                     color = self.stroke_line_color
                     draw_annotation = False
+                    draw_circle = False
                    
                 self.draw_stroke(strokes[j],
                                  j,
                                  color,
-                                 draw_annotation=draw_annotation)
+                                 draw_annotation=draw_annotation,
+                                 draw_circle=draw_circle)
 
         self.cr.restore()
 
@@ -318,7 +414,8 @@ class WritingImageRenderer(WritingCairoRenderer, _ImageRendererBase):
         
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         cr = cairo.Context(self.surface)
-        cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
+        cr.scale(float(width) / writing.get_width(), 
+                 float(height) / writing.get_height())
         WritingCairoRenderer.__init__(self, cr, writing)
 
 class WritingSVGRenderer(WritingCairoRenderer, _SurfaceRendererBase):
@@ -332,7 +429,8 @@ class WritingSVGRenderer(WritingCairoRenderer, _SurfaceRendererBase):
         
         self.surface = cairo.SVGSurface(filename, width, height)
         cr = cairo.Context(self.surface)
-        cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
+        cr.scale(float(width) / writing.get_width(), 
+                 float(height) / writing.get_height())
         WritingCairoRenderer.__init__(self, cr, writing)
 
 class WritingPDFRenderer(WritingCairoRenderer, _SurfaceRendererBase):
@@ -346,7 +444,8 @@ class WritingPDFRenderer(WritingCairoRenderer, _SurfaceRendererBase):
         
         self.surface = cairo.PDFSurface(filename, width, height)
         cr = cairo.Context(self.surface)
-        cr.scale(float(width) / Writing.WIDTH, float(height) / Writing.HEIGHT)
+        cr.scale(float(width) / writing.get_width(), 
+                 float(height) / writing.get_height())
         WritingCairoRenderer.__init__(self, cr, writing)
 
 class WritingStepsImageRenderer(WritingStepsCairoRenderer, _ImageRendererBase):
@@ -373,8 +472,8 @@ class WritingStepsImageRenderer(WritingStepsCairoRenderer, _ImageRendererBase):
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
                                           self.width, self.height)
         cr = cairo.Context(self.surface)
-        cr.scale(float(self.width) / Writing.WIDTH,
-                 float(self.height) / Writing.HEIGHT)
+        cr.scale(float(self.width) / writing.get_width(),
+                 float(self.height) / writing.get_height())
         WritingStepsCairoRenderer.__init__(self, cr, writing)
         
     def write_to_png(self, filename):
@@ -404,8 +503,8 @@ class WritingStepsSVGRenderer(WritingStepsCairoRenderer, _SurfaceRendererBase):
         
         self.surface = cairo.SVGSurface(filename, self.width, self.height)
         cr = cairo.Context(self.surface)
-        cr.scale(float(self.width) / Writing.WIDTH,
-                 float(self.height) / Writing.HEIGHT)
+        cr.scale(float(self.width) / writing.get_width(),
+                 float(self.height) / writing.get_height())
         WritingStepsCairoRenderer.__init__(self, cr, writing)
 
 class WritingStepsPDFRenderer(WritingStepsCairoRenderer, _SurfaceRendererBase):
@@ -432,8 +531,8 @@ class WritingStepsPDFRenderer(WritingStepsCairoRenderer, _SurfaceRendererBase):
         
         self.surface = cairo.PDFSurface(filename, self.width, self.height)
         cr = cairo.Context(self.surface)
-        cr.scale(float(self.width) / Writing.WIDTH,
-                 float(self.height) / Writing.HEIGHT)
+        cr.scale(float(self.width) / writing.get_width(),
+                 float(self.height) / writing.get_height())
         WritingStepsCairoRenderer.__init__(self, cr, writing)
 
 def inch_to_pt(*arr):
@@ -444,77 +543,8 @@ def inch_to_pt(*arr):
         return arr
 
 def cm_to_pt(*arr):
-    arr = [round(cm * 28.3464567) for cm in arr]
+    arr = [int(round(cm * 28.3464567)) for cm in arr]
     if len(arr) == 1:
         return arr[0]
     else:
         return arr
-
-if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) < 2:
-        print "Need a writing file at least."
-        sys.exit()
-
-    if len(sys.argv) >= 3:
-        stroke_groups = [int(n) for n in sys.argv[2].split(",")]
-    else:
-        stroke_groups = None
-
-    if len(sys.argv) >= 4:
-        start, length = [int(n) for n in sys.argv[3].split(",")]
-    else:
-        start, length = 0, None
-
-    if len(sys.argv) >= 5:
-        n_chars_per_row = int(sys.argv[4])
-    else:
-        n_chars_per_row = None
-
-    char = Character()
-    char.read(sys.argv[1])
-    writing = char.get_writing()
-    
-    png_renderer = WritingImageRenderer(writing, 400, 400)
-    svg_renderer = WritingSVGRenderer(writing, "test.svg",
-                                      *cm_to_pt(20, 20))
-    pdf_renderer = WritingPDFRenderer(writing, "test.pdf",
-                                      *cm_to_pt(20, 20))
-
-    for renderer in (png_renderer, svg_renderer, pdf_renderer):
-        renderer.draw_background()
-        renderer.draw_axis()
-        renderer.draw_writing()
-        
-    png_renderer.write_to_png("test.png")
-
-    png_renderer = WritingStepsImageRenderer(writing, height=400,
-                                             stroke_groups=stroke_groups,
-                                             start=start,
-                                             length=length,
-                                             n_chars_per_row=n_chars_per_row)
-
-    height_pt = cm_to_pt(4)
-                                             
-    svg_renderer = WritingStepsSVGRenderer(writing,
-                                           "test_steps.svg",
-                                           height=height_pt,
-                                           stroke_groups=stroke_groups,
-                                           start=start,
-                                           length=length,
-                                           n_chars_per_row=n_chars_per_row)
-    pdf_renderer = WritingStepsPDFRenderer(writing,
-                                           "test_steps.pdf",
-                                           height=height_pt,
-                                           stroke_groups=stroke_groups,
-                                           start=start,
-                                           length=length,
-                                           n_chars_per_row=n_chars_per_row)
-
-    for renderer in (png_renderer, svg_renderer, pdf_renderer):
-        renderer.draw_background()
-        renderer.set_stroke_width(16)
-        renderer.draw_writing_steps()
-        
-    png_renderer.write_to_png("test_steps.png")
