@@ -3,14 +3,30 @@ tegaki-tools
 
 A set of command-line tools for Tegaki.
 
+Tools
+------
+
+* tegaki-build: build/train handwriting recognition models.
+* tegaki-convert: convert and/or concat character collection files.
+* tegaki-eval: evaluate handwriting recognition models against test data.
+* tegaki-render: convert character file to an image or video.
+
 Requirements
 ------------
 
-tegaki-python    0.2
+tegaki-python    0.3
+tegaki-pygtk     0.3
 
 Install
 -------
 
+($ su)
+# python setup.py install
+
+Additionally, if you would like GIF support in tegaki-render:
+
+$ cd tegaki-gifenc
+$ python setup.py build
 ($ su)
 # python setup.py install
 

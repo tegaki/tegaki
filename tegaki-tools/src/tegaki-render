@@ -1,0 +1,329 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2009 The Tegaki project contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Contributors to this file:
+# - Mathieu Blondel
+
+VERSION = '0.3'
+
+import sys
+from optparse import OptionParser, OptionGroup
+
+from tegaki.character import Character
+from tegakigtk.renderers import * 
+
+try:
+    from tegakigifenc import GifEncoder
+    FORMATS = ["gif"]
+except ImportError:
+    FORMATS = []
+  
+FORMATS += ["png", "svg", "pdf"]
+
+class TegakiRenderError(Exception):
+    pass
+
+class TegakiRender(object):
+
+    def __init__(self, options, args):
+        char = Character()
+        char.read(args[0])
+        self._writing = char.get_writing()
+        self._output = args[1]
+        for o in options.__dict__.keys():
+            setattr(self, "_" + o, getattr(options, o))
+
+        if not options.width and not options.height:
+            self._width, self._height = self._get_default_size()
+        elif not options.width:
+            self._width = self._height
+        else:
+            self._height = self._width
+
+    def _preprocessing(self):
+        if self._normalize:
+            self._writing.normalize()
+        if self._center:
+            self._writing.normalize_position()
+        if self._smooth:
+            self._writing.smooth()
+
+    def _draw_init(self, renderer):
+        renderer.set_stroke_width(self._stroke_width)
+        renderer.set_draw_circles(self._circles)
+        renderer.draw_background()
+        if not self._steps:
+            if self._axis: renderer.draw_axis()
+            renderer.set_draw_annotations(self._annot)
+
+    def _get_default_size(self):
+        if self._cm:
+            return [20, 20]
+        elif self._inch:
+            return [8, 8]
+        else:
+            return [400, 400]
+
+    def _get_size(self):
+        if self._cm:
+            return cm_to_pt(self._width, self._height)
+        elif self._inch:
+            return inch_to_pt(self._width, self._height)
+        else:
+            return [self._width, self._height]
+
+    def _get_stroke_groups(self):
+        if self._steps_groups:
+            try:
+                return [int(n) for n in self._steps_groups.split(",")]
+            except ValueError:
+                raise TegakiRenderError, \
+                "--steps-n-chars-per-row must be a comma separated list "
+                " of group stroke numbers, e.g. 1,1,3,1,4,2,2"
+        else:
+            return None
+
+    def _gen_png(self):
+        if self._steps:
+            png_renderer = WritingStepsImageRenderer(self._writing, 
+                               height=self._get_size()[1],
+                               stroke_groups=self._get_stroke_groups(),
+                               start=self._steps_start,
+                               length=self._steps_length,
+                               n_chars_per_row=self._steps_n_chars_per_row)
+            
+            self._draw_init(png_renderer)
+            png_renderer.draw_writing_steps()
+        else:
+            png_renderer = WritingImageRenderer(self._writing,
+                                                *self._get_size())
+            self._draw_init(png_renderer)
+            png_renderer.draw_writing()
+        
+        png_renderer.write_to_png(self._output)
+
+    def _gen_svg(self):
+        if self._steps:
+            svg_renderer = WritingStepsSVGRenderer(self._writing, 
+                               self._output,
+                               height=self._get_size()[1],
+                               stroke_groups=self._get_stroke_groups(),
+                               start=self._steps_start,
+                               length=self._steps_length,
+                               n_chars_per_row=self._steps_n_chars_per_row)
+
+            self._draw_init(svg_renderer)
+            svg_renderer.draw_writing_steps()
+        else:
+            svg_renderer = WritingSVGRenderer(self._writing, self._output,
+                                              *self._get_size())
+            self._draw_init(svg_renderer)
+            svg_renderer.draw_writing()
+
+    def _gen_pdf(self):
+        if self._steps:
+            pdf_renderer = WritingStepsPDFRenderer(self._writing, 
+                               self._output,
+                               height=self._get_size()[1],
+                               stroke_groups=self._get_stroke_groups(),
+                               start=self._steps_start,
+                               length=self._steps_length,
+                               n_chars_per_row=self._steps_n_chars_per_row)
+
+            self._draw_init(pdf_renderer)
+            pdf_renderer.draw_writing_steps()
+        else:
+            pdf_renderer = WritingSVGRenderer(self._writing, self._output,
+                                              *self._get_size())
+            self._draw_init(pdf_renderer)
+            pdf_renderer.draw_writing()
+
+    def _get_default_frame_duration(self):
+        if self._stroke_by_stroke:
+            return 500
+        else:
+            return 100
+
+    def _gen_animated_gif(self):
+        w, h = self._get_size()
+
+        enc = GifEncoder()
+        rend = WritingImageRenderer(self._writing, w, h)
+
+        if self._stroke_by_stroke:
+            def _write_frame():
+                buf = str(rend.get_data())
+
+                if self._frame_duration:
+                    delay_ms = self._frame_duration
+                else:
+                    delay_ms = self._get_default_frame_duration()
+
+                enc.add_image(0, 0, w, h, delay_ms, buf, rend.get_stride())
+        else:
+            def _write_frame(x, y, width, height, delay_ms):
+                if self._frame_duration:
+                    delay_ms = self._frame_duration
+                elif not delay_ms:
+                    delay_ms = self._get_default_frame_duration()
+
+                buf = str(rend.get_area_data(x, y, width, height))
+                assert(len(buf) == width * height * 4)
+                enc.add_image(x, y, width, height, delay_ms, buf, width*4)
+
+        self._draw_init(rend)
+        rend.draw_writing()
+
+        # set_palette_for_image(img_data, width, height, 
+        #                       number of bytes per line, alpha, num colors)
+        enc.set_palette_for_image(str(rend.get_data()), w, h, 
+                                      rend.get_stride(), True, 255)
+
+        enc.open(self._output, w, h, True, self._loop)
+
+        # set the entire image as first frame for the first 1000 milliseconds
+        enc.add_image(0, 0, w, h, 2000, str(rend.get_data()), rend.get_stride())
+
+        self._draw_init(rend)
+        # set a blank drawing area as second frame
+        enc.add_image(0, 0, w, h, 0, str(rend.get_data()), rend.get_stride())
+
+        if self._stroke_by_stroke:
+            rend.set_stroke_added_callback(_write_frame)
+        else:
+            rend.set_area_changed_callback(_write_frame)
+
+        rend.draw_writing()
+
+        enc.close()
+
+    def run(self):
+        self._preprocessing()
+
+        if self._output.endswith("png"):
+            self._gen_png()
+        elif self._output.endswith("svg"):
+            self._gen_svg()
+        elif self._output.endswith("pdf"):
+            self._gen_pdf()
+        elif self._output.endswith("gif") and "gif" in FORMATS:
+            self._gen_animated_gif()
+        else:
+            raise TegakiRenderError, "Output format not supported!"
+
+usage = "usage: %prog [options] input.xml " + "output.(%s)" % "|".join(FORMATS)
+
+parser = OptionParser(usage=usage, version="%prog " + VERSION)
+
+
+group = OptionGroup(parser, "Size options")
+group.add_option("", "--width",
+                  type="int", dest="width",
+                  help="output image width")
+group.add_option("", "--height",
+                  type="int", dest="height",
+                  help="output image height")
+group.add_option("", "--cm",
+                  action="store_true", dest="cm", default=False,
+                  help="width and height are defined in centimeters")
+group.add_option("", "--inch",
+                  action="store_true", dest="inch", default=False,
+                  help="width and height are defined in inches")
+parser.add_option_group(group)
+
+#####
+
+group = OptionGroup(parser, "Preprocessing options")
+group.add_option("", "--without-smoothing",
+                  action="store_false", dest="smooth", default=True,
+                  help="don't smooth strokes")
+group.add_option("", "--without-normalizing",
+                  action="store_false", dest="normalize", default=True,
+                  help="don't normalize character")
+group.add_option("", "--without-centering",
+                  action="store_false", dest="center", default=True,
+                  help="don't center character")
+parser.add_option_group(group)
+
+#####
+
+group = OptionGroup(parser, "Drawing options")
+group.add_option("", "--without-axis",
+                  action="store_false", dest="axis", default=True,
+                  help="don't draw axis")
+group.add_option("", "--without-annot",
+                  action="store_false", dest="annot", default=True,
+                  help="don't draw stroke number annotations")
+group.add_option("", "--without-circles",
+                  action="store_false", dest="circles", default=True,
+                  help="don't draw circles")
+group.add_option("", "--stroke-width",
+                  type="int", dest="stroke_width", default=16,
+                  help="stroke_width")
+parser.add_option_group(group)
+
+#####
+
+group = OptionGroup(parser, "Step-by-step options")
+group.add_option("", "--steps",
+                  action="store_true", dest="steps", default=False,
+                  help="draw the character step-by-step")
+group.add_option("", "--steps-start",
+                  type="int", dest="steps_start", default=0,
+                  help="step start index (starts at 0)")
+group.add_option("", "--steps-length",
+                  type="int", dest="steps_length",
+                  help="number of steps")
+group.add_option("", "--steps-groups",
+                  type="string", dest="steps_groups",
+                  help="comma-separated list of group stroke numbers")
+group.add_option("", "--steps-n-chars-per-row",
+                  type="int", dest="steps_n_chars_per_row",
+                  help="number of characters to display per row")
+
+parser.add_option_group(group)
+
+#####
+
+group = OptionGroup(parser, "GIF options")
+group.add_option("", "--loop",
+                  action="store_true", dest="loop", default=False,
+                  help="Make the GIF loops")
+group.add_option("", "--stroke-by-stroke",
+                  action="store_true", dest="stroke_by_stroke", default=False,
+                  help="display entire strokes in one frame")
+group.add_option("", "--frame-duration",
+                  type="int", dest="frame_duration",
+                  help="frame duration in milliseconds")
+
+parser.add_option_group(group)
+
+
+(options, args) = parser.parse_args()
+
+try:
+    if len(args) < 2:
+        raise TegakiRenderError, "Needs an input and an output file!"
+
+    TegakiRender(options, args).run()
+except TegakiRenderError, e:
+    sys.stderr.write(str(e) + "\n\n")
+    parser.print_help()
+    sys.exit(1)
+
