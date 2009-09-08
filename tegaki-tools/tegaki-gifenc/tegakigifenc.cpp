@@ -89,6 +89,7 @@ void GifEncoder::close() {
 
 GifEncoder::~GifEncoder() {
     if(enc) gifenc_free(enc);
+    fclose(output);
 }
 
 }
