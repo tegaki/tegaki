@@ -28,9 +28,9 @@ from optparse import OptionParser
 from tegaki.character import CharacterCollection
 from tegaki.recognizer import Recognizer, RecognizerError
 
-from tegakitools.utils import tomoe_dict_to_character_collection
+from tegakitools.tomoe import tomoe_dict_to_character_collection
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 def harmonic_mean(x1, x2):
     if x1 == 0.0 and x2 == 0.0:

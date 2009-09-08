@@ -28,9 +28,9 @@ from tegaki.character import CharacterCollection
 from tegaki.trainer import Trainer, TrainerError
 from tegaki.recognizer import Recognizer
 
-from tegakitools.utils import tomoe_dict_to_character_collection
+from tegakitools.tomoe import tomoe_dict_to_character_collection
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 class TegakiBuildError(Exception):
     pass
