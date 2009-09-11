@@ -43,15 +43,6 @@ class KuchibueParser(UnipenParser):
     # 3) the screen contains 152 boxes (19 columns, 8 rows) for the former
     #    while it contains only 1 for the latter
 
-    INPUT_RESOLUTION_WIDTH = 1280
-    INPUT_RESOLUTION_HEIGHT = 960
-    FRAME_START_X = 20 
-    FRAME_START_Y = 920
-    FRAME_STEP_X = 65
-    FRAME_STEP_Y = 105
-    FRAME_COUNT_COL = 19
-    FRAME_COUNT_ROW = 8
-
     def __init__(self):
         UnipenParser.__init__(self)
         self._labels = []
@@ -59,10 +50,16 @@ class KuchibueParser(UnipenParser):
         self._char = None
         self._row = 0
         self._col = 0
+        self._screen = None
+        self._line = None
 
     def _handle_SEGMENT(self, args):
         seg_type, delimit, quality, label = args.split(" ")
-        if seg_type == "CHARACTER":
+        if seg_type == "SCREEN":
+            self._screen = []
+        elif seg_type == "LINE":
+            self._screen.append(0) # number of characters in line
+        elif seg_type == "CHARACTER":
             label = label.strip()[1:-1]
             if label.startswith("SJIS"):
                 charcode = int("0" + label[4:], 16)
@@ -72,6 +69,37 @@ class KuchibueParser(UnipenParser):
                     pass #print "missing character", hex(charcode)
                     
             self._labels.append(label)
+            self._screen[-1] += 1
+
+    def _handle_X_DIM(self, args):
+        self.FRAME_WIDTH = int(args)
+
+    def _handle_Y_DIM(self, args):
+        self.FRAME_HEIGHT = int(args)
+
+    def _get_int_pair_from_line(self, line):
+        k, v = line.split(":")
+        return [int(val) for val in v.strip().split(" ")]
+
+    def _handle_PAD(self, args):
+        lines = [l.strip() for l in args.split("\n")]
+        for line in lines:
+            if line.startswith("Input Resolution"):
+                self.INPUT_RESOLUTION_WIDTH, self.INPUT_RESOLUTION_HEIGHT = \
+                    self._get_int_pair_from_line(line)
+
+    def _handle_DATA_INFO(self, args):
+        lines = [l.strip() for l in args.split("\n")]
+        for line in lines:
+            if line.startswith("Frame start"):
+                self.FRAME_START_X, self.FRAME_START_Y = \
+                    self._get_int_pair_from_line(line)
+            elif line.startswith("Frame  step"):
+                self.FRAME_STEP_X, self.FRAME_STEP_Y = \
+                    self._get_int_pair_from_line(line)  
+            elif line.startswith("Frame count"):
+                self.FRAME_COUNT_COL, self.FRAME_COUNT_ROW = \
+                    self._get_int_pair_from_line(line)    
 
     def _handle_START_BOX(self, args):
         if self._char:
@@ -100,13 +128,13 @@ class KuchibueParser(UnipenParser):
             y = abs(y - self.INPUT_RESOLUTION_HEIGHT) # change basis
             x -= self.FRAME_START_X # remove the padding
             x -= self.FRAME_STEP_X * self._col # translate to the left
-            x *= float(Writing.WIDTH) / self.FRAME_STEP_X # scale for x = 1000
+            x *= float(Writing.WIDTH) / self.FRAME_WIDTH # scale for x = 1000
             y -= (self.INPUT_RESOLUTION_HEIGHT - self.FRAME_START_Y) # padding
             y -= self.FRAME_STEP_Y * self._row # translate to the top
-            y *= float(Writing.HEIGHT) / self.FRAME_STEP_Y # scale for y = 1000
+            y *= float(Writing.HEIGHT) / self.FRAME_HEIGHT # scale for y = 1000
             x, y = int(x), int(y)
-            assert(x >= 0 and x <= 1000)
-            assert(y >= 0 and y <= 1000)
+            #assert(x >= 0 and x <= 1000)
+            #assert(y >= 0 and y <= 1000)
             stroke.append_point(Point(x,y))
         writing.append_stroke(stroke)
 
