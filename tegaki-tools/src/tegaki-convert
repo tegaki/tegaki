@@ -41,6 +41,8 @@ class TegakiConvert(object):
         self._charcols = options.charcols
         self._tomoe = options.tomoe
         self._kuchibue = options.kuchibue
+        self._include = options.include
+        self._exclude = options.exclude
 
         try:
             self._output_path = args[0]
@@ -71,6 +73,27 @@ class TegakiConvert(object):
         for kuchibue in self._kuchibue:
             charcol += kuchibue_to_character_collection(kuchibue)
 
+        # characters to include
+        buf = ""
+        for inc_path in self._include:
+            f = open(inc_path)
+            buf += f.read()
+            f.close()
+
+        if len(buf) > 0:
+            charcol.include_characters_from_text(buf)
+
+        # characters to exclude
+        buf = ""
+        for exc_path in self._exclude:
+            f = open(exc_path)
+            buf += f.read()
+            f.close()
+
+        if len(buf) > 0:
+            charcol.exclude_characters_from_text(buf)
+
+        # output
         if not self._output_path:
             # outputs to stdout if not output path specified
             print charcol.to_xml()
@@ -99,6 +122,14 @@ parser.add_option("-k", "--kuchibue",
                   action="append", type="string", dest="kuchibue",
                   default=[],
                   help="Kuchibue unipen database")
+parser.add_option("-i", "--include",
+                  action="append", type="string", dest="include",
+                  default=[],
+                  help="File containing characters to include")
+parser.add_option("-e", "--exclude",
+                  action="append", type="string", dest="exclude",
+                  default=[],
+                  help="File containing characters to exclude")
 
 (options, args) = parser.parse_args()
 
