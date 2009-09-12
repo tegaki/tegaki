@@ -32,7 +32,7 @@ from tegaki.trainer import Trainer
 from tegakigtk.iconview import WritingIconView, _WritingPixbufRenderer
 from tegakigtk.canvas import Canvas
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 PREDEFINED_SETS = {
 "Digits" : [[48,57]],
@@ -602,6 +602,11 @@ class TegakiTrain(object):
             self._treeview.get_model().clear()
             self._iconview.get_model().clear()
 
+    def _display_charcol_stats(self):
+        msg = "%d sets (%d characters) loaded!" % \
+            (self._charcol.get_n_sets(), self._charcol.get_total_n_characters())
+        self._statusbar_push(msg, sec=5)
+
     def _on_open(self, widget):
         if not self._save_is_enabled() or self._confirm_continue():
             dialog = CharacterCollectionFileChooserDialog(
@@ -624,6 +629,7 @@ class TegakiTrain(object):
                     self._iconview.get_model().clear()
                     self._refresh_treeview()
                     self._disable_save()
+                    self._display_charcol_stats()
 
             dialog.destroy()
 
@@ -636,6 +642,7 @@ class TegakiTrain(object):
         self._iconview.get_model().clear()
         self._refresh_treeview()
         self._disable_save()
+        self._display_charcol_stats()
 
     def _add_recent(self, filename):
         meta = {'mime_type':'text/xml', 'app_name':'tegaki-train',
