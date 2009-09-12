@@ -713,9 +713,15 @@ class Character(_XmlBase):
 
     def get_utf8(self):
         return self._utf8
+
+    def get_unicode(self):
+        return unicode(self.get_utf8(), "utf8")
         
     def set_utf8(self, utf8):
         self._utf8 = utf8
+
+    def set_unicode(self, uni):
+        self._utf8 = uni.encode("utf8")
 
     def get_writing(self):
         return self._writing
@@ -913,6 +919,9 @@ class CharacterCollection(_XmlBase):
     def get_set_list(self):
         return self._characters.keys()
 
+    def get_n_sets(self):
+        return len(self.get_set_list())
+
     def get_characters(self, set_name):
         if self._characters.has_key(set_name):
             return self._characters[set_name]
@@ -924,6 +933,12 @@ class CharacterCollection(_XmlBase):
         for k in self._characters.keys():
             characters += self._characters[k]
         return characters
+
+    def get_total_n_characters(self):
+        n = 0
+        for k in self._characters.keys():
+            n += len(self._characters[k])
+        return n
 
     def set_characters(self, set_name, characters):
         self._characters[set_name] = characters
@@ -956,6 +971,46 @@ class CharacterCollection(_XmlBase):
             if len(self._characters[set_name]) - 1 >= i:
                 self.remove_character(set_name, i)
                 self.insert_character(set_name, i, character)
+
+    def _get_dict_from_text(self, text):
+        text = text.replace(" ", "").replace("\n", "").replace("\t", "")
+        dic = {}
+        for c in text:
+            dic[c] = 1
+        return dic
+
+    def include_characters_from_text(self, text):
+        """
+        Only keep characters found in text.
+        """
+        dic = self._get_dict_from_text(unicode(text, "utf8"))
+        for set_name in self.get_set_list():
+            i = 0
+            for char in self.get_characters(set_name)[:]:
+                if not char.get_unicode() in dic:
+                    self.remove_character(set_name, i)
+                else:
+                    i += 1
+        self.remove_empty_sets()
+
+    def exclude_characters_from_text(self, text):
+        """
+        Exclude characters found in text.
+        """
+        dic = self._get_dict_from_text(unicode(text, "utf8"))
+        for set_name in self.get_set_list():
+            i = 0
+            for char in self.get_characters(set_name)[:]:
+                if char.get_unicode() in dic:
+                    self.remove_character(set_name, i)
+                else:
+                    i += 1
+        self.remove_empty_sets()
+
+    def remove_empty_sets(self):
+        for set_name in self.get_set_list():
+            if len(self.get_characters(set_name)) == 0:
+                self.remove_set(set_name)
 
     def to_xml(self):
         s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

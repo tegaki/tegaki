@@ -747,3 +747,17 @@ class CharacterCollectionTest(unittest.TestCase):
                                         recursive=False)
         self.assertEquals(charcol.get_set_list(), ["防"])
         self.assertEquals(len(charcol.get_characters("防")), 1)
+
+    def testIncludeChars(self):
+        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
+        charcol = CharacterCollection()
+        charcol.read(path)
+        charcol.include_characters_from_text("一三")
+        self.assertEquals(charcol.get_set_list(), ["一", "三"])
+
+    def testExcludeChars(self):
+        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
+        charcol = CharacterCollection()
+        charcol.read(path)
+        charcol.exclude_characters_from_text("三")
+        self.assertEquals(charcol.get_set_list(), ["一", "二"])
