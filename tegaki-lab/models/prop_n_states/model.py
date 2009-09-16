@@ -28,10 +28,6 @@ import models.basic.model
 from lib.exceptions import *
 from lib import hmm
 
-Sequence = hmm.Sequence
-SequenceSet = hmm.SequenceSet
-MultivariateHmm = hmm.GhmmMultivariateHmm
-
 class Model(models.basic.model.Model):
     """
     Title: prop-n-states
@@ -74,7 +70,7 @@ class Model(models.basic.model.Model):
         A = self.get_state_transition_matrix(n_states)
         B = self.get_emission_matrix(n_states, sset)
 
-        return MultivariateHmm(A, B, pi)
+        return self.MultivariateHmm(A, B, pi)
           
 
     def init(self):

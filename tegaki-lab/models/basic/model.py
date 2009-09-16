@@ -25,6 +25,7 @@ import glob
 import shutil
 import tarfile
 import datetime
+import platform
 
 from tegaki.character import *
 from tegaki.arrayutils import *
@@ -34,10 +35,6 @@ from tegaki.dictutils import SortedDict
 from lib.exceptions import *
 from lib.utils import *
 from lib import hmm
-
-Sequence = hmm.Sequence
-SequenceSet = hmm.SequenceSet
-MultivariateHmm = hmm.GhmmMultivariateHmm
 
 class Model(object):
     """
@@ -50,6 +47,14 @@ class Model(object):
     """
 
     def __init__(self, options):
+
+        self.Sequence = hmm.Sequence
+        self.SequenceSet = hmm.SequenceSet
+
+        if platform.system() == "Java": # Jython 2.5
+            self.MultivariateHmm = hmm.JahmmMultivariateHmm
+        else:
+            self.MultivariateHmm = hmm.GhmmMultivariateHmm
 
         self.ALL = ["clean", "fextract", "init", "train", "eval"]
         self.COMMANDS = self.ALL + ["pad", "find", "commands", "archive"]
@@ -129,7 +134,7 @@ class Model(object):
         return char
 
     def get_sequence_set(self, file_path):
-        return SequenceSet.from_file(file_path)
+        return self.SequenceSet.from_file(file_path)
 
     def get_utf8_from_char_code(self, char_code):
         return unichr(int(char_code)).encode("utf8")
@@ -192,7 +197,7 @@ class Model(object):
 
                 self.print_verbose(output_file)
 
-                sset = SequenceSet(sequence_set)
+                sset = self.SequenceSet(sequence_set)
                 sset.write(output_file)
 
     ########################################
@@ -274,7 +279,7 @@ class Model(object):
         A = self.get_state_transition_matrix(n_states)
         B = self.get_emission_matrix(n_states, sset)
 
-        hmm = MultivariateHmm(A, B, pi)
+        hmm = self.MultivariateHmm(A, B, pi)
         
         return hmm
           
@@ -323,7 +328,7 @@ class Model(object):
         
         for file in initial_hmm_files:
             char_code = int(os.path.basename(file).split(".")[0])
-            hmm = MultivariateHmm.from_file(file)
+            hmm = self.MultivariateHmm.from_file(file)
             sset_file = os.path.join(self.TRAIN_FEATURES_ROOT,
                                      str(char_code) + ".sset")
 
@@ -367,7 +372,7 @@ class Model(object):
         
         for file in files:
             char_code = int(os.path.basename(file).split(".")[0])
-            hmm = MultivariateHmm.from_file(file)
+            hmm = self.MultivariateHmm.from_file(file)
             hmm.char_code = char_code     
             hmms.append(hmm)
             
@@ -418,6 +423,8 @@ class Model(object):
 
             n_total += 1
 
+            self.print_verbose(file)
+
         self.stderr_print("match1: ",
                           float(n_match1)/float(n_total) * 100,
                           "%")
@@ -435,7 +442,7 @@ class Model(object):
     ########################################
 
     def find_writing(self, writing):
-        seq = Sequence(self.get_feature_vectors(writing))
+        seq = self.Sequence(self.get_feature_vectors(writing))
         trained_hmm_files = self.get_trained_hmm_files()
 
         if len(trained_hmm_files) == 0:

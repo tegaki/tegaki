@@ -22,7 +22,10 @@
 import xml.parsers.expat
 import cStringIO
 import gzip as gzipm
-import bz2 as bz2m
+try:
+    import bz2 as bz2m
+except ImportError:
+    pass
 from math import floor, atan, sin, cos, pi
 import os
 import re
@@ -629,7 +632,10 @@ class _XmlBase(object):
                 if gzip:
                     file = gzipm.GzipFile(file, compresslevel=compresslevel)
                 elif bz2:
-                    file = bz2m.BZ2File(file, compresslevel=compresslevel)
+                    try:
+                        file = bz2m.BZ2File(file, compresslevel=compresslevel)
+                    except NameError:
+                        raise NotImplementedError
                 else:
                     file = open(file)
                     
@@ -646,7 +652,10 @@ class _XmlBase(object):
             io = gzipm.GzipFile(fileobj=io, compresslevel=compresslevel)
             string = io.read()
         elif bz2:
-            string = bz2m.decompress(string)
+            try:
+                string = bz2m.decompress(string)
+            except NameError:
+                raise NotImplementedError
             
         parser = self._get_parser()
         parser.Parse(string)
@@ -656,7 +665,10 @@ class _XmlBase(object):
             if gzip:
                 file = gzipm.GzipFile(file, "w", compresslevel=compresslevel)
             elif bz2:
-                file = bz2m.BZ2File(file, "w", compresslevel=compresslevel)
+                try:
+                    file = bz2m.BZ2File(file, "w", compresslevel=compresslevel)
+                except NameError:
+                    raise NotImplementedError
             else:            
                 file = open(file, "w")
                 
@@ -667,7 +679,10 @@ class _XmlBase(object):
 
     def write_string(self, gzip=False, bz2=False, compresslevel=9):
         if bz2:
-            return bz2m.compress(self.to_xml(), compresslevel=compresslevel)
+            try:
+                return bz2m.compress(self.to_xml(), compresslevel=compresslevel)
+            except NameError:
+                raise NotImplementedError
         elif gzip:
             io = cStringIO.StringIO()
             f = gzipm.GzipFile(fileobj=io, mode="w",
