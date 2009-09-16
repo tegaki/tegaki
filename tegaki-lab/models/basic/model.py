@@ -26,8 +26,6 @@ import shutil
 import tarfile
 import datetime
 
-import ghmm
-
 from tegaki.character import *
 from tegaki.arrayutils import *
 from tegaki.mathutils import *
@@ -35,6 +33,11 @@ from tegaki.dictutils import SortedDict
 
 from lib.exceptions import *
 from lib.utils import *
+from lib import hmm
+
+Sequence = hmm.Sequence
+SequenceSet = hmm.SequenceSet
+MultivariateHmm = hmm.GhmmMultivariateHmm
 
 class Model(object):
     """
@@ -50,8 +53,7 @@ class Model(object):
 
         self.ALL = ["clean", "fextract", "init", "train", "eval"]
         self.COMMANDS = self.ALL + ["pad", "find", "commands", "archive"]
-     
-        self.DOMAIN = ghmm.Float()
+    
         self.verbose = options.verbose
         self.options = options
 
@@ -127,7 +129,7 @@ class Model(object):
         return char
 
     def get_sequence_set(self, file_path):
-        return ghmm.SequenceSet(self.DOMAIN, file_path)
+        return SequenceSet.from_file(file_path)
 
     def get_utf8_from_char_code(self, char_code):
         return unichr(int(char_code)).encode("utf8")
@@ -140,16 +142,17 @@ class Model(object):
     # Feature extraction...
     ########################################
 
-    def get_feature_vectors(self, writing, normalize=False):
+    def get_feature_vectors(self, writing, normalize=True):
         """
         Get deltax and deltay as feature vectors.
         """
         if normalize:
+            writing.downsample_threshold(50)
             writing.normalize()
             
         strokes = writing.get_strokes()
         vectors = [(x,y) for stroke in strokes for x,y in stroke]
-        vectors = array_sample(vectors, self.SAMPLING)
+        #vectors = array_sample(vectors, self.SAMPLING)
 
         arr = []
 
@@ -182,19 +185,14 @@ class Model(object):
 
                     char_features = self.get_feature_vectors(writing)
 
-                    sequence_set.append(array_flatten(char_features))
+                    sequence_set.append(char_features)
 
                 output_file = os.path.join(output_dir,
                                            str(char_code) + ".sset")
 
                 self.print_verbose(output_file)
 
-
-                if os.path.exists(output_file):
-                    # necessary because SequenceSet#write appends content
-                    os.unlink(output_file)
-
-                sset = ghmm.SequenceSet(self.DOMAIN, sequence_set)
+                sset = SequenceSet(sequence_set)
                 sset.write(output_file)
 
     ########################################
@@ -240,12 +238,8 @@ class Model(object):
         all_segments = [[] for i in range(n_states)]
 
         for seq in sset:
-            # files contain data sequentially
-            # need to reconvert to vectors of n dimensions
-            vectors = array_reshape(list(seq), self.N_DIMENSIONS)
-
             # Segments vectors uniformly. One segment per state.
-            segments = array_split(vectors, n_states)
+            segments = array_split(seq, n_states)
 
             # Concatenate each segments[i] with the segments[i] obtained
             # at the previous iteration
@@ -266,7 +260,7 @@ class Model(object):
                 
                 # the covariance matrix of our multivariate gaussian
                 array_covariance_matrix(all_segments[i],
-                                             non_diagonal=self.NON_DIAGONAL)
+                                        non_diagonal=self.NON_DIAGONAL)
                 
             ])
 
@@ -280,12 +274,7 @@ class Model(object):
         A = self.get_state_transition_matrix(n_states)
         B = self.get_emission_matrix(n_states, sset)
 
-        hmm = ghmm.HMMFromMatrices(
-                    self.DOMAIN,
-                    ghmm.MultivariateGaussianDistribution(self.DOMAIN),
-                    A,
-                    B,
-                    pi)
+        hmm = MultivariateHmm(A, B, pi)
         
         return hmm
           
@@ -313,9 +302,6 @@ class Model(object):
 
             self.print_verbose(output_file)
 
-            if os.path.exists(output_file):
-                os.unlink(output_file)
-
             hmm.write(output_file)
 
     ########################################
@@ -337,21 +323,18 @@ class Model(object):
         
         for file in initial_hmm_files:
             char_code = int(os.path.basename(file).split(".")[0])
-            hmm = ghmm.HMMOpen(file)
+            hmm = MultivariateHmm.from_file(file)
             sset_file = os.path.join(self.TRAIN_FEATURES_ROOT,
                                      str(char_code) + ".sset")
 
             sset = self.get_sequence_set(sset_file)
 
-            hmm.baumWelch(sset)
+            hmm.bw_training(sset)
 
             output_file = os.path.join(self.TRAIN_HMM_ROOT,
                                        "%d.xml" % char_code)
 
             self.print_verbose(output_file)
-
-            if os.path.exists(output_file):
-                os.unlink(output_file)
 
             hmm.write(output_file)
 
@@ -372,7 +355,7 @@ class Model(object):
             logp = hmm.viterbi(seq)[1]
             res.append([hmm.char_code, logp])
 
-        if seq.__class__.__name__ == ghmm.SequenceSet:
+        if str(seq.__class__.__name__) == "SequenceSet":
             res.sort(key=lambda x:array_mean(x[1]), reverse=True)
         else:
             res.sort(key=lambda x:x[1], reverse=True)
@@ -384,7 +367,7 @@ class Model(object):
         
         for file in files:
             char_code = int(os.path.basename(file).split(".")[0])
-            hmm = ghmm.HMMOpen(file)
+            hmm = MultivariateHmm.from_file(file)
             hmm.char_code = char_code     
             hmms.append(hmm)
             
@@ -452,10 +435,7 @@ class Model(object):
     ########################################
 
     def find_writing(self, writing):
-        char_features = self.get_feature_vectors(writing)
-        
-        seq = ghmm.EmissionSequence(self.DOMAIN,
-                                    array_flatten(char_features))
+        seq = Sequence(self.get_feature_vectors(writing))
         trained_hmm_files = self.get_trained_hmm_files()
 
         if len(trained_hmm_files) == 0:

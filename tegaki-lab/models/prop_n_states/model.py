@@ -20,13 +20,17 @@
 # - Mathieu Blondel
 
 import os
-import ghmm
 import glob
 
 from tegaki.arrayutils import *
 import models.basic.model
 
 from lib.exceptions import *
+from lib import hmm
+
+Sequence = hmm.Sequence
+SequenceSet = hmm.SequenceSet
+MultivariateHmm = hmm.GhmmMultivariateHmm
 
 class Model(models.basic.model.Model):
     """
@@ -70,14 +74,7 @@ class Model(models.basic.model.Model):
         A = self.get_state_transition_matrix(n_states)
         B = self.get_emission_matrix(n_states, sset)
 
-        hmm = ghmm.HMMFromMatrices(
-                    self.DOMAIN,
-                    ghmm.MultivariateGaussianDistribution(self.DOMAIN),
-                    A,
-                    B,
-                    pi)
-        
-        return hmm
+        return MultivariateHmm(A, B, pi)
           
 
     def init(self):
@@ -113,9 +110,6 @@ class Model(models.basic.model.Model):
 
             output_file = os.path.join(self.INIT_HMM_ROOT,
                                        "%d.xml" % sset.char_code)
-
-            if os.path.exists(output_file):
-                os.unlink(output_file)
 
             hmm.write(output_file)
             

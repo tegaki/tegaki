@@ -20,7 +20,6 @@
 # - Mathieu Blondel
 
 import os
-import ghmm
 import glob
 
 from tegaki.arrayutils import *
