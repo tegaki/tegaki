@@ -1,0 +1,10 @@
+**/build
+**/dist
+**/**/build
+**/**/dist
+**/**/*.pyc
+**/**/*.class
+**/**/**/*.pyc
+**/**/**/*.class
+**/MANIFEST
+**/**/*_wrap.cpp
