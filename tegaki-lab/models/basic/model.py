@@ -425,40 +425,46 @@ class Model(object):
         n_match1 = 0
         n_match5 = 0
         n_match10 = 0
+        char_codes = {}
 
         s = ""
         
         for file in self.get_eval_feature_files():
             char_code = int(os.path.basename(file).split(".")[0])
+            char_codes[char_code] = 1
             sset = self.get_sequence_set(file)
 
-            # evaluate all evaluation sets at the same time
-            res = [x[0] for x in self.eval_sequence(sset, hmms)][:10]
+            for seq in sset:
+                res = [x[0] for x in self.eval_sequence(seq, hmms)][:10]
 
-            if char_code in res:
-                n_match10 += 1 
+                if char_code in res:
+                    n_match10 += 1 
 
-            if char_code in res[:5]:
-                n_match5 += 1
+                if char_code in res[:5]:
+                    n_match5 += 1
 
-                position = str(res.index(char_code) + 1)
-                matches = ", ".join([self.get_utf8_from_char_code(x) \
-                                        for x in res[:5]])
-            else:
-                position = "X"
-                matches = ""
+                    position = str(res.index(char_code) + 1)
+                    matches = ", ".join([self.get_utf8_from_char_code(x) \
+                                            for x in res[:5]])
+                else:
+                    position = "X"
+                    matches = ""
 
-            if char_code == res[0]:
-                n_match1 += 1
+                if char_code == res[0]:
+                    n_match1 += 1
 
-            utf8 = self.get_utf8_from_char_code(char_code)
+                utf8 = self.get_utf8_from_char_code(char_code)
 
-            s += "%s\t%s\t%s\n" % (utf8, position, matches)
+                s += "%s\t%s\t%s\n" % (utf8, position, matches)
 
-            n_total += 1
+                n_total += 1
 
             self.print_verbose(file)
 
+        n_classes = len(char_codes.keys())
+
+        self.stderr_print("%d characters (%d samples)" % \
+                           (n_classes, n_total))
         self.stderr_print("match1: ",
                           float(n_match1)/float(n_total) * 100,
                           "%")
