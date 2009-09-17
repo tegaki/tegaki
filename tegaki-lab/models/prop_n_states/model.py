@@ -26,6 +26,8 @@ from tegaki.arrayutils import *
 import models.basic.model
 
 from lib.exceptions import *
+
+from lib.hmm import Sequence, SequenceSet, MultivariateHmm
 from lib import hmm
 
 class Model(models.basic.model.Model):
@@ -70,10 +72,12 @@ class Model(models.basic.model.Model):
         A = self.get_state_transition_matrix(n_states)
         B = self.get_emission_matrix(n_states, sset)
 
-        return self.MultivariateHmm(A, B, pi)
+        return MultivariateHmm(A, B, pi)
           
 
     def init(self):
+        self.load_char_dicts()
+
         feature_files = self.get_train_feature_files()
 
         if len(feature_files) == 0:
