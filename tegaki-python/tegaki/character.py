@@ -912,16 +912,19 @@ class CharacterCollection(_XmlBase):
                 
         return charcol
 
-    def __add__(self, other):
+    def concatenate(self, other, check_duplicate=False):
         new = CharacterCollection()
         for charcol in (self, other):
             for set_name in charcol.get_set_list():
                 new.add_set(set_name)
                 characters = new.get_characters(set_name)
                 for char in charcol.get_characters(set_name):
-                    if not char in characters:
+                    if not check_duplicate or not char in characters:
                         new.append_character(set_name, char)
         return new
+
+    def __add__(self, other):
+        return self.concatenate(other)
                    
     def add_set(self, set_name):
         if not self._characters.has_key(set_name):
