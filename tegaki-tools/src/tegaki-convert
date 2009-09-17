@@ -43,6 +43,7 @@ class TegakiConvert(object):
         self._kuchibue = options.kuchibue
         self._include = options.include
         self._exclude = options.exclude
+        self._max_samples = options.max_samples
 
         try:
             self._output_path = args[0]
@@ -93,6 +94,10 @@ class TegakiConvert(object):
         if len(buf) > 0:
             charcol.exclude_characters_from_text(buf)
 
+        # max samples
+        if self._max_samples:
+            charcol.remove_samples(keep_at_most=self._max_samples)
+
         # output
         if not self._output_path:
             # outputs to stdout if not output path specified
@@ -109,7 +114,7 @@ parser = OptionParser(usage="usage: %prog [options] [output-path]",
 parser.add_option("-d", "--directory",
                   action="append", type="string", dest="directories",
                   default=[],
-                  help="directory containing individual XML character files")
+                  help="Directory containing individual XML character files")
 parser.add_option("-c", "--charcol",
                   action="append", type="string", dest="charcols",
                   default=[],
@@ -130,6 +135,9 @@ parser.add_option("-e", "--exclude",
                   action="append", type="string", dest="exclude",
                   default=[],
                   help="File containing characters to exclude")
+parser.add_option("-m", "--max-samples",
+                  type="int", dest="max_samples",
+                  help="Maximum number of samples per character")
 
 (options, args) = parser.parse_args()
 
