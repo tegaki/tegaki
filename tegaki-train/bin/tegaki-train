@@ -330,7 +330,10 @@ class EditCharacterSampleWindow(gtk.Window):
         self._clear_button = gtk.Button(stock=gtk.STOCK_CLEAR)
         self._clear_button.connect("clicked", self._on_clear)
         hbox.pack_start(self._clear_button)
-        vbox.pack_start(hbox)
+        self._replay_button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY)
+        self._replay_button.connect("clicked", self._on_replay)
+        hbox.pack_start(self._replay_button)  
+        vbox.pack_start(hbox)      
 
         align = gtk.Alignment(xalign=0.5, yalign=0.0, xscale=0.0, yscale=0.0)
         vbox2 = gtk.VBox()
@@ -358,6 +361,9 @@ class EditCharacterSampleWindow(gtk.Window):
 
     def _on_clear(self, widget):
         self._canvas.clear()
+
+    def _on_replay(self, widget):
+        self._canvas.replay()
 
     def get_character_value(self):
         return self._entry.get_text().strip()
