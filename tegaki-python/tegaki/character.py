@@ -1025,6 +1025,12 @@ class CharacterCollection(_XmlBase):
                     i += 1
         self.remove_empty_sets()
 
+    def remove_samples(self, keep_at_most):
+        for set_name in self.get_set_list():
+            if len(self._characters[set_name]) > keep_at_most:
+                self._characters[set_name] = \
+                    self._characters[set_name][0:keep_at_most]
+
     def remove_empty_sets(self):
         for set_name in self.get_set_list():
             if len(self.get_characters(set_name)) == 0:
