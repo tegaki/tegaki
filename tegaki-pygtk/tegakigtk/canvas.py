@@ -40,7 +40,7 @@ class Canvas(gtk.Widget):
     DEFAULT_WIDTH = 400
     DEFAULT_HEIGHT = 400
 
-    DEFAULT_REPLAY_SPEED = 25 # msec
+    DEFAULT_REPLAY_SPEED = 50 # msec
 
     __gsignals__ = {
         "stroke_added" :     (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
@@ -515,9 +515,10 @@ class Canvas(gtk.Widget):
         if self._curr_stroke > 0 and self._curr_point == 1 and \
            not self._speed:            
             # inter stroke duration
-            t2 = self._strokes[self._curr_stroke][0].timestamp
-            t1 = self._strokes[self._curr_stroke - 1][-1].timestamp
-            time.sleep(float(t2 - t1) / 1000)
+            # t2 = self._strokes[self._curr_stroke][0].timestamp
+            # t1 = self._strokes[self._curr_stroke - 1][-1].timestamp
+            # time.sleep(float(t2 - t1) / 1000)
+            time.sleep(float(self._get_speed(self._curr_stroke))/1000)
         
         p1 = self._strokes[self._curr_stroke][self._curr_point - 1]
         p1 = (p1.x, p1.y)
