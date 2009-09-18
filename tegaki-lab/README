@@ -9,9 +9,17 @@ Requirements
 ------------
 
 Python              2.4    http://www.python.org
-GHMM *              SVN    http://ghmm.sourceforge.net
 tegaki-python       0.1
 tegaki-pygtk        0.1
+
+At least one of:
+
+GHMM *              SVN    http://ghmm.sourceforge.net
+
+Jython              2.5    http://www.jython.org
+JaHmm               0.6.2  http://code.google.com/p/jahmm/
+
+Hydroml             git    git clone http://www.mblondel.org/code/hydroml.git
 
 [*] The Python bindings are also required.
 
