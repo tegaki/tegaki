@@ -119,24 +119,34 @@ class KuchibueParser(UnipenParser):
         if self._char:
             self._characters.append(self._char)
 
+    def _get_coordinates(self, x, y):
+        y = abs(y - self.INPUT_RESOLUTION_HEIGHT) # change basis
+        x -= self.FRAME_START_X # remove the padding
+        x -= self.FRAME_STEP_X * self._col # translate to the left
+        x *= float(Writing.WIDTH) / self.FRAME_WIDTH # scale for x = 1000
+        y -= (self.INPUT_RESOLUTION_HEIGHT - self.FRAME_START_Y) # padding
+        y -= self.FRAME_STEP_Y * self._row # translate to the top
+        y *= float(Writing.HEIGHT) / self.FRAME_HEIGHT # scale for y = 1000
+        return (int(x), int(y))
+
     def _handle_PEN_DOWN(self, args):
         writing = self._char.get_writing()
         points = [[int(p_) for p_ in p.split(" ")] \
                     for p in args.strip().split("\n")]
         stroke = Stroke()
         for x, y in points:
-            y = abs(y - self.INPUT_RESOLUTION_HEIGHT) # change basis
-            x -= self.FRAME_START_X # remove the padding
-            x -= self.FRAME_STEP_X * self._col # translate to the left
-            x *= float(Writing.WIDTH) / self.FRAME_WIDTH # scale for x = 1000
-            y -= (self.INPUT_RESOLUTION_HEIGHT - self.FRAME_START_Y) # padding
-            y -= self.FRAME_STEP_Y * self._row # translate to the top
-            y *= float(Writing.HEIGHT) / self.FRAME_HEIGHT # scale for y = 1000
-            x, y = int(x), int(y)
+            x, y = self._get_coordinates(x,y)
             #assert(x >= 0 and x <= 1000)
             #assert(y >= 0 and y <= 1000)
             stroke.append_point(Point(x,y))
         writing.append_stroke(stroke)
+
+    def _handle_PEN_UP(self, args):
+        writing = self._char.get_writing()
+        x, y = [int(p) for p in args.strip().split(" ")]
+        x, y = self._get_coordinates(x,y)
+        strokes = writing.get_strokes()
+        strokes[-1].append(Point(x,y))
 
 def kuchibue_to_character_collection(path):
     parser = KuchibueParser()
