@@ -34,7 +34,7 @@ from tegaki.dictutils import SortedDict
 
 from lib.exceptions import *
 from lib.utils import *
-from lib.hmm import Sequence, SequenceSet, MultivariateHmm
+from lib.hmm import Sequence, SequenceSet, MultivariateHmm, ViterbiTrainer
 from lib import hmm
 
 class Model(object):
@@ -46,6 +46,11 @@ class Model(object):
     Initialization: vectors distributed equally among states
     State transitions: 0.5 itself, 0.5 next state
     """
+
+    TRAINING_NONE = 0
+    TRAINING_BAUM_WELCH = 1
+    TRAINING_VITERBI = 2
+    TRAINING_BOTH = 3
 
     def __init__(self, options):
 
@@ -62,12 +67,15 @@ class Model(object):
         self.verbose = options.verbose
         self.options = options
 
+        self.SELF_TRANSITION = 0.5
+        self.NEXT_TRANSITION = 0.5
         self.SAMPLING = 0.5
         self.N_STATES_PER_STROKE = 3
         self.N_DIMENSIONS = 2
         # whether to calculate non-diagonal values in the covariance matrix
         # or not
         self.NON_DIAGONAL = False
+        self.TRAINING = self.TRAINING_BAUM_WELCH
 
         self.TRAIN_CORPORA = ["japanese-learner1", "japanese-native1"]
         self.EVAL_CORPORA = ["japanese-learner1", "japanese-native1"]
@@ -255,10 +263,11 @@ class Model(object):
                 state[n_states - 1] = 1.0
             else:
                 # else, as an initial value, we set the prob to stay in
-                # the same state to 0.5 and to jump to the next state to 0.5
+                # the same state to SELF_TRANSITION and to jump to the next
+                # state to NEXT_TRANSITION
                 # the values will be updated by the training
-                state[i] = 0.5
-                state[i + 1] = 0.5
+                state[i] = self.SELF_TRANSITION
+                state[i + 1] = self.NEXT_TRANSITION
 
             matrix.append(state)
        
@@ -355,6 +364,8 @@ class Model(object):
             os.makedirs(self.TRAIN_HMM_ROOT)
 
         trainer = self.Trainer()
+        viterbi_trainer = ViterbiTrainer(self.ViterbiCalculator(),
+                                         non_diagonal=self.NON_DIAGONAL)
         
         for file in initial_hmm_files:
             char_code = int(os.path.basename(file).split(".")[0])
@@ -363,13 +374,16 @@ class Model(object):
                                      str(char_code) + ".sset")
 
             sset = self.get_sequence_set(sset_file)
-
-            trainer.train(hmm, sset)
-
             output_file = os.path.join(self.TRAIN_HMM_ROOT,
                                        "%d.xml" % char_code)
 
-            self.print_verbose(output_file)
+            if self.TRAINING in (self.TRAINING_VITERBI, self.TRAINING_BOTH):
+                self.print_verbose("Viterbi training: " + output_file)
+                viterbi_trainer.train(hmm, sset)
+
+            if self.TRAINING in (self.TRAINING_BAUM_WELCH, self.TRAINING_BOTH):
+                self.print_verbose("Baum-Welch training: " + output_file)
+                trainer.train(hmm, sset)
 
             hmm.write(output_file)
 
@@ -444,11 +458,11 @@ class Model(object):
                     n_match5 += 1
 
                     position = str(res.index(char_code) + 1)
-                    matches = ", ".join([self.get_utf8_from_char_code(x) \
-                                            for x in res[:5]])
                 else:
                     position = "X"
-                    matches = ""
+
+                matches = ", ".join([self.get_utf8_from_char_code(x) \
+                                        for x in res[:5]])
 
                 if char_code == res[0]:
                     n_match1 += 1

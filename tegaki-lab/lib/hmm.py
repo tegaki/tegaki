@@ -20,12 +20,15 @@
 # - Mathieu Blondel
 
 import os
-from math import sqrt
+from math import sqrt, log
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 from tegaki.arrayutils import *
+
+def assert_almost_equals(a, b, eps=0.001):
+    assert(abs(a-b) < eps)
 
 class _Pickable:
 
@@ -57,6 +60,114 @@ class MultivariateHmm(object, _Pickable):
         self.B = B
         self.pi = pi
 
+    def get_n_states(self):
+        return len(self.pi)
+
+class ViterbiTrainer(object):
+    """
+    Supports left-right HMMs only for now.
+    """
+
+    def __init__(self, calculator, n_iterations=5, eps=0.0001,
+                       non_diagonal=False):
+        self._calculator = calculator
+        self._n_iterations = n_iterations
+        self._eps = abs(log(eps))
+        self._non_diagonal = non_diagonal
+
+    def train(self, hmm, sset):
+        last_logp_avg = None
+
+        for it in range(self._n_iterations):
+            
+            # contains vectors assigned to states
+            containers = []
+            for i in range(hmm.get_n_states()):
+                containers.append([])
+
+            # contains first state counts
+            init = [0] * hmm.get_n_states()
+
+            # contains outgoing transition counts
+            out_trans = [0] * hmm.get_n_states()
+
+            # contains transition counts
+            trans_mat = []
+            for i in range(hmm.get_n_states()):
+                trans_mat.append([0] * hmm.get_n_states())
+
+            logp_avg = 0
+
+            for seq in sset:
+                states, logp = self._calculator.viterbi(hmm, seq)
+                logp_avg += logp
+                assert(len(states) == len(seq))
+
+                init[states[0]] += 1
+
+                for i, state in enumerate(states):
+                    containers[state].append(seq[i])
+                    out_trans[state] += 1
+                    
+                    if i != len(states) - 1:
+                        next_state = states[i+1]
+                        trans_mat[state][next_state] += 1
+
+            logp_avg /= float(len(sset))
+
+            if last_logp_avg is not None:
+                diff = abs(logp_avg - last_logp_avg)
+                if  diff < self._eps:
+                    #print "Viterbi training stopped on iteration %d" % it
+                    break
+
+            last_logp_avg = logp_avg
+
+           # estimate observertion distribution
+            opdfs = []
+            for container in containers:
+                if container == []:
+                    # no vectors assigned to that state
+                    # this means that the new HMM will have potentially
+                    # fewer states
+                    break
+
+                means = array_mean_vector(container)
+                covmatrix = array_covariance_matrix(container,
+                                                    self._non_diagonal)
+                opdfs.append([means, covmatrix])
+
+            n_states = len(opdfs)
+
+            # estimate initial state probabilities
+            pi = [float(v) / len(sset) for v in init[0:n_states]]
+            assert_almost_equals(sum(pi), 1.0)
+
+            trans_mat = trans_mat[0:n_states]
+
+            # estimate state transition probabilities
+            for i in range(n_states): 
+                for j in range(n_states):
+                    if out_trans[i] > 0:
+                        trans_mat[i][j] /= float(out_trans[i])
+
+                trans_mat[i] = trans_mat[i][0:n_states]
+                sum_= sum(trans_mat[i])
+
+                if sum_ == 0:
+                    trans_mat[i][-1] = 1.0
+                else:
+                    # normalize so that the sum of probabilities 
+                    # always equals 1.0
+                    for j in range(n_states):
+                        trans_mat[i][j] /= sum_
+               
+                assert_almost_equals(sum(trans_mat[i]), 1.0)
+
+            hmm.pi = pi
+            hmm.A = trans_mat
+            hmm.B = opdfs
+
 try:
     import ghmm
 
@@ -83,7 +194,7 @@ try:
             hmm_ = self._get_hmm(hmm)
 
             if isinstance(obj, SequenceSet):
-                obj = [array_flatten(s) for s in obj]
+                obj = [array_flatten(s[:]) for s in obj]
                 obj = ghmm.SequenceSet(DOMAIN, obj)
                 res = hmm_.viterbi(obj)
                 # ghmm returns a scalar even though a sequence set was passed
@@ -91,10 +202,40 @@ try:
                 if len(obj) == 1:
                     res = [[res[0]], [res[1]]]
             else:
-                obj = ghmm.EmissionSequence(DOMAIN, array_flatten(obj))
+                obj = ghmm.EmissionSequence(DOMAIN, array_flatten(obj[:]))
                 res = hmm_.viterbi(obj)
     
             return res
+
+except ImportError:
+    pass
+
+try:
+    from hydroml.hmm import Hmm
+    from hydroml.distribution import MultivariateGaussianDistribution
+
+    class _HydromlBase(object):
+
+        def _get_hmm(self, hmm):
+            opdfs = []
+            for means, covmatrix in hmm.B:
+                covmatrix = array_split(covmatrix, int(sqrt(len(covmatrix))))
+                opdfs.append(MultivariateGaussianDistribution(means, covmatrix))
+
+            return Hmm(hmm.pi, hmm.A, opdfs)
+
+    class HydromlViterbiCalculator(_HydromlBase):
+
+        def viterbi(self, hmm, obj):
+            hmm_ = self._get_hmm(hmm)
+
+            if isinstance(obj, SequenceSet):
+                res = [hmm_.viterbi(seq) for seq in obj]
+                all_paths = [res[i][0] for i in range(len(res))]
+                all_logp = [res[i][1] for i in range(len(res))]
+                return all_paths, all_logp
+            else:
+                return hmm_.viterbi(obj)
 
 except ImportError:
     pass
