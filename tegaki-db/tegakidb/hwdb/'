@@ -1,0 +1,6 @@
+import re
+
+s = u"我说小姐你好 I said shorty what's up"
+r = re.search("\S+", s)
+print r
+

@@ -1,0 +1,21 @@
+{% extends "base/base.html" %}
+
+{% block bread_crumbs %}
+    <span class="active-crumb">Lianxi</span>
+{% endblock %}
+
+
+{% block title %}Tegaki-db - Lianxi{% endblock %}
+{% block extrahead %}
+{% endblock %}
+
+{% block lianxi_li_class %}class="cur_link"{% endblock %}
+
+
+{% block content %}
+<div id="lianxiContent">
+    <h1><a href="{% url lianxi-assignments %}">Assignments</a></h1>
+    <p>View and Complete Assignments.  </p>
+
+</div>
+{% endblock %}

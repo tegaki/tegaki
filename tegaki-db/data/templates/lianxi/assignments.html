@@ -10,12 +10,11 @@
 
 {% block content %}
 
-<h1> Character Sets</h1>
-<p><a href="{% url hwdb-create-charset %}">Create A Character Set</a></p>
+<h1> Assignments</h1>
 <div >
     <div class="datagrid">
         {% datagrid %}
-            json_store_url = '{% url hwdb-charset-datagrid %}'
+            json_store_url = '{% url lianxi-assignments-datagrid %}'
             list_display = ('name','lang__description', 'description', 'random_char', 'number_of_characters', 'user__username')
             label = { 'user__username': 'User', 'lang__description':'Language', 'description':'Description', 'name':'Name', 'random_char':'Random Character', 'number_of_characters':'Number of Characters'}
             search = ('user__username__icontains', 'lang__description__icontains', 'description__icontains', 'name__icontains', 'characters__icontains')

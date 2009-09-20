@@ -1,0 +1,16 @@
+.charset_selected {
+    display: block;
+    border: 1px solid 0x00ff00;
+    background: 0x00dd00;
+}
+
+.charset_unselected {
+    display: block;
+    border: 1px solid 0x0000ff;
+    background: 0xaaaaaa;
+}
+
+.charset_input {
+    display: block;
+    border: 1px solid 0xee0000;
+}

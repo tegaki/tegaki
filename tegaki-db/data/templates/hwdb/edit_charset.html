@@ -10,6 +10,8 @@
 {% block title %}Edit Character Set: {{charset.name }}  - Tegaki-db{% endblock %}
 
 {% block extrahead %}
+<link href="{{MEDIA_URL}}css/hwdb.css" type="text/css" rel="stylesheet" />
+
 <script type="text/javascript">
 function selectCS()
 {
@@ -18,6 +20,12 @@ function selectCS()
         postData: "id={{ charset.id }}",
         load: function(data){
             //console.log(data)
+        var selector = document.getElementById('selector');
+        console.log(selector);
+        console.log(selector.value);
+        selector.value = 'Selected';
+        selector.class = 'charset_selected';
+        console.log(selector);
         }
     });
 }
@@ -29,12 +37,17 @@ function selectCS()
 <div class='user-edit-charset'>
     <h1>{{charset.name}} </h1>
 
-<form method='post' action='.'>
+    <form method='post' action='.'>
+    {% ifequal charset request.session.current_charset %}
+    <input class="charset_selected" type="button" id="selector" name="selector" value="Selected" />
+    {%else%}
+    <input class="charset_unselected"type="button" id="selector" name="selector" value="Select" onclick="selectCS();" />
+    {%endifequal%}
+        {{ form.as_p }}
 
-{{ form.as_p }}
-
-<input type="submit" value="Update" />
-<input type="button" id="selector" name="selector" value="Select" onclick="selectCS();" />
+        {{ charset.display_characters }}
+        <input type="submit" value="Update" />
+        <input type="hidden" id="id" name="id" value="{{charset.id}}" />
 </form>
 </div>
 

@@ -13,16 +13,16 @@
 
 {% block content %}
 
-<h1> Character Sets</h1>
+<h1> Samples</h1>
 <p><a href="{% url hwdb-input %}">Input A Sample</a></p>
 <div >
 
     <div class="datagrid">
         {% datagrid %}
             json_store_url = '{% url hwdb-samples-datagrid %}'
-            list_display = ('character__utf8','character__lang__description', 'date', 'user__username')
-            label = { 'user__username': 'User', 'character__lang__description':'Language', 'date':'Date Entered', 'character__utf8':'Unicode'}
-            search = ('user__username__icontains', 'lang__description__icontains', 'character__utf8__exact')
+            list_display = ('character__utf8','character__lang__description', 'date', 'character_set__name', 'user__username')
+            label = { 'user__username': 'User', 'character__lang__description':'Language', 'date':'Date Entered', 'character_set__name':'Character Set', 'character__utf8':'Unicode'}
+            search = ('user__username__icontains', 'lang__description__icontains', 'character__utf8__exact', 'character_set__name__icontains')
             height='500px'
             id='samples'
         {% enddatagrid %}

@@ -26,6 +26,11 @@ dojo.addOnLoad(load);
 
 var character='{{char}}';
 
+function clearAll()
+{
+    ricepaper.clear();
+}
+
 function submitDrawing(){
     w = ricepaper.character.get_writing();
     xml = w.toXML();

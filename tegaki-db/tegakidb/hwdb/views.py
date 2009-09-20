@@ -62,14 +62,15 @@ def input_submit(request):
     writing = char.get_writing()
     uni = ord(unicode(utf8))
 
-    lang = request.session['current_charset'].lang
+    cs = request.session['current_charset']
+    lang = cs.lang
 
     try:
         tdbChar = Character.objects.get(unicode=uni)  #this is the Character from the database
     except:
         tdbChar = Character(lang=lang, unicode=uni, n_handwriting_samples=1)
         tdbChar.save()
-    w = HandWritingSample(character=tdbChar, user=user, data=writing.to_xml())  #minimum fields needed to store
+    w = HandWritingSample(character=tdbChar, user=user, data=writing.to_xml(), character_set=cs)  #minimum fields needed to store
     w.save()
     tdbChar.n_handwriting_samples += 1
     tdbChar.save()
@@ -98,6 +99,7 @@ def samples_datagrid(request):
         djob['character__utf8'] = s.character.utf8()
         djob['character__lang__description'] = s.character.lang.description
         djob['date'] = s.date
+        djob['character_set__name'] = s.character_set.name
         djob['user__username'] = s.user.username
         if s.user.get_profile().show_handwriting_samples or request.user == s.user: 
             #only if they publicly display this charset
@@ -167,14 +169,17 @@ def charset_datagrid(request):
     dojo_obs = []
     charsets, num = datagrid_helper(CharacterSet, request)
     for c in charsets:
+        print c
         djob = {}
         #'id', 'user__username', 'country', 'lang', 'description', 'n_handwriting_samples'
         djob['id'] = c.id
         djob['name'] = c.name
         djob['lang__description'] = c.lang.description
         djob['description'] = c.description
+        #print c.get_random()
         djob['random_char'] = unichr(c.get_random())
-        djob['characters'] = c.characters       #might want to do something else for display
+        #djob['characters'] = c.characters       #might want to do something else for display
+        djob['number_of_characters'] = len(c)
         if c.user:
             djob['user__username'] = c.user.username
         if c.public or request.user == c.user:  #only if they publicly display this charset

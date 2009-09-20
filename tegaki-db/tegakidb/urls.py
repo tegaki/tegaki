@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'template_name': 'users/logout.html', 'next_page':'/%s' % settings.BASE_URL}, name="logout"),
 
 
+    (r'^lianxi/', include('tegakidb.lianxi.urls')),
     (r'^news/', include('tegakidb.news.urls')),
 
     (r'^users/', include('tegakidb.users.urls')),
@@ -16,10 +17,9 @@ urlpatterns = patterns('',
     (r'^hwdb/', include('tegakidb.hwdb.urls')),
 
 
-
-
     (r'^dojango/', include('tegakidb.dojango.urls')),
 
+#    (r'^lianxi/', include('tegakidb.lianxi.urls')),
     (r'^admin/(.*)', admin.site.root),
     #(r'^admin/', include(admin.site.urls)), #this is Django 1.1 version 
 )
