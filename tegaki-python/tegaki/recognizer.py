@@ -23,12 +23,13 @@ import glob
 import os
 import imp
 
+from tegaki.engine import Engine
 from tegaki.dictutils import SortedDict
 
 class RecognizerError(Exception):
     pass
 
-class Recognizer(object):
+class Recognizer(Engine):
 
     def __init__(self):
         self._model = None
@@ -43,30 +44,7 @@ class Recognizer(object):
     def _load_available_recognizers(cls):
         cls.available_recognizers  = SortedDict()
 
-        currdir = os.path.dirname(os.path.abspath(__file__))
-
-        try:
-            # UNIX
-            homedir = os.environ['HOME']
-        except KeyError:
-            # Windows
-            homedir = os.environ['USERPROFILE']
-
-        # FIXME: use $prefix defined in setup
-        search_path = ["/usr/local/share/tegaki/engines/",
-                       "/usr/share/tegaki/engines/",
-                       # for Maemo
-                       "/media/mmc1/tegaki/engines/",
-                       "/media/mmc2/tegaki/engines/",
-                       # personal directory
-                       os.path.join(homedir, ".tegaki", "engines"),     
-                       os.path.join(currdir, "engines")]
-
-        if 'TEGAKI_ENGINE_PATH' in os.environ and \
-            os.environ['TEGAKI_ENGINE_PATH'].strip() != "":
-            search_path += os.environ['TEGAKI_ENGINE_PATH'].strip().split(":")
-
-        for directory in search_path:
+        for directory in cls._get_search_path("engines"):
             if not os.path.exists(directory):
                 continue
 
@@ -104,31 +82,11 @@ class Recognizer(object):
             cls.available_models = cls._get_available_models(name)
             return cls.__dict__["available_models"]
 
-    @staticmethod
-    def _get_available_models(recognizer):
+    @classmethod
+    def _get_available_models(cls, recognizer):
         available_models = SortedDict()
 
-        try:
-            # UNIX
-            homedir = os.environ['HOME']
-        except KeyError:
-            # Windows
-            homedir = os.environ['USERPROFILE']
-
-        # FIXME: use $prefix defined in setup
-        search_path = ["/usr/local/share/tegaki/models/",
-                       "/usr/share/tegaki/models/",
-                       # for Maemo
-                       "/media/mmc1/tegaki/models/",
-                       "/media/mmc2/tegaki/models/",
-                       # personal directory
-                       os.path.join(homedir, ".tegaki", "models")]
-
-        if 'TEGAKI_MODEL_PATH' in os.environ and \
-            os.environ['TEGAKI_MODEL_PATH'].strip() != "":
-            search_path += os.environ['TEGAKI_MODEL_PATH'].strip().split(":")
-
-        for directory in search_path:
+        for directory in cls._get_search_path("models"):
             directory = os.path.join(directory, recognizer)
 
             if not os.path.exists(directory):

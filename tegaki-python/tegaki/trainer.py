@@ -24,12 +24,13 @@ import os
 import imp
 from cStringIO import StringIO
 
+from tegaki.engine import Engine
 from tegaki.dictutils import SortedDict
 
 class TrainerError(Exception):
     pass
 
-class Trainer(object):
+class Trainer(Engine):
 
     def __init__(self):
         pass
@@ -44,30 +45,7 @@ class Trainer(object):
     def _load_available_trainers(cls):
         cls.available_trainers  = SortedDict()
 
-        currdir = os.path.dirname(os.path.abspath(__file__))
-
-        try:
-            # UNIX
-            homedir = os.environ['HOME']
-        except KeyError:
-            # Windows
-            homedir = os.environ['USERPROFILE']
-
-        # FIXME: use $prefix defined in setup
-        search_path = ["/usr/local/share/tegaki/engines/",
-                       "/usr/share/tegaki/engines/",
-                       # for Maemo
-                       "/media/mmc1/tegaki/engines/",
-                       "/media/mmc2/tegaki/engines/",
-                       # personal directory
-                       os.path.join(homedir, ".tegaki", "engines"),     
-                       os.path.join(currdir, "engines")]
-
-        if 'TEGAKI_ENGINE_PATH' in os.environ and \
-            os.environ['TEGAKI_ENGINE_PATH'].strip() != "":
-            search_path += os.environ['TEGAKI_ENGINE_PATH'].strip().split(":")
-
-        for directory in search_path:
+        for directory in cls._get_search_path("engines"):
             if not os.path.exists(directory):
                 continue
 
