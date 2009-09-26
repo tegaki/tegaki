@@ -25,6 +25,6 @@ setup(
     version = getversion(),
     license='GPL',
     packages = ['tegakigtk'],
-    package_dir = {'tegakigtk':'tegakigtk/'},
-    data_files=[('share/tegaki/icons/', ['data/tegaki/icons/handwriting.png'])]
+    package_dir = {'tegakigtk':'tegakigtk'},
+    data_files=[('share/tegaki/icons', ['data/tegaki/icons/handwriting.png'])]
 )

@@ -25,5 +25,5 @@ setup(
     version = getversion(),
     license='GPL',
     packages = ['tegaki', 'tegaki.engines'],
-    package_dir = {'tegaki':'tegaki/', 'tegaki.engines':'tegaki/engines/'}
+    package_dir = {'tegaki':'tegaki', 'tegaki.engines':'tegaki/engines'}
 )

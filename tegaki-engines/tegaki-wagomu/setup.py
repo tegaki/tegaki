@@ -40,5 +40,5 @@ setup(
                            #library_dirs = pkg_config('glib-2.0','--libs'),
                            swig_opts=['-c++'])],
 
-    data_files=[('share/tegaki/engines/', ['tegakiwagomu.py'])]
+    data_files=[('share/tegaki/engines', ['tegakiwagomu.py'])]
 )
