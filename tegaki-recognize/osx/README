@@ -1,0 +1,16 @@
+In order to prepare an app bundle for OSX
+-----------------------------------------
+
+1. Install macports
+
+2. Edit /opt/local/share/macports/Tcl/port1.0/portconfigure.tcl
+
+and change "default configure.ldflags" to:
+
+default configure.ldflags   {"-L${prefix}/lib -Xlinker -headerpad_max_install_names"}
+
+This leaves more space in the library headers for py2app.
+
+3. Install py25-gtk. Make sure that tegaki-recognize works.
+
+4. Run osx/create_app_bundle.sh then osx/create_dmg.sh
