@@ -29,6 +29,7 @@ if sys.platform == 'darwin' and "py2app" in sys.argv[1:]:
     # be used for opening files.
     options=dict(py2app=dict(argv_emulation=True,
                              site_packages=True,
+                             iconfile="data/icons/tegaki-recognize.icns",
                              includes="gtk,atk,pangocairo,cairo,gio,tegaki,tegaki.trainer,tegaki.recognizer,tegakigtk,zinnia")),
     )
 elif sys.platform == 'win32' and "py2exe" in sys.argv[1:]:
