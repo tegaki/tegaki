@@ -33,10 +33,17 @@ if sys.platform == 'darwin' and "py2app" in sys.argv[1:]:
                              includes="gtk,atk,pangocairo,cairo,gio,tegaki,tegaki.trainer,tegaki.recognizer,tegakigtk,zinnia")),
     )
 elif sys.platform == 'win32' and "py2exe" in sys.argv[1:]:
-    # FIXME: TODO
+    import py2exe
+    
     extra_options = dict(
     setup_requires=['py2exe'],
-    app=[mainscript],
+    windows=[{'script' : mainscript,
+                  'icon_resources': [(0x0004, 'data/icons/tegaki-recognize.ico')]},],
+    options=dict(py2exe=dict(
+                                   compressed=1,
+                                   optimize=2, 
+                                   bundle_files=3,
+                                   includes="gtk,atk,pangocairo,cairo,tegaki,tegaki.trainer,tegaki.recognizer,tegakigtk,zinnia,tegaki.arrayutils,tegaki.engines")),
     )
 else:
     extra_options = dict(

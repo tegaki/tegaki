@@ -1,0 +1,25 @@
+1. Add the following at the beginning of bin/tegaki-recognize.
+---
+import os
+import sys
+
+def main_dir():
+    return os.path.dirname(sys.executable)
+
+def addpath(path, value):
+    if not path in os.environ or len(os.environ[path]) == 0:
+        os.environ[path] = value
+    else:
+         os.environ[path] = value + os.path.pathsep + os.environ[path]
+
+addpath("TEGAKI_MODEL_PATH", os.path.join(main_dir(), "models"))
+addpath("TEGAKI_ENGINE_PATH", os.path.join(main_dir(), "engines"))
+
+
+2. Run "python setup.py py2exe".
+
+3. Copy tegaki engines (tegaki*.py) to dist/engines/.
+
+4. Copy etc/, lib/ and share/ from your GTK installation to dist/.
+
+5. Compile tegaki-recognize.iss with Inno Setup (http://www.jrsoftware.org/isinfo.php).
