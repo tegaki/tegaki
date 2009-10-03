@@ -94,9 +94,31 @@ done
 mkdir -p  $Resources/engines
 cp ../tegaki-python/tegaki/engines/*.*  $Resources/engines/
 
-mv ${MacOS}/tegaki-recognize ${MacOS}/tegaki-recognize.bin
-cp osx/tegaki-recognize.sh $MacOS/tegaki-recognize
-chmod 755 $MacOS/tegaki-recognize
+# Add environment variables
+cat << EOF >> "${Resources}/tegaki-recognize.py.new"
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+
+currdir = os.path.dirname(os.path.abspath(__file__))
+res = os.path.join(currdir, "..", "Resources")
+
+os.environ["FONTCONFIG_FILE"] = os.path.join(res, "etc/fonts/fonts.conf") 
+os.environ["TEGAKI_ENGINE_PATH"] = os.path.join(res, "engines/") 
+os.environ["PANGO_RC_FILE"] = os.path.join(res, "etc/pango/pangorc")
+os.environ["GDK_PIXBUF_MODULE_FILE"] = os.path.join(res, "etc/gtk-2.0/gdk-pixbuf.loaders") 
+os.environ["GTK_PATH"] = res 
+os.environ["GTK_EXE_PREFIX"]= res 
+
+#os.environ["DISPLAY"] = ":0.0"
+EOF
+
+# GDK pixbuf loaders don't work yet
+cat ${Resources}/tegaki-recognize.py >> ${Resources}/tegaki-recognize.py.new
+sed "s?self._init_icon()?#self._init_icon()?" < ${Resources}/tegaki-recognize.py.new > ${Resources}/tegaki-recognize.py
+sed "s?self._window.set_icon(self._pixbuf)?#self._window.set_icon(self._pixbuf)?" ${Resources}/tegaki-recognize.py > ${Resources}/tegaki-recognize.py.new
+mv ${Resources}/tegaki-recognize.py.new ${Resources}/tegaki-recognize.py
 
 # Make sure that macports don't interfere with the bundle
 #sudo chmod 0 /opt
