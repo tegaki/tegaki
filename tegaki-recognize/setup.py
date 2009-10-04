@@ -30,7 +30,7 @@ if sys.platform == 'darwin' and "py2app" in sys.argv[1:]:
     options=dict(py2app=dict(argv_emulation=True,
                              site_packages=True,
                              iconfile="data/icons/tegaki-recognize.icns",
-                             includes="gtk,atk,pangocairo,cairo,gio,tegaki,tegaki.trainer,tegaki.recognizer,tegakigtk,zinnia")),
+                             includes="gtk,atk,pangocairo,cairo,gio,tegaki,tegaki.trainer,tegaki.recognizer,tegakigtk,zinnia,wagomu,tegaki.arrayutils")),
     )
 elif sys.platform == 'win32' and "py2exe" in sys.argv[1:]:
     import py2exe

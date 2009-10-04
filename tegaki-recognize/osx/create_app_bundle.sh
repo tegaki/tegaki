@@ -93,6 +93,7 @@ done
 # Copy Tegaki engines
 mkdir -p  $Resources/engines
 cp ../tegaki-python/tegaki/engines/*.*  $Resources/engines/
+cp ../tegaki-engines/tegaki-wagomu/tegaki* $Resources/engines/
 
 # Add environment variables
 cat << EOF >> "${Resources}/tegaki-recognize.py.new"
