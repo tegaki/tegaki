@@ -43,7 +43,7 @@ elif sys.platform == 'win32' and "py2exe" in sys.argv[1:]:
                                    compressed=1,
                                    optimize=2, 
                                    bundle_files=3,
-                                   includes="gtk,atk,pangocairo,cairo,tegaki,tegaki.trainer,tegaki.recognizer,tegakigtk,zinnia,tegaki.arrayutils,tegaki.engines")),
+                                   includes="gtk,atk,pangocairo,cairo,tegaki,tegaki.trainer,tegaki.recognizer,tegakigtk,zinnia,tegaki.arrayutils,tegaki.engines,wagomu")),
     )
 else:
     extra_options = dict(
