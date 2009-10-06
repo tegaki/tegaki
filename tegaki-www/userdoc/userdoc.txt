@@ -1,0 +1,74 @@
+# Tegaki user documentation
+
+Tegaki is an ongoing project which aims to develop a free and open-source modern implementation of handwriting recognition software, specifically designed for Chinese (simplified and traditional) and Japanese, and that is suitable for both the desktop and mobile devices.
+
+## 1. Packages
+
+Tegaki is composed of the following packages:
+
+- tegaki-recognize: handwriting recognition for the desktop.
+- tegaki-train: character editor and training manager.
+- scim-tegaki: handwriting recognition for SCIM.
+- tegaki-tools: tools for advanced users and developers.
+
+In addition, all these packages depend on the following two base libraries:
+
+- tegaki-python: base Python library.
+- tegaki-pygtk: base user interface library.
+
+## 2. Install
+
+### 2.1. Windows
+
+The recommended way to install Tegaki in Windows is to use our Windows installer. It installs *tegaki-python*, *tegaki-pygtk*, *tegaki-recognize*, *zinnia* and *wagomu*. After that, install your models of interest (see section 4.1 "Model search path") and you should be ready to use Tegaki.
+
+### 2.2. Mac OS X
+
+The recommended way to install Tegaki in Mac OS X is to use our .dmg image. It provides *tegaki-python*, *tegaki-pygtk*, *tegaki-recognize*, *zinnia* and *wagomu*. After opening the image, you can drag the Tegaki icon to the dock or the Applications folder.
+
+Tegaki on Mac OS X requires that X11 is installed on your system. If that is not the case yet, you may install it from the MacOS X install disc (it is located in System/Installation/Packages/X11User.pkg) or from [Apple's website](http://www.apple.com/downloads/macosx/apple/macosx_updates/x11formacosx.html "link to X11"). After that, install your models of interest (see section 4.1 "Model search path") and you should be ready to use Tegaki.
+
+### 2.3. From source
+
+On UNIX and UNIX-like systems, it's recommended to install Tegaki from your distribution but if you can't find it or are looking for the newest version, you may install it from source. Start by installing *tegaki-python* and *tegaki-pygtk* then proceed to the installation of the desired packages. A README file describing the software dependencies as well as the commands that need to be entered is present in all packages.
+
+## 3. Engines
+
+Tegaki needs so-called engines to operate. Engines are made of two parts: a recognizer and a trainer. The recognizer uses a handwriting model to... recognize handwritten characters. The trainer's role is to create such a model from a set of handwritten character samples. 
+
+Currently two engines are supported in Tegaki:
+
+- zinnia
+- wagomu
+
+Each engine has its own strengths and weaknesses. You are encouraged to try both and see which one works best for your handwriting or come up best with your expectations. Because they are made differently, you may also use one engine when the other fails to recognize a character.
+
+## 4. Models
+
+In order to operate, recognizers need models. Several of them may be installed for each recognizer. Models are composed of two files: a .model file and a .meta file.
+
+.model files are read-only and containi the data necessary for the recognizer to operate. They are architecture-dependent, meaning that a model made on an architecture will not work on another architecture. Models available for download on Tegaki's website are made for little-endian architecture (Intel, AMD, ARM etc).
+
+.meta files are writable and contain parameters about the model. Some parameters are mandatory, some optionals. Some parameters are common to all engines, some are specific.
+
+General-purpose models for Simplified Chinese and Japanese are available for downloads. However, you may prepare custom models with *tegaki-train* and tegaki-tool's *tegaki-build* (see sections 6. "tegaki-train" and 7.2. "tegaki-build").
+
+### 4.1. Model search path
+
+### 4.2. Model paramaters
+
+## 5. tegaki-recognize
+
+## 6. tegaki-train
+
+## 7. tegaki-tools
+
+
+### 7.1. tegaki-convert
+
+### 7.2. tegaki-build
+
+### 7.3. tegaki-eval
+
+### 7.4. tegaki-render
+
