@@ -86,6 +86,8 @@ try:
                 else:
                     path = os.path.join(os.environ['HOME'], ".tegaki", "models",
                                         "zinnia", meta["name"] + ".model")
+            else:
+                path = os.path.abspath(path)
 
             if not os.path.exists(os.path.dirname(path)):
                 os.makedirs(os.path.dirname(path))
