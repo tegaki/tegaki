@@ -1,10 +1,13 @@
 all=tegaki-zinnia-japanese tegaki-zinnia-japanese-light \
 tegaki-zinnia-japanese-joyo tegaki-zinnia-japanese-kyoiku \
-tegaki-zinnia-simplified-chinese tegaki-zinnia-simplified-chinese-light
+tegaki-zinnia-simplified-chinese tegaki-zinnia-simplified-chinese-light \
+tegaki-zinnia-traditional-chinese
 
 alldist=tegaki-zinnia-japanese-dist tegaki-zinnia-japanese-light-dist \
 tegaki-zinnia-japanese-joyo-dist tegaki-zinnia-japanese-kyoiku-dist \
-tegaki-zinnia-simplified-chinese-dist tegaki-zinnia-simplified-chinese-light-dist
+tegaki-zinnia-simplified-chinese-dist \
+tegaki-zinnia-simplified-chinese-light-dist \
+tegaki-zinnia-traditional-chinese-dist
 
 all: $(all)
 
@@ -15,6 +18,7 @@ tzjk: tegaki-zinnia-japanese-kyoiku
 tzjj: tegaki-zinnia-japanese-joyo
 tzsc: tegaki-zinnia-simplified-chinese
 tzscl: tegaki-zinnia-simplified-chinese-light
+tztc: tegaki-zinnia-traditional-chinese
 
 # build japanese
 tegaki-zinnia-japanese: tegaki-zinnia-japanese-build data/train/japanese/handwriting-ja.xml
@@ -36,8 +40,18 @@ tegaki-zinnia-simplified-chinese: tegaki-zinnia-simplified-chinese-build data/tr
 	cp -u -p data/train/simplified-chinese/handwriting-zh_CN.xml build/$@
 	make -C build/$@
 
+# build traditional chinese
+tegaki-zinnia-traditional-chinese: tegaki-zinnia-traditional-chinese-build data/train/traditional-chinese/handwriting-zh_TW.xml data/train/traditional-chinese/out-domain data/train/simplified-chinese/handwriting-zh_CN.xml data/train/japanese/handwriting-ja.xml
+	tegaki-bootstrap -q --domain=BIG5 --locale=T --max-samples=1 \
+build/$@/handwriting-zh_TW.xml \
+-c data/train/traditional-chinese/handwriting-zh_TW.xml \
+-d data/train/traditional-chinese/out-domain \
+-t data/train/simplified-chinese/handwriting-zh_CN.xml \
+-t data/train/japanese/handwriting-ja.xml
+	make -C build/$@
+
 # prepare build-directory
-tegaki-zinnia-japanese-build tegaki-zinnia-japanese-joyo-build tegaki-zinnia-japanese-kyoiku-build tegaki-zinnia-simplified-chinese-build:
+tegaki-zinnia-japanese-build tegaki-zinnia-japanese-joyo-build tegaki-zinnia-japanese-kyoiku-build tegaki-zinnia-simplified-chinese-build tegaki-zinnia-traditional-chinese-build:
 	model=$(subst -build,,$@); \
 	mkdir -p build/$$model; \
 	cp $$model/* build/$$model/; \
@@ -56,6 +70,12 @@ tegaki-zinnia-simplified-chinese-light: tegaki-zinnia-simplified-chinese
 	cp -R -p build/tegaki-zinnia-simplified-chinese build/$@
 	zinnia_convert -c 0.005 build/tegaki-zinnia-simplified-chinese-light/handwriting-zh_CN.model.txt \
 build/tegaki-zinnia-simplified-chinese-light/handwriting-zh_CN.model
+
+tegaki-zinnia-traditional-chinese-light: tegaki-zinnia-traditional-chinese
+	rm -rf build/$@
+	cp -R -p build/tegaki-zinnia-traditional-chinese build/$@
+	zinnia_convert -c 0.005 build/tegaki-zinnia-traditional-chinese-light/handwriting-zh_TW.model.txt \
+build/tegaki-zinnia-traditional-chinese-light/handwriting-zh_TW.model
 
 # prepare all zip files
 dist: $(alldist)
