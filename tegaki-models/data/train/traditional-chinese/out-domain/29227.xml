@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character>
+  <utf8>爫</utf8>
+  <width>1000</width>
+  <height>1000</height>
+  <strokes>
+    <stroke>
+      <point x="616" y="240" timestamp="0" />
+      <point x="616" y="243" timestamp="104" />
+      <point x="616" y="246" timestamp="112" />
+      <point x="613" y="253" timestamp="120" />
+      <point x="610" y="256" timestamp="128" />
+      <point x="603" y="260" timestamp="136" />
+      <point x="600" y="266" timestamp="144" />
+      <point x="596" y="273" timestamp="152" />
+      <point x="593" y="276" timestamp="160" />
+      <point x="586" y="283" timestamp="168" />
+      <point x="576" y="286" timestamp="176" />
+      <point x="570" y="293" timestamp="184" />
+      <point x="563" y="300" timestamp="192" />
+      <point x="556" y="303" timestamp="200" />
+      <point x="550" y="310" timestamp="208" />
+      <point x="543" y="313" timestamp="216" />
+      <point x="536" y="320" timestamp="224" />
+      <point x="533" y="323" timestamp="232" />
+      <point x="526" y="326" timestamp="240" />
+      <point x="523" y="330" timestamp="248" />
+      <point x="513" y="333" timestamp="256" />
+      <point x="510" y="340" timestamp="264" />
+      <point x="503" y="343" timestamp="273" />
+      <point x="493" y="346" timestamp="280" />
+      <point x="483" y="350" timestamp="288" />
+      <point x="473" y="353" timestamp="296" />
+      <point x="463" y="356" timestamp="304" />
+      <point x="450" y="360" timestamp="312" />
+      <point x="436" y="366" timestamp="320" />
+      <point x="413" y="370" timestamp="328" />
+      <point x="396" y="376" timestamp="336" />
+      <point x="376" y="380" timestamp="344" />
+      <point x="353" y="386" timestamp="352" />
+      <point x="333" y="386" timestamp="360" />
+      <point x="316" y="393" timestamp="368" />
+      <point x="303" y="396" timestamp="376" />
+      <point x="293" y="403" timestamp="384" />
+      <point x="286" y="403" timestamp="392" />
+      <point x="283" y="406" timestamp="400" />
+      <point x="276" y="406" timestamp="408" />
+      <point x="276" y="410" timestamp="416" />
+      <point x="270" y="410" timestamp="424" />
+      <point x="266" y="410" timestamp="432" />
+      <point x="263" y="410" timestamp="440" />
+      <point x="256" y="410" timestamp="448" />
+      <point x="250" y="413" timestamp="456" />
+      <point x="243" y="413" timestamp="464" />
+      <point x="236" y="413" timestamp="472" />
+      <point x="226" y="416" timestamp="480" />
+      <point x="223" y="416" timestamp="488" />
+      <point x="216" y="416" timestamp="496" />
+      <point x="213" y="416" timestamp="504" />
+      <point x="210" y="416" timestamp="512" />
+    </stroke>
+    <stroke>
+      <point x="230" y="493" timestamp="1016" />
+      <point x="233" y="496" timestamp="1040" />
+      <point x="233" y="500" timestamp="1048" />
+      <point x="236" y="503" timestamp="1056" />
+      <point x="240" y="510" timestamp="1065" />
+      <point x="243" y="516" timestamp="1072" />
+      <point x="246" y="523" timestamp="1081" />
+      <point x="250" y="530" timestamp="1088" />
+      <point x="253" y="536" timestamp="1097" />
+      <point x="256" y="546" timestamp="1104" />
+      <point x="260" y="553" timestamp="1112" />
+      <point x="263" y="560" timestamp="1120" />
+      <point x="266" y="563" timestamp="1128" />
+      <point x="266" y="566" timestamp="1144" />
+      <point x="266" y="570" timestamp="1152" />
+      <point x="270" y="570" timestamp="1208" />
+    </stroke>
+    <stroke>
+      <point x="423" y="453" timestamp="1632" />
+      <point x="426" y="453" timestamp="1648" />
+      <point x="430" y="460" timestamp="1664" />
+      <point x="433" y="466" timestamp="1673" />
+      <point x="436" y="470" timestamp="1680" />
+      <point x="440" y="480" timestamp="1689" />
+      <point x="443" y="486" timestamp="1696" />
+      <point x="443" y="500" timestamp="1705" />
+      <point x="443" y="506" timestamp="1712" />
+      <point x="443" y="516" timestamp="1720" />
+      <point x="446" y="523" timestamp="1728" />
+      <point x="446" y="530" timestamp="1736" />
+      <point x="446" y="533" timestamp="1744" />
+      <point x="446" y="536" timestamp="1752" />
+      <point x="446" y="540" timestamp="1760" />
+      <point x="450" y="543" timestamp="1768" />
+      <point x="450" y="546" timestamp="1776" />
+    </stroke>
+    <stroke>
+      <point x="623" y="443" timestamp="2216" />
+      <point x="623" y="450" timestamp="2248" />
+      <point x="620" y="456" timestamp="2256" />
+      <point x="620" y="463" timestamp="2264" />
+      <point x="616" y="466" timestamp="2273" />
+      <point x="613" y="476" timestamp="2280" />
+      <point x="610" y="486" timestamp="2289" />
+      <point x="603" y="496" timestamp="2296" />
+      <point x="600" y="506" timestamp="2304" />
+      <point x="596" y="513" timestamp="2312" />
+      <point x="586" y="523" timestamp="2320" />
+      <point x="583" y="533" timestamp="2328" />
+      <point x="576" y="540" timestamp="2336" />
+      <point x="573" y="543" timestamp="2344" />
+      <point x="570" y="550" timestamp="2352" />
+    </stroke>
+  </strokes>
+</character>
