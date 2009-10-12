@@ -407,6 +407,8 @@ class Canvas(gtk.Widget):
             last_x, last_y = self._window_coordinates(stroke[-1].x,
                                                       stroke[-1].y)
             dx, dy = last_x - x, last_y - y
+            if dx == dy == 0:
+                dx, dy = x, y
 
         dl = math.sqrt(dx*dx + dy*dy)
 
