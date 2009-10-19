@@ -6,10 +6,18 @@ A set of command-line tools for Tegaki.
 Tools
 ------
 
-* tegaki-build: build/train handwriting recognition models.
-* tegaki-convert: convert and/or concat character collection files.
-* tegaki-eval: evaluate handwriting recognition models against test data.
-* tegaki-render: convert character file to an image or video.
+* tegaki-boostrap: bootstrap a character collection using similar collections
+                   and knowledge about the characters shape data.
+
+* tegaki-build:    build/train handwriting recognition models.
+
+* tegaki-convert:  convert and/or concat character collection files.
+
+* tegaki-eval:     evaluate handwriting recognition models against test data.
+
+* tegaki-render:   convert character file to an image or video.
+
+* tegaki-stats:    show various statistics about a character collection.
 
 Requirements
 ------------
