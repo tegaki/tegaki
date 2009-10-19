@@ -846,7 +846,14 @@ class Character(_XmlBase):
 class CharacterCollection(_XmlBase):
     """
     A collection of characters is composed of sets.
-    Each set can have zero, one, or more characters.
+    Each set can be composed of zero, one, or more characters.
+
+    /!\ Sets do not necessarily contain only characters of the same class
+    / utf8 value. Sets may also be used to group characters in other fashions
+    (e.g. by number of strokes, by handwriting quality, etc...).
+    Therefore the set name is not guaranteed to contain the utf8 value of
+    the characters of that set. The utf8 value must be retrieved from each
+    character individually.
     """
 
     DTD = \
@@ -1011,6 +1018,19 @@ class CharacterCollection(_XmlBase):
                     i += 1
         self.remove_empty_sets()
 
+    def include_characters_from_files(self, text_files):
+        """
+        Only keep characters found in text_files.
+        """
+        buf = ""
+        for inc_path in text_files:
+            f = open(inc_path)
+            buf += f.read()
+            f.close()
+
+        if len(buf) > 0:
+            self.include_characters_from_text(buf)
+
     def exclude_characters_from_text(self, text):
         """
         Exclude characters found in text.
@@ -1024,6 +1044,19 @@ class CharacterCollection(_XmlBase):
                 else:
                     i += 1
         self.remove_empty_sets()
+
+    def exclude_characters_from_files(self, text_files):
+        """
+        Exclude characters found in text_files.
+        """
+        buf = ""
+        for exc_path in text_files:
+            f = open(exc_path)
+            buf += f.read()
+            f.close()
+
+        if len(buf) > 0:
+            self.exclude_characters_from_text(buf)
 
     def remove_samples(self, keep_at_most):
         for set_name in self.get_set_list():
