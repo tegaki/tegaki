@@ -58,8 +58,10 @@ import locale
 from optparse import OptionParser
 
 from tegaki.character import CharacterCollection, Writing, Character
+
 from tegakitools.tomoe import tomoe_dict_to_character_collection
 from tegakitools.kuchibue import kuchibue_to_character_collection
+from tegakitools.charcol import *
 
 try:
     from cjklib.characterlookup import CharacterLookup
@@ -81,7 +83,7 @@ class TegakiBootstrap(object):
         #u'⿴': [(1, 1, 0, 0), (0.5, 0.5, 0.25, 0.25)],
         u'⿵': [(1, 1, 0, 0), (0.5, 0.75, 0.25, 0.25)],
         u'⿶': [(1, 1, 0, 0), (0.5, 0.75, 0.25, 0)],
-        u'⿷': [(1, 1, 0, 0), (0.75, 0.5, 0.25, 0.25)],
+        #u'⿷': [(1, 1, 0, 0), (0.75, 0.5, 0.25, 0.25)],
         u'⿸': [(1, 1, 0, 0), (0.75, 0.75, 0.25, 0.25)],
         u'⿹': [(1, 1, 0, 0), (0.75, 0.75, 0, 0.25)],
         u'⿺': [(1, 1, 0, 0), (0.75, 0.75, 0.25, 0)],
@@ -124,49 +126,14 @@ class TegakiBootstrap(object):
 
     def _get_charcol(self):
         if not hasattr(self, '_charcol'):
-            self._charcol = CharacterCollection()
+            self._charcol = get_aggregated_charcol(
+                                  ((TYPE_CHARCOL, self._charcols),
+                                   (TYPE_DIRECTORY, self._directories),
+                                   (TYPE_TOMOE, self._tomoe),
+                                   (TYPE_KUCHIBUE, self._kuchibue)))
 
-            # add the directories provided
-            for directory in self._directories:
-                self._charcol += CharacterCollection.from_character_directory(
-                    directory)
-
-            # add the character collections provided
-            for charcol_path in self._charcols:
-                _charcol = CharacterCollection()
-                gzip = False; bz2 = False
-                if charcol_path.endswith(".gz"): gzip = True
-                if charcol_path.endswith(".bz2"): bz2 = True
-                _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
-                self._charcol += _charcol
-
-            # add tomoe dictionaries provided
-            for tomoe in self._tomoe:
-                self._charcol += tomoe_dict_to_character_collection(tomoe)
-
-            # add the kuchibue databases provided
-            for kuchibue in self._kuchibue:
-                self._charcol += kuchibue_to_character_collection(kuchibue)
-
-            # characters to include
-            buf = ""
-            for inc_path in self._include:
-                f = open(inc_path)
-                buf += f.read()
-                f.close()
-
-            if len(buf) > 0:
-                self._charcol.include_characters_from_text(buf)
-
-            # characters to exclude
-            buf = ""
-            for exc_path in self._exclude:
-                f = open(exc_path)
-                buf += f.read()
-                f.close()
-
-            if len(buf) > 0:
-                self._charcol.exclude_characters_from_text(buf)
+            charcol.include_characters_from_files(self._include)
+            charcol.exclude_characters_from_files(self._exclude)
 
             # max samples
             if self._max_samples:
@@ -370,7 +337,7 @@ class TegakiBootstrap(object):
             if CharacterLookup.isBinaryIDSOperator(character):
                 # check for IDS operators we can't make any order
                 # assumption about
-                if character in [u'⿴', u'⿻']:
+                if character in [u'⿴', u'⿻', u'⿷']:
                     return [], index, []
                 else:
                     # Get stroke order for both components
@@ -430,7 +397,7 @@ class TegakiBootstrap(object):
     @classmethod
     def merge_writing_objects(cls, idsChar, writing_objects):
         if idsChar not in cls.COMPONENT_TRANSFORMATION:
-            raise ValueError("Not supported") # [u'⿴', u'⿻']
+            raise ValueError("Not supported") # [u'⿴', u'⿻', u'⿷']
 
         assert (CharacterLookup.isBinaryIDSOperator(idsChar) \
             and len(writing_objects) == 2) \
@@ -487,6 +454,8 @@ parser.add_option("-k", "--kuchibue",
                   action="append", type="string", dest="kuchibue",
                   default=[],
                   help="Kuchibue unipen database")
+
+
 parser.add_option("-i", "--include",
                   action="append", type="string", dest="include",
                   default=[],
@@ -498,6 +467,8 @@ parser.add_option("-e", "--exclude",
 parser.add_option("-m", "--max-samples",
                   type="int", dest="max_samples",
                   help="Maximum number of samples per character")
+
+
 parser.add_option("-l", "--locale",
                   type="string", dest="locale",
                   default='T',
@@ -506,6 +477,8 @@ parser.add_option("--domain",
                   type="string", dest="character_domain",
                   default='Unicode',
                   help="Character domain of target characters")
+
+
 parser.add_option("-q", "--quiet", dest="quiet",
                   action="store_true",
                   help="Don't print any statistics")
