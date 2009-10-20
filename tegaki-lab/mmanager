@@ -159,9 +159,11 @@ Options:
 """)
 
 parser = OptionParser()
-parser.add_option("-v", "--verbose",
-                  action="store_true", dest="verbose", default=False,
-                  help="print more status messages to stdout")
+
+parser.add_option("-v", "--verbosity-level",
+                  type="int", dest="verbose", default=0,
+                  help="verbosity level (0: quiet)")
+
 parser.add_option("-s", "--stdin",
                   action="store_true", dest="stdin", default=False,
                   help="read character xml from stdin")

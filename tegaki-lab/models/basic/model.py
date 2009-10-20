@@ -106,11 +106,18 @@ class Model(object):
         self.train_char_dict = None
 
     def load_char_dicts(self):
+        self.load_eval_char_dict()
+        self.load_train_char_dict()
+
+    def load_eval_char_dict(self):
         if not self.eval_char_dict:
             self.eval_char_dict = self.get_eval_char_dict()
+        self.print_verbose("Eval data loading done")
+
+    def load_train_char_dict(self):
         if not self.train_char_dict:
             self.train_char_dict = self.get_train_char_dict()
-        self.print_verbose("Data loading done")
+        self.print_verbose("Training data loading done")
 
     def get_char_dict(self, directory, corpora):
         """
@@ -149,6 +156,9 @@ class Model(object):
                 dic[charcode].append(char)
 
         return dic
+
+    def get_chardict_n_characters(self, chardict):
+        return sum([len(cl) for cc,cl in chardict.items()])
                     
     def get_eval_char_dict(self):
         return self.get_char_dict(self.EVAL_ROOT, self.EVAL_CORPORA)
@@ -170,8 +180,12 @@ class Model(object):
     def get_utf8_from_char_code(self, char_code):
         return unichr(int(char_code)).encode("utf8")
 
-    def print_verbose(self, *args):
-        if self.verbose:
+    def print_verbose(self, *args, **kw):
+        if "verbose" in kw: verbose = kw["verbose"]
+        elif "v" in kw: verbose = kw["v"]
+        else: verbose = 1
+
+        if self.verbose >= verbose:
             self.stderr_print(*args)
 
     ########################################
