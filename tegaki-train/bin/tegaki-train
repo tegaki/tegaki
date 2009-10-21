@@ -592,12 +592,36 @@ class QuestionDialog(gtk.MessageDialog):
                                    gtk.MESSAGE_QUESTION, 
                                    gtk.BUTTONS_YES_NO, msg)
 
+class TegakiTrainError(Exception):
+    pass
+
 class TegakiTrain(object):
 
-    def __init__(self):
+    def __init__(self, options, args):
         self._charcol = CharacterCollection()
         self._create_window()
         self._update_title()
+
+        if args:
+            if len(args) != 1:
+                raise TegakiTrainError("More than one input specified")
+            charcol = CharacterCollectionFileChooserDialog\
+                .open_character_collection(args[0])
+
+            current_folder, filename = os.path.split(args[0])
+            self._load_file(charcol, current_folder, filename)
+
+    def _load_file(self, charcol, current_folder, filename):
+        self._curr_folder = current_folder
+        self._curr_file = filename
+        self._update_title()
+        if charcol:
+            self._add_recent(self._curr_file)
+            self._charcol = charcol
+            self._iconview.get_model().clear()
+            self._refresh_treeview()
+            self._disable_save()
+            self._display_charcol_stats()
 
     def _on_new(self, widget):
         if not self._save_is_enabled() or self._confirm_continue():
@@ -625,17 +649,9 @@ class TegakiTrain(object):
 
             response = dialog.run()
             if response == gtk.RESPONSE_OK:
-                self._curr_folder = dialog.get_current_folder()
-                self._curr_file = dialog.get_filename()
-                self._update_title()
                 charcol = dialog.get_character_collection()
-                if charcol:
-                    self._add_recent(self._curr_file)
-                    self._charcol = charcol
-                    self._iconview.get_model().clear()
-                    self._refresh_treeview()
-                    self._disable_save()
-                    self._display_charcol_stats()
+                self._load_file(charcol, dialog.get_current_folder(),
+                                dialog.get_filename())
 
             dialog.destroy()
 
@@ -1137,4 +1153,9 @@ parser = OptionParser(version="%prog " + VERSION)
 
 (options, args) = parser.parse_args()
 
-TegakiTrain().run()
+try:
+    TegakiTrain(options, args).run()
+except TegakiTrainError, e:
+    sys.stderr.write(str(e) + "\n\n")
+    parser.print_help()
+    sys.exit(1)
