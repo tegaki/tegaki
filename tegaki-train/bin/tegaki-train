@@ -609,7 +609,7 @@ class TegakiTrain(object):
                 .open_character_collection(args[0])
 
             current_folder, filename = os.path.split(args[0])
-            self._load_file(charcol, current_folder, filename)
+            self._load_file(charcol, current_folder, args[0])
 
     def _load_file(self, charcol, current_folder, filename):
         self._curr_folder = current_folder
