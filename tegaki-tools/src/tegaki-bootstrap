@@ -132,8 +132,8 @@ class TegakiBootstrap(object):
                                    (TYPE_TOMOE, self._tomoe),
                                    (TYPE_KUCHIBUE, self._kuchibue)))
 
-            charcol.include_characters_from_files(self._include)
-            charcol.exclude_characters_from_files(self._exclude)
+            self._charcol.include_characters_from_files(self._include)
+            self._charcol.exclude_characters_from_files(self._exclude)
 
             # max samples
             if self._max_samples:
