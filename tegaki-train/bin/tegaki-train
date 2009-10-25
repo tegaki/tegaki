@@ -19,6 +19,7 @@
 
 # Contributors to this file:
 # - Mathieu Blondel
+# - Christoph Burgmer
 
 import os
 from optparse import OptionParser
@@ -1149,7 +1150,8 @@ class TegakiTrain(object):
     def run(self):
         gtk.main()
 
-parser = OptionParser(version="%prog " + VERSION)
+usage = "Usage: %prog [options] [charcol-file]"
+parser = OptionParser(usage=usage, version="%prog " + VERSION)
 
 (options, args) = parser.parse_args()
 
