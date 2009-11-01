@@ -1,2 +1,2 @@
-include AUTHORS COPYING COPYRIGHT README TODO MANIFEST.in
+include AUTHORS COPYING COPYRIGHT README TODO MANIFEST.in ChangeLog tegaki-gifenc/* tegaki-gifenc/*/*
 exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST
