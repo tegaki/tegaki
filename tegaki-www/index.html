@@ -11,10 +11,7 @@ ul li {
 
 <h1>Tegaki Project</h1>
 
-<p>Tegaki is an ongoing project which aims to develop a free and open-source
-modern implementation of handwriting recognition software, specifically
-designed for Chinese (simplified and traditional) and Japanese, and that is
-suitable for both the desktop and mobile devices.</p>
+<p>Tegaki is a free and open-source handwriting recognition project for Chinese and Japanese characters.</p>
 
 <p><video src="tegaki.ogv" poster="tegaki.png" controls>
 <img src="tegaki.png" alt="Tegaki screenshot" /><p>
@@ -23,70 +20,135 @@ href="http://www.youtube.com/watch?v=FkheUhvRjsc">youtube</a>.
 </video>
 </p>
 
-<h2>Packages</h2>
-
-<p><em>Libraries</em></p>
+<p>Tegaki:</p>
 <ul>
-<li>tegaki-python: base Python library (<strong>0.2</strong>).</li>
-<li>tegaki-pygtk: base user interface library (<strong>0.2</strong>).</li>
+<li>is free and open-source</li>
+<li>is multi-plaform</li>
+<li>focuses on Chinese (simplified and traditional) and Japanese characters</li>
+<li>supports 2 different recognition engines</li>
+<li>aspires to work on both desktop-PCs and mobile devices</li>
 </ul>
-
-<p><em>Applications</em></p>
-<ul>
-<li>scim-tegaki: Tegaki integration in <a
-href="http://www.scim-im.org/">SCIM</a> (<strong>0.1</strong>).</li>
-<li>tegaki-recognize: Tegaki integration in the desktop
-(<strong>0.2</strong>).</li>
-<li>tegaki-train: Train Tegaki with your own handwriting
-(<strong>0.2</strong>).</li>
-</ul>
-
-<p><em>Models</em></p>
-<ul>
-<li>tegaki-zinnia-japanese: Japanese model for the zinnia recognizer
-(<strong>0.2</strong>).</li>
-<li>tegaki-zinnia-simplified-chinese: Simplified Chinese model for the
-zinnia recognizer (<strong>0.2</strong>).</li>
-</ul>
-
-<p><em>Developer tools</em></p>
-<ul>
-<li>tegaki-tools: tools to convert data, train models and evaluate models
-(<strong>0.2</strong>).</li>
-</ul>
-
-<p>( ) indicates the latest version.</p>
-
-<h2>Engines</h2>
-
-<p>Tegaki is designed to be able to use several recognition engines. So
-far however, we only support <a href="http://zinnia.sourceforge.net">Zinnia</a>.
-</p>
-
-<p>One of the ongoing goals of the project is to implement fast and reliable
-recognition engines using state-of-the-art techniques.</p>
-
-<h2>Models</h2>
-
-In addition to Zinnia, you need to install at least one of the following
-models:
-
-<ul>
-<li>tegaki-zinnia-simplified-chinese</li>
-<li>tegaki-zinnia-japanese</li>
-</ul>
-
-<p>Models are based on character templates from the <a
-href="http://tomoe.sourceforge.jp">Tomoe</a> project.</p>
 
 <h2>Downloads</h2>
 
-<p><strong><a
-href="https://sourceforge.net/project/showfiles.php?group_id=253058">Download
-page</a></strong></p>
+<h3>For Windows</h3>
 
-<p>Note: Although Tegaki should work on Windows and Mac OS X, easy-to-install
-packages are not provided yet.</p>
+<p>-> <a href="http://www.tegaki.org/releases/0.3/tegaki-recognize-0.3-setup.exe">tegaki-recognize-0.3-setup.exe</a></p>
+
+<p>This package includes tegaki-recognize, zinnia and wagomu.</p>
+
+<h3>For Mac OS X</h3>
+
+<p>-> <a href="http://www.tegaki.org/releases/0.3/tegaki-recognize-0.3.dmg">tegaki-recognize-0.3.dmg</a></p>
+
+<p>This package includes tegaki-recognize, zinnia and wagomu.</p>
+
+<p>Tegaki on Mac OS X requires Intel processors. In addition, it requires that X11 is installed on your system. If that is not the case yet, you may install it from the MacOS X install disc (it is located in System/Installation/Packages/X11User.pkg) or from <a href="http://www.apple.com/downloads/macosx/apple/macosx_updates/x11formacosx.html" title="link to X11">Apple's website</a>.</p>
+
+<h3>From source</h3>
+
+<ul>
+<li><a href="http://www.tegaki.org/releases/0.3/tegaki-python-0.3.tar.gz">tegaki-python-0.3.tar</a> (Base python library)</li>
+<li><a href="http://www.tegaki.org/releases/0.3/tegaki-pygtk-0.3.tar.gz">tegaki-pygtk-0.3.tar.gz</a> (Base user interface library)</li>
+<li><a href="http://www.tegaki.org/releases/0.3/tegaki-recognize-0.3.tar.gz">tegaki-recognize-0.3.tar.gz</a> (Main program)</li>
+<li><a href="http://zinnia.sourceforge.net">zinnia</a> (Recognition engine)</li>
+<li><a href="http://www.tegaki.org/releases/0.3/tegaki-wagomu-0.3.tar.gz">tegaki-wagomu-0.3.tar.gz</a> (Recognition engine)</li>
+<li><a href="http://www.tegaki.org/releases/0.1/scim-tegaki-0.1.tar.gz">scim-tegaki-0.1.tar.gz</a> (Integration in SCIM)</li>
+<li><a href="http://www.tegaki.org/releases/0.3/tegaki-train-0.3.tar.gz">tegaki-train-0.3.tar.gz</a> (Character editor and training manager)</li>
+<li><a href="http://www.tegaki.org/releases/0.3/tegaki-tools-0.3.tar.gz">tegaki-tools-0.3.tar.gz</a> (Advanced-user and developer tools)</li>
+</ul>
+
+<h2>Models</h2>
+
+<p>Handwriting models are not included in the software, they must be downloaded separately.</p>
+
+<p>.model and .meta files can be placed in the following folder:</p>
+
+<ul>
+<li>on Windows: C:\Program Files\tegaki-recognize\models\[engine-name]\</li>
+<li>on Mac OS X: /Library/Application Support/tegaki/models/[engine-name]/</li>
+<li>on UNIX: /usr/share/tegaki/models/[engine-name]/</li>
+</ul>
+
+<p>For example, on Windows, models for zinnia can be placed in C:\Program Files\tegaki-recognize\models\zinnia\.</p>
+
+<table width="90%" border="1">
+<tr>
+<td>Engine</td>
+<td>Name</td>
+<td>Comment</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-japanese-0.3.zip">Japanese (all)</a></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-japanese-light-0.3.zip">Japanese (all, light)</a></td>
+<td>Smaller and faster but less accurate</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-japanese-kyoiku-0.3.zip">Japanese (kyoiku kanji)</a></td>
+<td>Primary school level kanji only</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-japanese-joyo-0.3.zip">Japanese (joyo kanji)</a></td>
+<td>Commonly used kanji only</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-simplified-chinese-0.3.zip">Simplified Chinese</a></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-simplified-chinese-light-0.3.zip">Simplified Chinese (light)</a></td>
+<td>Smaller and faster but less accurate</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-traditional-chinese-0.3.zip">Traditional Chinese</a></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>zinnia</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-zinnia-traditional-chinese-light-0.3.zip">Traditional Chinese (light)</a></td>
+<td>Smaller and faster but less accurate</td>
+</tr>
+<tr>
+<td>wagomu</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-wagomu-japanese-0.3.zip">Japanese (all)</a></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>wagomu</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-wagomu-japanese-kyoiku-0.3.zip">Japanese (kyoiku kanji)</a></td>
+<td>Primary school level kanji only</td>
+</tr>
+<tr>
+<td>wagomu</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-wagomu-japanese-joyo-0.3.zip">Japanese (joyo kanji)</a></td>
+<td>Commonly used kanji only</td>
+</tr>
+<tr>
+<td>wagomu</td>
+<td><a href="http://www.tegaki.org/releases/0.3/models/tegaki-wagomu-simplified-chinese-0.3.zip">Simplified Chinese</a></td>
+<td>&nbsp;</td>
+</tr> 
+</table>
+
+<h2>Documentation</h2>
+
+<p>Documentation can be found <a href="userdoc/">here</a>.</p>
+
+<h2>Discussion</h2>
+
+<p>If you are interested in our project, please join our 
+<a href="http://groups.google.com/group/tegaki-hwr">discussion group</a>.
+Both user and developer discussions are welcome.</p>
 
 <h2>Development</h2>
 
@@ -102,11 +164,15 @@ href="http://www.mblondel.org/gitweb?p=hwr.git">here</a>.</p>
 href="http://sourceforge.net/tracker/?group_id=253058&atid=1126665">bug
 tracker</a>.</p>
 
-<h2>Discussion</h2>
+<p>Areas in which we welcome contributions include:</p>
 
-<p>If you are interested in our project, please join our 
-<a href="http://groups.google.com/group/tegaki-hwr">discussion group</a>.
-Both user and developer discussions are welcome.</p>
+<ul>
+<li>Native OSX/Cocoa user interface using PyObjC</li>
+<li>Qt user interface using PyQt</li>
+<li>Android or Iphone support</li>
+<li>Better Maemo support</li>
+<li>Offline recognition</li>
+</ul>
 
 <h2>Related links</h2>
 
