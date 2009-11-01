@@ -3,15 +3,15 @@
 RM="`which rm` -vrf"
 MKDIR="`which mkdir` -p"
 
-TMP_DIR="/tmp/tegaki"
+DIST_DIR="`pwd`/dist/"
 PACKAGES="tegaki-python tegaki-pygtk scim-tegaki tegaki-recognize"
 PACKAGES="$PACKAGES tegaki-train tegaki-tools"
-PACKAGES="$PACKAGES tegaki-models/tegaki-zinnia-japanese"
-PACKAGES="$PACKAGES tegaki-models/tegaki-zinnia-simplified-chinese"
+PACKAGES="$PACKAGES tegaki-train tegaki-tools"
+PACKAGES="$PACKAGES tegaki-engines/tegaki-wagomu"
 
-echo "Creating temporary directory..."
-$RM $TMP_DIR
-$MKDIR $TMP_DIR
+echo "Creating dist directory $DIST_DIR..."
+$RM $DIST_DIR
+$MKDIR $DIST_DIR
 
 echo "Cleaning directories..."
 for package in $PACKAGES; do
@@ -24,7 +24,8 @@ for package in $PACKAGES; do
     (
     echo "$package..."
     cd $package
+    git log -- ./ > ChangeLog
     python setup.py sdist
-    cp dist/*.tar.gz $TMP_DIR/
+    cp dist/*.tar.gz $DIST_DIR/
     )
 done
