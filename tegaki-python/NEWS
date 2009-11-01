@@ -1,9 +1,0 @@
-NEWS
-
-=== tegaki-python 0.2 ===
-
-- Renamed from "tegaki" to "tegaki-python".
-- Added CharacterCollection object.
-- Added Maemo-specific directories to the model search path.
-- Fixed #2793323 "tegaki should ship with ZPL license (or replace minjson.py)".
-- Various bug fixes.
