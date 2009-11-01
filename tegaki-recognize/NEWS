@@ -1,8 +1,0 @@
-NEWS
-
-=== tegaki-recognize 0.2 ===
-
-- Added "--dont-quit" option.
-- Added "--simple" option.
-- Fixed #2693356 "killing window doesn't exit program".
-- Set windows icon.
