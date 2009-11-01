@@ -1,0 +1,5 @@
+name = Japanese
+shortname = 日
+language = ja
+downsample_threshold = 50
+window_size = 3

@@ -1,14 +1,26 @@
-all=tegaki-zinnia-japanese tegaki-zinnia-japanese-light \
+all=$(allzinnia) $(allwagomu)
+
+allzinnia=tegaki-zinnia-japanese tegaki-zinnia-japanese-light \
 tegaki-zinnia-japanese-joyo tegaki-zinnia-japanese-kyoiku \
 tegaki-zinnia-simplified-chinese tegaki-zinnia-simplified-chinese-light \
 tegaki-zinnia-traditional-chinese tegaki-zinnia-traditional-chinese-light
 
-alldist=tegaki-zinnia-japanese-dist tegaki-zinnia-japanese-light-dist \
+allwagomu=tegaki-wagomu-japanese \
+tegaki-wagomu-japanese-joyo tegaki-wagomu-japanese-kyoiku \
+tegaki-wagomu-simplified-chinese
+
+alldist=$(allzinniadist) $(allwagomudist)
+
+allzinniadist=tegaki-zinnia-japanese-dist tegaki-zinnia-japanese-light-dist \
 tegaki-zinnia-japanese-joyo-dist tegaki-zinnia-japanese-kyoiku-dist \
 tegaki-zinnia-simplified-chinese-dist \
 tegaki-zinnia-simplified-chinese-light-dist \
 tegaki-zinnia-traditional-chinese-dist \
 tegaki-zinnia-traditional-chinese-light-dist
+
+allwagomudist=tegaki-wagomu-japanese-dist \
+tegaki-wagomu-japanese-joyo-dist tegaki-wagomu-japanese-kyoiku-dist \
+tegaki-wagomu-simplified-chinese-dist
 
 all: $(all)
 
@@ -22,6 +34,11 @@ tegaki-zinnia-simplified-chinese-light: build/tegaki-zinnia-simplified-chinese-l
 tegaki-zinnia-traditional-chinese: build/tegaki-zinnia-traditional-chinese/handwriting-zh_TW.model
 tegaki-zinnia-traditional-chinese-light: build/tegaki-zinnia-traditional-chinese-light/handwriting-zh_TW.model
 
+tegaki-wagomu-japanese: build/tegaki-wagomu-japanese/handwriting-ja.model
+tegaki-wagomu-japanese-kyoiku: build/tegaki-wagomu-japanese-kyoiku/kyoiku-kanji.model
+tegaki-wagomu-japanese-joyo: build/tegaki-wagomu-japanese-joyo/joyo-kanji.model
+tegaki-wagomu-simplified-chinese: build/tegaki-wagomu-simplified-chinese/handwriting-zh_CN.model
+
 # shortcuts
 tzj: tegaki-zinnia-japanese
 tzjl: tegaki-zinnia-japanese-light
@@ -32,11 +49,21 @@ tzscl: tegaki-zinnia-simplified-chinese-light
 tztc: tegaki-zinnia-traditional-chinese
 tztcl: tegaki-zinnia-traditional-chinese-light
 
+twj: tegaki-wagomu-japanese
+twjk: tegaki-wagomu-japanese-kyoiku
+twjj: tegaki-wagomu-japanese-joyo
+twsc: tegaki-wagomu-simplified-chinese
+
 # build japanese
 build/tegaki-zinnia-japanese/handwriting-ja.model: data/train/japanese/handwriting-ja.xml
 	test -d build/tegaki-zinnia-japanese || make tegaki-zinnia-japanese-build
 	cp -u -p data/train/japanese/handwriting-ja.xml build/tegaki-zinnia-japanese/
 	make -C build/tegaki-zinnia-japanese
+
+build/tegaki-wagomu-japanese/handwriting-ja.model: data/train/japanese/handwriting-ja.xml
+	test -d build/tegaki-wagomu-japanese || make tegaki-wagomu-japanese-build
+	cp -u -p data/train/japanese/handwriting-ja.xml build/tegaki-wagomu-japanese/
+	make -C build/tegaki-wagomu-japanese
 
 build/tegaki-zinnia-japanese-kyoiku/kyoiku-kanji.model: data/train/japanese/handwriting-ja.xml
 	test -d build/tegaki-zinnia-japanese-kyoiku || make tegaki-zinnia-japanese-kyoiku-build
@@ -44,17 +71,34 @@ build/tegaki-zinnia-japanese-kyoiku/kyoiku-kanji.model: data/train/japanese/hand
 	touch -r data/train/japanese/handwriting-ja.xml build/tegaki-zinnia-japanese-kyoiku/kyoiku-kanji.xml
 	make -C build/tegaki-zinnia-japanese-kyoiku
 
+build/tegaki-wagomu-japanese-kyoiku/kyoiku-kanji.model: data/train/japanese/handwriting-ja.xml
+	test -d build/tegaki-wagomu-japanese-kyoiku || make tegaki-wagomu-japanese-kyoiku-build
+	tegaki-convert -t data/train/japanese/handwriting-ja.xml --include data/script/kyoiku-kanji.txt build/tegaki-wagomu-japanese-kyoiku/kyoiku-kanji.xml
+	touch -r data/train/japanese/handwriting-ja.xml build/tegaki-wagomu-japanese-kyoiku/kyoiku-kanji.xml
+	make -C build/tegaki-wagomu-japanese-kyoiku
+
 build/tegaki-zinnia-japanese-joyo/joyo-kanji.model: data/train/japanese/handwriting-ja.xml
 	test -d build/tegaki-zinnia-japanese-joyo || make tegaki-zinnia-japanese-joyo-build
 	tegaki-convert -t data/train/japanese/handwriting-ja.xml --include data/script/joyo-kanji.txt build/tegaki-zinnia-japanese-joyo/joyo-kanji.xml
 	touch -r data/train/japanese/handwriting-ja.xml build/tegaki-zinnia-japanese-joyo/joyo-kanji.xml
 	make -C build/tegaki-zinnia-japanese-joyo
 
+build/tegaki-wagomu-japanese-joyo/joyo-kanji.model: data/train/japanese/handwriting-ja.xml
+	test -d build/tegaki-wagomu-japanese-joyo || make tegaki-wagomu-japanese-joyo-build
+	tegaki-convert -t data/train/japanese/handwriting-ja.xml --include data/script/joyo-kanji.txt build/tegaki-wagomu-japanese-joyo/joyo-kanji.xml
+	touch -r data/train/japanese/handwriting-ja.xml build/tegaki-wagomu-japanese-joyo/joyo-kanji.xml
+	make -C build/tegaki-wagomu-japanese-joyo
+
 # build simplified-chinese
 build/tegaki-zinnia-simplified-chinese/handwriting-zh_CN.model: data/train/simplified-chinese/handwriting-zh_CN.xml
 	test -d build/tegaki-zinnia-simplified-chinese || make tegaki-zinnia-simplified-chinese-build
 	cp -u -p data/train/simplified-chinese/handwriting-zh_CN.xml build/tegaki-zinnia-simplified-chinese
 	make -C build/tegaki-zinnia-simplified-chinese
+
+build/tegaki-wagomu-simplified-chinese/handwriting-zh_CN.model: data/train/simplified-chinese/handwriting-zh_CN.xml
+	test -d build/tegaki-wagomu-simplified-chinese || make tegaki-wagomu-simplified-chinese-build
+	cp -u -p data/train/simplified-chinese/handwriting-zh_CN.xml build/tegaki-wagomu-simplified-chinese
+	make -C build/tegaki-wagomu-simplified-chinese
 
 # build traditional chinese
 build/tegaki-zinnia-traditional-chinese/handwriting-zh_TW.model: data/train/traditional-chinese/handwriting-zh_TW.xml data/train/traditional-chinese/out-domain data/train/simplified-chinese/handwriting-zh_CN.xml data/train/japanese/handwriting-ja.xml
@@ -92,6 +136,13 @@ tegaki-zinnia-japanese-build tegaki-zinnia-japanese-joyo-build tegaki-zinnia-jap
 	mkdir -p build/$$model; \
 	cp $$model/* build/$$model/; \
 	sed "s?\[recognizer-name\]?zinnia?" < README.in > build/$$model/README.txt; \
+	cp LGPL build/$$model/COPYING
+
+tegaki-wagomu-japanese-build tegaki-wagomu-japanese-joyo-build tegaki-wagomu-japanese-kyoiku-build tegaki-wagomu-simplified-chinese-build:
+	model=$(subst -build,,$@); \
+	mkdir -p build/$$model; \
+	cp $$model/* build/$$model/; \
+	sed "s?\[recognizer-name\]?wagomu?" < README.in > build/$$model/README.txt; \
 	cp LGPL build/$$model/COPYING
 
 # prepare all zip files

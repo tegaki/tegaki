@@ -1,0 +1,5 @@
+name = Simplified Chinese
+shortname = 中
+language = zh_CN
+downsample_threshold = 50
+window_size = 3
