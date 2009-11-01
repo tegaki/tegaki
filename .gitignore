@@ -8,3 +8,7 @@
 **/**/**/*.class
 **/MANIFEST
 **/**/*_wrap.cpp
+**/ChangeLog
+**/**/ChangeLog
+dist
+build
