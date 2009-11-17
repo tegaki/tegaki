@@ -19,6 +19,7 @@
 /* 
 * Contributors to this file:
 *  - Mathieu Blondel
+*  - Shawn M Moore
 */
 
 /* Internal canvas size */
@@ -126,6 +127,21 @@ WebCanvas.prototype._initListeners = function() {
         this.canvas.addEventListener("mouseout",
                                      callback(this, this._onButtonReleased),
                                      false);                                     
+        // iPhone/iTouch events
+        this.canvas.addEventListener("touchstart",
+                                     callback(this, this._onButtonPressed),
+                                              false);
+        this.canvas.addEventListener("touchend",
+                                     callback(this, this._onButtonReleased),
+                                     false);
+        this.canvas.addEventListener("touchcancel",
+                                     callback(this, this._onButtonReleased),
+                                     false);
+        this.canvas.addEventListener("touchmove",
+                                     callback(this, this._onMove), false);
+
+        // Disable page scrolling via dragging inside the canvas
+        this.canvas.addEventListener("touchmove", function(e){e.preventDefault();}, false);
     }
     else
         alert("Your browser does not support interaction.");
@@ -205,8 +221,12 @@ WebCanvas.prototype._onMove = function(event) {
 
 WebCanvas.prototype._getRelativePosition = function(event) {
     var t = this.canvas;
-    var x = event.clientX + (window.pageXOffset || 0);
-    var y = event.clientY + (window.pageYOffset || 0);
+
+    // targetTouches is iPhone/iTouch-specific; it's a list of finger drags
+    var e = event.targetTouches ? event.targetTouches[0] : event;
+
+    var x = e.clientX + (window.pageXOffset || 0);
+    var y = e.clientY + (window.pageYOffset || 0);
 
     do
         x -= t.offsetLeft + parseInt(t.style.borderLeftWidth || 0),
