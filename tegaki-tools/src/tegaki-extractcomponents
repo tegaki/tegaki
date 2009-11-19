@@ -1,0 +1,309 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Copyright (C) 2009 The Tegaki project contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Contributors to this file:
+# - Christoph Burgmer, cburgmer ÂT ira DÔT uka DÔT de (main author)
+# - Mathieu Blondel
+
+"""
+Extract component handwriting data and build a character collection for
+component characters. Reverse process of that of tegaki-bootstrap.
+
+TODO:
+    - If a component has no stroke count data, count backwards
+"""
+
+import sys
+from optparse import OptionParser
+
+from tegaki.character import CharacterCollection, Character
+from tegakitools.tomoe import tomoe_dict_to_character_collection
+from tegakitools.kuchibue import kuchibue_to_character_collection
+
+try:
+    from cjklib.characterlookup import CharacterLookup
+    from cjklib.exception import NoInformationError
+except ImportError:
+    print "Please install cjklib (http://code.google.com/p/cjklib)"
+    sys.exit(1)
+
+VERSION = '0.3'
+
+class TegakiExtractComponents(object):
+
+    def __init__(self, options, args):
+        self._directories = options.directories
+        self._charcols = options.charcols
+        self._tomoe = options.tomoe
+        self._kuchibue = options.kuchibue
+        self._include = options.include
+        self._exclude = options.exclude
+        self._max_samples = options.max_samples
+        self._locale = options.locale
+        self._quiet = options.quiet
+
+        try:
+            self._output_path = args[0]
+        except:
+            self._output_path = None
+
+        self._cjk = CharacterLookup(self._locale)
+
+    def _get_charcol(self):
+        if not hasattr(self, '_charcol'):
+            self._charcol = CharacterCollection()
+
+            # add the directories provided
+            for directory in self._directories:
+                self._charcol += CharacterCollection.from_character_directory(
+                    directory)
+
+            # add the character collections provided
+            for charcol_path in self._charcols:
+                _charcol = CharacterCollection()
+                gzip = False; bz2 = False
+                if charcol_path.endswith(".gz"): gzip = True
+                if charcol_path.endswith(".bz2"): bz2 = True
+                _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
+                self._charcol += _charcol
+
+            # add tomoe dictionaries provided
+            for tomoe in self._tomoe:
+                self._charcol += tomoe_dict_to_character_collection(tomoe)
+
+            # add the kuchibue databases provided
+            for kuchibue in self._kuchibue:
+                self._charcol += kuchibue_to_character_collection(kuchibue)
+
+            # characters to include
+            buf = ""
+            for inc_path in self._include:
+                f = open(inc_path)
+                buf += f.read()
+                f.close()
+
+            if len(buf) > 0:
+                self._charcol.include_characters_from_text(buf)
+
+            # characters to exclude
+            buf = ""
+            for exc_path in self._exclude:
+                f = open(exc_path)
+                buf += f.read()
+                f.close()
+
+            if len(buf) > 0:
+                self._charcol.exclude_characters_from_text(buf)
+
+            # max samples
+            if self._max_samples:
+                self._charcol.remove_samples(keep_at_most=self._max_samples)
+
+        return self._charcol
+
+    def run(self):
+        charcol = self._get_charcol()
+
+        # do the bootstrapping
+        to_charcol = self.extractComponents(charcol)
+
+        # max samples
+        if self._max_samples:
+            to_charcol.remove_samples(keep_at_most=self._max_samples)
+
+        # output
+        if not self._output_path:
+            # outputs to stdout if no output path specified
+            print to_charcol.to_xml()
+        else:
+            gzip = False; bz2 = False
+            if self._output_path.endswith(".gz"): gzip = True
+            if self._output_path.endswith(".bz2"): bz2 = True
+            to_charcol.write(self._output_path, gzip=gzip, bz2=bz2)
+
+    def extractComponents(self, charcol):
+        to_charcol = CharacterCollection()
+
+        for char in charcol.get_all_characters():
+            for component in self.getComponentWritings(char):
+                to_charcol.append_character(component.get_utf8(), component)
+
+        return to_charcol
+
+    def getComponentWritings(self, char):
+        """
+        Gets a list of Character objects with extracted component handwriting
+        data for the given char.
+        """
+        c = char.get_unicode()
+        writing = char.get_writing()
+
+        try:
+            stroke_count = self._cjk.getStrokeCount(c)
+        except NoInformationError:
+            return []
+
+        if stroke_count != writing.get_n_strokes():
+            if not self._quiet:
+                print >> sys.stderr, ("Stroke count doesn't match for %s" % c
+                    + " (cjklib %d, handwriting writing %d)"
+                    % (self._cjk.getStrokeCount(c), writing.get_n_strokes()))
+            return []
+        componentEntries = self._getComponentsByStrokeOrder(c)
+        return self._getWritings(componentEntries, writing)
+
+    def _getWritings(self, componentEntries, sourceWriting, seenStrokes=0):
+        """
+        Returns a list of Character objects with extracted component handwriting
+        data. Input is the component structure with components ordered by their
+        occurence in the stroke order sequence as returned by
+        _getComponentsByStrokeOrder().
+        """
+        componentWritingList = []
+
+        for decompositionEntry in componentEntries:
+            _seenStrokes = seenStrokes
+            for component, glyph, components in decompositionEntry:
+                try:
+                    strokeCount = self._cjk.getStrokeCount(component, glyph)
+                except NoInformationError:
+                    # we can't tell how much characters to remove in front
+                    # TODO calculate strokes from counting backwards
+                    break
+
+                writing = sourceWriting.copy()
+                # remove preceding strokes
+                for i in range(_seenStrokes): writing.remove_stroke(0)
+                # remove following
+                for i in range(strokeCount, writing.get_n_strokes()):
+                    writing.remove_stroke(strokeCount)
+                writing.normalize()
+
+                newChar = Character()
+                newChar.set_unicode(component)
+                newChar.set_writing(writing)
+
+                componentWritingList.append(newChar)
+                componentWritingList.extend(
+                    self._getWritings(components, sourceWriting, _seenStrokes))
+
+                _seenStrokes += strokeCount
+
+        return componentWritingList
+
+    def _getComponentsByStrokeOrder(self, char, glyph=None):
+        """
+        Returns a list of component structures, one for each decomposition.
+        Components are ordered by their occurence in the correct stroke order
+        sequence.
+        """
+        componentOrder = []
+        for decomposition in self._cjk.getDecompositionEntries(char):
+            c, _ = self._recurseDecomposition(decomposition)
+            componentOrder.append(c)
+        return componentOrder
+
+    def _recurseDecomposition(self, decomposition, index=0):
+        """
+        Retuns a component structure for a given decomposition, ordered by their
+        occurence in the correct stroke order sequence.
+        """
+        if index >= len(decomposition):
+            raise ValueError()
+        if type(decomposition[index]) == type(()):
+            # consume one component
+            component, glyph = decomposition[index]
+            components = self._getComponentsByStrokeOrder(component, glyph)
+            return [(component, glyph, components)], index + 1
+        if not CharacterLookup.isIDSOperator(decomposition[index]):
+            # simple chars should be IDS operators
+            raise ValueError()
+        if CharacterLookup.isBinaryIDSOperator(decomposition[index]):
+            components = []
+            origIndex = index
+            index = index + 1
+            c, index = self._recurseDecomposition(decomposition, index)
+            components.extend(c)
+            c, index = self._recurseDecomposition(decomposition, index)
+            components.extend(c)
+
+            if decomposition[origIndex] in [u'⿴', u'⿻', u'⿷']:
+                return [(u'？', 0, []), (u'？', 0, [])], index
+            if decomposition[origIndex] in [u'⿺', u'⿶']:
+                components.reverse()
+            return components, index
+        elif CharacterLookup.isTrinaryIDSOperator(decomposition[index]):
+            components = []
+            index = index + 1
+            c, index = self._recurseDecomposition(decomposition, index)
+            components.extend(c)
+            c, index = self._recurseDecomposition(decomposition, index)
+            components.extend(c)
+            c, index = self._recurseDecomposition(decomposition, index)
+            components.extend(c)
+            return components, index
+        else:
+            raise ValueError()
+
+
+parser = OptionParser(usage="usage: %prog [options] [output-path]",
+                      version="%prog " + VERSION)
+
+parser.add_option("-d", "--directory",
+                  action="append", type="string", dest="directories",
+                  default=[],
+                  help="Directory containing individual XML character files")
+parser.add_option("-c", "--charcol",
+                  action="append", type="string", dest="charcols",
+                  default=[],
+                  help="character collection XML files")
+parser.add_option("-t", "--tomoe-dict",
+                  action="append", type="string", dest="tomoe",
+                  default=[],
+                  help="Tomoe XML dictionary files")
+parser.add_option("-k", "--kuchibue",
+                  action="append", type="string", dest="kuchibue",
+                  default=[],
+                  help="Kuchibue unipen database")
+parser.add_option("-i", "--include",
+                  action="append", type="string", dest="include",
+                  default=[],
+                  help="File containing characters to include")
+parser.add_option("-e", "--exclude",
+                  action="append", type="string", dest="exclude",
+                  default=[],
+                  help="File containing characters to exclude")
+parser.add_option("-m", "--max-samples",
+                  type="int", dest="max_samples",
+                  help="Maximum number of samples per character")
+parser.add_option("-l", "--locale",
+                  type="string", dest="locale",
+                  default='T',
+                  help="Character locale of target characters")
+parser.add_option("-q", "--quiet", dest="quiet",
+                  action="store_true",
+                  help="Don't print any statistics")
+
+(options, args) = parser.parse_args()
+
+#try:
+TegakiExtractComponents(options, args).run()
+#except TegakiBootstrapError, e:
+    #sys.stderr.write(str(e) + "\n\n")
+    #parser.print_help()
+    #sys.exit(1)
