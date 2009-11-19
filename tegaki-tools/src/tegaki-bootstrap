@@ -115,6 +115,7 @@ class TegakiBootstrap(object):
         self._max_samples = options.max_samples
         self._locale = options.locale
         self._character_domain = options.character_domain
+        self._no_exact_transformation = options.no_exact_transformation
         self._quiet = options.quiet
 
         try:
@@ -184,7 +185,8 @@ class TegakiBootstrap(object):
                 sys.stdout.flush()
             charSet = target_char.encode('utf8')
             source_character_lookup = self._get_source_character_lookup()
-            if target_char in source_character_lookup:
+            if (target_char in source_character_lookup
+                and not self._no_exact_transformation):
                 to_charcol.add_set(charSet)
                 for character in source_character_lookup[target_char]:
                     to_charcol.append_character(charSet, character)
@@ -192,9 +194,10 @@ class TegakiBootstrap(object):
                 exact_transformations += 1
             else:
                 writing_objects, missing_chars \
-                    = self.get_writings_from_decomposition(target_char)
+                    = self.get_writings_from_decomposition(target_char,
+                        force_decomposition=True)
                 if writing_objects:
-                    for writing in writing_objects:
+                    for writing in writing_objects[:self._max_samples]:
                         character = Character()
                         character.set_writing(writing)
                         character.set_unicode(target_char)
@@ -297,9 +300,10 @@ class TegakiBootstrap(object):
 
         return self._source_character_lookup
 
-    def get_writings_from_decomposition(self, char):
+    def get_writings_from_decomposition(self, char, force_decomposition=False):
         writing_objects = []
-        if char in self._get_source_character_lookup():
+        if (not force_decomposition
+            and char in self._get_source_character_lookup()):
             writing_objects = [character.get_writing() \
                 for character in self._get_source_character_lookup()[char]]
         elif (CharacterLookup.isRadicalChar(char)
@@ -479,6 +483,10 @@ parser.add_option("--domain",
                   help="Character domain of target characters")
 
 
+parser.add_option("-x", "--no-exact", dest="no_exact_transformation",
+                  action="store_true",
+                  help="Don't use exact transformations" \
+                    + ", use only decompositions")
 parser.add_option("-q", "--quiet", dest="quiet",
                   action="store_true",
                   help="Don't print any statistics")
