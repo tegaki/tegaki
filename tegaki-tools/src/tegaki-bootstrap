@@ -126,30 +126,23 @@ class TegakiBootstrap(object):
         self._cjk = CharacterLookup(self._locale, self._character_domain)
 
     def _get_charcol(self):
-        if not hasattr(self, '_charcol'):
-            self._charcol = get_aggregated_charcol(
-                                  ((TYPE_CHARCOL, self._charcols),
-                                   (TYPE_DIRECTORY, self._directories),
-                                   (TYPE_TOMOE, self._tomoe),
-                                   (TYPE_KUCHIBUE, self._kuchibue)))
+        _charcol = get_aggregated_charcol(((TYPE_CHARCOL, self._charcols),
+                                           (TYPE_DIRECTORY, self._directories),
+                                           (TYPE_TOMOE, self._tomoe),
+                                           (TYPE_KUCHIBUE, self._kuchibue)))
 
-            self._charcol.include_characters_from_files(self._include)
-            self._charcol.exclude_characters_from_files(self._exclude)
+        _charcol.include_characters_from_files(self._include)
+        _charcol.exclude_characters_from_files(self._exclude)
 
-            # max samples
-            if self._max_samples:
-                self._charcol.remove_samples(keep_at_most=self._max_samples)
+        # max samples
+        if self._max_samples:
+            _charcol.remove_samples(keep_at_most=self._max_samples)
 
-        return self._charcol
+        return _charcol
 
     def run(self):
-        charcol = self._get_charcol()
-
-        if charcol.get_total_n_characters() == 0:
-            raise TegakiBootstrapError("Empty input collection provided")
-
         # do the bootstrapping
-        to_charcol = self.bootstrap(charcol)
+        to_charcol = self.bootstrap()
 
         # max samples
         if self._max_samples:
@@ -165,7 +158,7 @@ class TegakiBootstrap(object):
             if self._output_path.endswith(".bz2"): bz2 = True
             to_charcol.write(self._output_path, gzip=gzip, bz2=bz2)
 
-    def bootstrap(self, charcol):
+    def bootstrap(self):
         exact_transformations = 0
         decomposition_transformations = 0
         decomposition_fertilities = []
@@ -292,7 +285,12 @@ class TegakiBootstrap(object):
     def _get_source_character_lookup(self):
         if not hasattr(self, '_source_character_lookup'):
             self._source_character_lookup = {}
-            for character in self._get_charcol().get_all_characters():
+
+            charcol = self._get_charcol()
+            if charcol.get_total_n_characters() == 0:
+                raise TegakiBootstrapError("Empty input collection provided")
+
+            for character in charcol.get_all_characters():
                 char = character.get_utf8().decode('utf8')
                 if char not in self._source_character_lookup:
                     self._source_character_lookup[char] = []
