@@ -55,12 +55,12 @@ TODO:
 """
 import sys
 import locale
+import random
+random.seed(12345) # provide deterministic results
 from optparse import OptionParser
 
 from tegaki.character import CharacterCollection, Writing, Character
 
-from tegakitools.tomoe import tomoe_dict_to_character_collection
-from tegakitools.kuchibue import kuchibue_to_character_collection
 from tegakitools.charcol import *
 
 try:
@@ -113,6 +113,7 @@ class TegakiBootstrap(object):
         self._include = options.include
         self._exclude = options.exclude
         self._max_samples = options.max_samples
+        assert self._max_samples
         self._locale = options.locale
         self._character_domain = options.character_domain
         self._no_exact_transformation = options.no_exact_transformation
@@ -135,8 +136,7 @@ class TegakiBootstrap(object):
         _charcol.exclude_characters_from_files(self._exclude)
 
         # max samples
-        if self._max_samples:
-            _charcol.remove_samples(keep_at_most=self._max_samples)
+        _charcol.remove_samples(keep_at_most=self._max_samples)
 
         return _charcol
 
@@ -145,8 +145,7 @@ class TegakiBootstrap(object):
         to_charcol = self.bootstrap()
 
         # max samples
-        if self._max_samples:
-            to_charcol.remove_samples(keep_at_most=self._max_samples)
+        #to_charcol.remove_samples(keep_at_most=self._max_samples)
 
         # output
         if not self._output_path:
@@ -159,47 +158,68 @@ class TegakiBootstrap(object):
             to_charcol.write(self._output_path, gzip=gzip, bz2=bz2)
 
     def bootstrap(self):
-        exact_transformations = 0
-        decomposition_transformations = 0
-        decomposition_fertilities = []
-        missing_transformations = 0
+        n_chars = 0
+        n_exact_transformations = 0
+        char_n_exact_transformations = 0
+        n_decomposition_transformations = 0
+        char_n_decomposition_transformations = 0
+
+        char_n_missing_transformations = 0
+        char_n_underrepresented = 0
 
         to_charcol = CharacterCollection()
 
         missing_char_dict = {}
         missing_single_characters = []
         # iterate through all characters of the target character set
-        count = 0
         for target_char in self._cjk.getDomainCharacterIterator():
         #for target_char in iter([u'亄', u'乿', u'仜', u'伳']): # DEBUG
-            count += 1
-            if count % 100 == 0:
+            n_chars += 1
+            if n_chars % 100 == 0:
                 sys.stdout.write('.')
                 sys.stdout.flush()
-            charSet = target_char.encode('utf8')
+            char_set = target_char.encode('utf8')
             source_character_lookup = self._get_source_character_lookup()
+
+            exact_transformations = 0
             if (target_char in source_character_lookup
                 and not self._no_exact_transformation):
-                to_charcol.add_set(charSet)
-                for character in source_character_lookup[target_char]:
-                    to_charcol.append_character(charSet, character)
+                char_n_exact_transformations += 1
 
-                exact_transformations += 1
-            else:
+                to_charcol.add_set(char_set)
+                source_chars = source_character_lookup[target_char]
+                for character in source_chars[:self._max_samples]:
+                    exact_transformations += 1
+                    to_charcol.append_character(char_set, character)
+
+            n_exact_transformations += exact_transformations
+            n_total_transformation = exact_transformations
+
+            # fill up with decomposition transformations?
+            need_n_chars = self._max_samples - exact_transformations
+
+            decomposition_transformations = 0
+            if need_n_chars > 0:
                 writing_objects, missing_chars \
                     = self.get_writings_from_decomposition(target_char,
                         force_decomposition=True)
                 if writing_objects:
-                    for writing in writing_objects[:self._max_samples]:
+                    char_n_decomposition_transformations += 1
+
+                    writing_objects = writing_objects[:need_n_chars]
+                    for writing in writing_objects:
+                        decomposition_transformations += 1
+
                         character = Character()
                         character.set_writing(writing)
                         character.set_unicode(target_char)
-                        to_charcol.append_character(charSet, character)
+                        to_charcol.append_character(char_set, character)
 
-                    decomposition_transformations += 1
-                    decomposition_fertilities.append(len(writing_objects))
-                else:
+                n_total_transformation += decomposition_transformations
+
+                if n_total_transformation == 0:
                     if missing_chars:
+                        # list components that can help us build this transform.
                         for missing in missing_chars:
                             if missing not in missing_char_dict:
                                 missing_char_dict[missing] = []
@@ -207,28 +227,49 @@ class TegakiBootstrap(object):
                     else:
                         missing_single_characters.append(target_char)
 
-                    missing_transformations += 1
+            n_decomposition_transformations += decomposition_transformations
+
+            # if no direct transformation exists we have no data at all
+            if n_total_transformation == 0:
+                char_n_missing_transformations += 1
+            elif n_total_transformation < self._max_samples:
+                # we have data, just not enough
+                char_n_underrepresented += 1
 
         sys.stdout.write('\n')
 
         if not self._quiet:
             _, default_encoding = locale.getdefaultlocale()
-            total = exact_transformations + decomposition_transformations \
-                + missing_transformations
-            print 'Exact transformation count: %d (%d%%)' \
-                % (exact_transformations, 100 * exact_transformations / total)
-            print 'Decomposition transformation count: %d (%d%%)' \
-                % (decomposition_transformations,
-                    100 * decomposition_transformations / total)
-            if decomposition_fertilities:
-                decomposition_fertility = (sum(decomposition_fertilities) \
-                    / len(decomposition_fertilities))
-            else:
-                decomposition_fertility = 1
-            print 'Decomposition fertility: %d' % decomposition_fertility
-            print 'Missing transformations: %d (%d%%)' \
-                % (missing_transformations,
-                    100 * missing_transformations / total)
+            total = n_exact_transformations + n_decomposition_transformations
+
+            print 'Total characters: %d' % n_chars
+            print 'Total transformation (instances): %d' % total
+
+            print 'Characters with exact transformations: %d (%d%%)' \
+                % (char_n_exact_transformations,
+                   100 * char_n_exact_transformations / n_chars)
+            print 'Total exact transformations: %d (%d%%)' \
+                % (n_exact_transformations,
+                   100 * n_exact_transformations / total)
+            print 'Average exact transformations: %f' \
+                % (1. * n_exact_transformations / n_chars)
+
+            print 'Characters with decomposition transformations: %d (%d%%)' \
+                % (char_n_decomposition_transformations,
+                   100 * char_n_decomposition_transformations / n_chars)
+            print 'Total decomposition transformations: %d (%d%%)' \
+                % (n_decomposition_transformations,
+                   100 * n_decomposition_transformations / total)
+            print 'Average decomposition transformations: %f' \
+                % (1. * n_decomposition_transformations / n_chars)
+
+            print 'Characters missing transformations: %d (%d%%)' \
+                % (char_n_missing_transformations,
+                    100 * char_n_missing_transformations / n_chars)
+            if self._max_samples > 1:
+                print 'Characters with less than %d instances: %d (%d%%)' \
+                    % (self._max_samples, char_n_underrepresented,
+                        100 * char_n_underrepresented / n_chars)
 
             # missing single characters
             # Extend by those with components, that have a component with low
@@ -300,22 +341,27 @@ class TegakiBootstrap(object):
 
     def get_writings_from_decomposition(self, char, force_decomposition=False):
         writing_objects = []
-        if (not force_decomposition
-            and char in self._get_source_character_lookup()):
-            writing_objects = [character.get_writing() \
-                for character in self._get_source_character_lookup()[char]]
-        elif (CharacterLookup.isRadicalChar(char)
+
+        source_char_lookup = self._get_source_character_lookup()
+
+        exact_transformations = 0
+        if (not force_decomposition and char in source_char_lookup):
+            writing_objects.extend([character.get_writing() \
+                for character in source_char_lookup[char]])
+
+        if (CharacterLookup.isRadicalChar(char)
             and char not in self.RADICALS_NON_VISUAL_EQUIVALENCE):
             try:
                 equivChar = self._cjk.getRadicalFormEquivalentCharacter(char)
-                if equivChar in self._get_source_character_lookup():
-                    writing_objects = [character.get_writing() for character \
-                        in self._get_source_character_lookup()[equivChar]]
+                if equivChar in source_char_lookup:
+                    writing_objects.extend([character.get_writing()
+                        for character in source_char_lookup[equivChar]])
             except UnsupportedError:
                 pass
 
+        # add decompositions, limit to upper bound max_samples
         missing_chars = []
-        if not writing_objects:
+        if len(writing_objects) < self._max_samples:
             decompositions = self._cjk.getDecompositionEntries(char)
             for decomposition in decompositions:
                 writing_objs, _, missing = self._get_writing_from_entry(
@@ -324,8 +370,10 @@ class TegakiBootstrap(object):
                     missing_chars.extend(missing)
                 writing_objects.extend(writing_objs)
 
-        if writing_objects:
-            missing_chars = []
+                if len(writing_objects) >= self._max_samples:
+                    break
+
+        writing_objects = writing_objects[:self._max_samples]
 
         return writing_objects, missing_chars
 
@@ -367,8 +415,12 @@ class TegakiBootstrap(object):
             # merge
             writing_objects = []
             if not missing_chars:
-                for writing_objs in TegakiBootstrap.cross(
-                    *writing_objects_list):
+                compound_writings = TegakiBootstrap.cross(*writing_objects_list)
+                # shuffle to provide more variation
+                random.shuffle(compound_writings)
+                compound_writings = compound_writings[:self._max_samples]
+
+                for writing_objs in compound_writings:
                     writing = self.merge_writing_objects(character,
                         writing_objs)
                     writing_objects.append(writing)
@@ -397,20 +449,20 @@ class TegakiBootstrap(object):
         assert False
 
     @classmethod
-    def merge_writing_objects(cls, idsChar, writing_objects):
-        if idsChar not in cls.COMPONENT_TRANSFORMATION:
+    def merge_writing_objects(cls, ids_char, writing_objects):
+        if ids_char not in cls.COMPONENT_TRANSFORMATION:
             raise ValueError("Not supported") # [u'⿴', u'⿻', u'⿷']
 
-        assert (CharacterLookup.isBinaryIDSOperator(idsChar) \
+        assert (CharacterLookup.isBinaryIDSOperator(ids_char) \
             and len(writing_objects) == 2) \
-            or (CharacterLookup.isTrinaryIDSOperator(idsChar) \
+            or (CharacterLookup.isTrinaryIDSOperator(ids_char) \
             and len(writing_objects) == 3)
-        assert len(cls.COMPONENT_TRANSFORMATION[idsChar]) \
+        assert len(cls.COMPONENT_TRANSFORMATION[ids_char]) \
             == len(writing_objects)
 
-        transformations = cls.COMPONENT_TRANSFORMATION[idsChar]
+        transformations = cls.COMPONENT_TRANSFORMATION[ids_char]
         # reverse transformations where inner part is written first
-        if idsChar in [u'⿺', u'⿶']:
+        if ids_char in [u'⿺', u'⿶']:
             writing_objects.reverse()
             transformations = transformations[:]
             transformations.reverse()
@@ -421,7 +473,7 @@ class TegakiBootstrap(object):
 
             obj = writing_objects[idx].copy()
             obj.resize(xrate, yrate)
-            obj.move_rel(dx * obj.get_width(), dy* obj.get_height())
+            obj.move_rel(dx * obj.get_width(), dy * obj.get_height())
             obj.resize(resultingWriting.get_width() / obj.get_width(),
                 resultingWriting.get_height() / obj.get_height())
             for s in obj.get_strokes(True):
@@ -467,7 +519,7 @@ parser.add_option("-e", "--exclude",
                   default=[],
                   help="File containing characters to exclude")
 parser.add_option("-m", "--max-samples",
-                  type="int", dest="max_samples",
+                  type="int", dest="max_samples", default=1,
                   help="Maximum number of samples per character")
 
 

@@ -161,7 +161,7 @@ class TegakiExtractComponents(object):
         if stroke_count != writing.get_n_strokes():
             if not self._quiet:
                 print >> sys.stderr, ("Stroke count doesn't match for %s" % c
-                    + " (cjklib %d, handwriting writing %d)"
+                    + " (cjklib %d, handwriting %d)"
                     % (self._cjk.getStrokeCount(c), writing.get_n_strokes()))
             return []
         componentEntries = self._getComponentsByStrokeOrder(c)
