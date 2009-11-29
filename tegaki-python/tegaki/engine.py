@@ -61,7 +61,7 @@ class Engine(object):
         if platform.system() == "Darwin":
             search_path += [os.path.join(homedir, "Library", 
                                          "Application Support", "tegaki", what),
-                            os.path.join("Library", "Application Support",
+                            os.path.join("/Library", "Application Support",
                                          "tegaki", what)]
 
         try:
