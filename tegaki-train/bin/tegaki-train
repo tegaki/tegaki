@@ -28,12 +28,14 @@ import glib
 import gtk
 from gtk import gdk
 
-from tegaki.character import Character, CharacterCollection
+from tegaki.character import Character
+from tegaki.charcol import CharacterCollection
 from tegaki.trainer import Trainer
+
 from tegakigtk.iconview import WritingIconView, _WritingPixbufRenderer
 from tegakigtk.canvas import Canvas
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 PREDEFINED_SETS = {
 "Digits" : [[48,57]],
@@ -427,7 +429,7 @@ class CharacterSetListView(gtk.TreeView):
 
     def _set_to_cell(self, column, cell, model, iter):
         charset = model[iter][0]
-        n_chars = len(self._parentw._charcol.get_characters(charset))
+        n_chars = self._parentw._charcol.get_n_characters(charset)
         cell.props.text = str(n_chars)
 
     def append_charset(self, charset):
@@ -539,15 +541,22 @@ class CharacterCollectionFileChooserDialog(gtk.FileChooserDialog):
     def _init_dialog(self):
         self.set_default_size(400, 400)
         
-        for name, pat in [["Character collection", "*.charcol"], 
-                          ["Gzip-compressed Character collection",
-                           "*.charcol.gz"],
-                          ["Bz2-compressed Character collection",
-                           "*.charcol.bz2"],
-                          ["All files", "*.*"]]:
+        alltypes = ["*.charcol", "*.charcol.gz", "*.charcol.bz2", "*.chardb"]
+
+        for name, pats in [["All supported files", alltypes],
+                           ["Character collection (DB)", alltypes[3]],
+                           ["Character collection (XML)", alltypes[0]], 
+                           ["Gzip-compressed Character collection (XML)",
+                            alltypes[1]],
+                           ["Bz2-compressed Character collection (XML)",
+                            alltypes[2]],
+                           ["All files", "*.*"]]:
             filt = gtk.FileFilter()
             filt.set_name(name)
-            filt.add_pattern(pat)
+            if not isinstance(pats, list):
+                pats = [pats]
+            for pat in pats:
+                filt.add_pattern(pat)
             self.add_filter(filt)
 
         self.set_default_response(gtk.RESPONSE_OK)
@@ -558,19 +567,22 @@ class CharacterCollectionFileChooserDialog(gtk.FileChooserDialog):
 
     @staticmethod
     def open_character_collection(filename):
-        charcol = CharacterCollection()
+        if filename.endswith(".chardb"):
+            return CharacterCollection(filename)
+        else:
+            charcol = CharacterCollection()
 
-        try:
-            if filename.endswith(".gz"):
-                charcol.read(filename, gzip=True)
-            elif filename.endswith(".bz2"):
-                charcol.read(filename, bz2=True)
-            else:
-                charcol.read(filename)
-        except ValueError: # incorrect XML
-            return None
+            try:
+                if filename.endswith(".gz"):
+                    charcol.read(filename, gzip=True)
+                elif filename.endswith(".bz2"):
+                    charcol.read(filename, bz2=True)
+                else:
+                    charcol.read(filename)
+            except ValueError: # incorrect XML
+                return None
 
-        return charcol
+            return charcol
 
     def set_character_collection(self, charcol):
         filename = self.get_filename()
@@ -579,12 +591,26 @@ class CharacterCollectionFileChooserDialog(gtk.FileChooserDialog):
 
     @staticmethod
     def save_character_collection(charcol, filename):
-        if filename.endswith(".gz"):
-            charcol.write(filename, gzip=True)
-        elif filename.endswith(".bz2"):
-            charcol.write(filename, bz2=True)
+        if filename.endswith(".chardb"):
+            charcol.commit()
+
+            if filename != charcol.get_filename():               
+                # save database to file then rebind charcol to this database
+                if os.path.exists(filename):
+                    os.unlink(filename)
+                newcc = CharacterCollection(filename)
+                newcc.merge([charcol])
+                newcc.commit()
+                del newcc
+                charcol.bind(filename)
+                
         else:
-            charcol.write(filename)
+            if filename.endswith(".gz"):
+                charcol.write(filename, gzip=True)
+            elif filename.endswith(".bz2"):
+                charcol.write(filename, bz2=True)
+            else:
+                charcol.write(filename)
 
 class QuestionDialog(gtk.MessageDialog):
 
@@ -739,7 +765,7 @@ class TegakiTrain(object):
 
     def _on_train_done(self, dialog, response):
         if response == gtk.RESPONSE_OK:
-            if len(self._charcol.get_all_characters()) > 0:
+            if self._charcol.get_total_n_characters() > 0:
                 meta = dialog.get_meta()
                 engine = dialog.get_engine()
                 trainer_class = Trainer.get_available_trainers()[engine]
@@ -833,11 +859,11 @@ class TegakiTrain(object):
     def _on_add_sample(self, widget):
         window = EditCharacterSampleWindow(self._window)
         charset = self._treeview.get_selected_charset()
-        characters = self._charcol.get_characters(charset)
-        if len(characters) == 0:
+        if self._charcol.get_n_characters(charset) == 0:
             charvalue = charset
         else:
-            charvalue = characters[0].get_utf8()
+            char = self._charcol.get_characters(charset, limit=1)
+            charvalue = char[0].get_utf8()
         window.set_character_value(charvalue)
         window.connect("delete-event", self._on_add_sample_done)
         window.show_all()
@@ -846,6 +872,7 @@ class TegakiTrain(object):
         charset = self._treeview.get_selected_charset()
         character = window.get_character()
         self._charcol.append_character(charset, character)
+        # FIXME; update the corresponding character only
         self._iconview.set_characters(self._charcol.get_characters(charset))
         self._enable_save()
 
@@ -884,8 +911,8 @@ class TegakiTrain(object):
         charset = self._treeview.get_selected_charset()
         selitems = self._iconview.get_selected_items()
         charindex = selitems[0][0]
-        char = self._charcol.get_characters(charset)[charindex]
-        window.set_character(char)
+        char = self._charcol.get_characters(charset, limit=1, offset=charindex)
+        window.set_character(char[0])
         window.connect("delete-event", self._on_edit_sample_done)
         window.show_all()
 
@@ -921,8 +948,9 @@ class TegakiTrain(object):
             charset = self._treeview.get_selected_charset()
             selitems = self._iconview.get_selected_items()
             charindex = selitems[0][0]
-            char = self._charcol.get_characters(charset)[charindex]
-            dialog.set_character(char)
+            char = self._charcol.get_characters(charset, limit=1,
+                                                offset=charindex)
+            dialog.set_character(char[0])
 
         dialog.destroy()
 
