@@ -24,12 +24,11 @@ import sys
 import os
 from optparse import OptionParser
 
-from tegaki.character import CharacterCollection
+from tegaki.charcol import CharacterCollection
 
-from tegakitools.tomoe import tomoe_dict_to_character_collection
-from tegakitools.kuchibue import kuchibue_to_character_collection
+from tegakitools.charcol import *
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 class TegakiConvertError(Exception):
     pass
@@ -39,60 +38,31 @@ class TegakiConvert(object):
     def __init__(self, options, args):
         self._directories = options.directories
         self._charcols = options.charcols
+        self._databases = options.databases
         self._tomoe = options.tomoe
         self._kuchibue = options.kuchibue
         self._include = options.include
         self._exclude = options.exclude
         self._max_samples = options.max_samples
 
-        try:
+        if len(args) > 1:
+            raise TegakiConvertError, "tegaki-convert needs only 1 argument"
+        elif len(args) == 1:
             self._output_path = args[0]
-        except:
+        else:
             self._output_path = None
 
     def run(self):
-        charcol = CharacterCollection()
+        charcol = get_aggregated_charcol(
+                        ((TYPE_CHARCOL, self._charcols),
+                         (TYPE_CHARCOL_DB, self._databases),
+                         (TYPE_DIRECTORY, self._directories),
+                         (TYPE_TOMOE, self._tomoe),
+                         (TYPE_KUCHIBUE, self._kuchibue)), self._output_path)
 
-        # add the directories provided
-        for directory in self._directories:
-            charcol += CharacterCollection.from_character_directory(directory)
 
-        # add the character collections provided
-        for charcol_path in self._charcols:
-            _charcol = CharacterCollection()
-            gzip = False; bz2 = False
-            if charcol_path.endswith(".gz"): gzip = True
-            if charcol_path.endswith(".bz2"): bz2 = True
-            _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
-            charcol += _charcol
-
-        # add tomoe dictionaries provided
-        for tomoe in self._tomoe:
-            charcol += tomoe_dict_to_character_collection(tomoe)
-
-        # add the kuchibue databases provided
-        for kuchibue in self._kuchibue:
-            charcol += kuchibue_to_character_collection(kuchibue)
-
-        # characters to include
-        buf = ""
-        for inc_path in self._include:
-            f = open(inc_path)
-            buf += f.read()
-            f.close()
-
-        if len(buf) > 0:
-            charcol.include_characters_from_text(buf)
-
-        # characters to exclude
-        buf = ""
-        for exc_path in self._exclude:
-            f = open(exc_path)
-            buf += f.read()
-            f.close()
-
-        if len(buf) > 0:
-            charcol.exclude_characters_from_text(buf)
+        charcol.include_characters_from_files(self._include)
+        charcol.exclude_characters_from_files(self._exclude)
 
         # max samples
         if self._max_samples:
@@ -103,10 +73,12 @@ class TegakiConvert(object):
             # outputs to stdout if not output path specified
             print charcol.to_xml()
         else:
-            gzip = False; bz2 = False
-            if self._output_path.endswith(".gz"): gzip = True
-            if self._output_path.endswith(".bz2"): bz2 = True
-            charcol.write(self._output_path, gzip=gzip, bz2=bz2)
+            if self._output_path.endswith(".chardb"):
+                charcol.commit()                
+            else:
+                # save in XML format (with support for .gz and .bz2)
+                write_charcol_to(charcol, self._output_path)
+
 
 parser = OptionParser(usage="usage: %prog [options] [output-path]",
                       version="%prog " + VERSION)
@@ -117,6 +89,10 @@ parser.add_option("-d", "--directory",
                   help="Directory containing individual XML character files")
 parser.add_option("-c", "--charcol",
                   action="append", type="string", dest="charcols",
+                  default=[],
+                  help="character collection XML files")
+parser.add_option("-b", "--db",
+                  action="append", type="string", dest="databases",
                   default=[],
                   help="character collection XML files")
 parser.add_option("-t", "--tomoe-dict",

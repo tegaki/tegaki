@@ -20,8 +20,8 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-from tegaki.character import Point, Stroke, Writing, Character, \
-                             CharacterCollection, _XmlBase
+from tegaki.character import Point, Stroke, Writing, Character, _XmlBase
+from tegaki.charcol import CharacterCollection
 
 class TomoeXmlDictionaryReader(_XmlBase):
 

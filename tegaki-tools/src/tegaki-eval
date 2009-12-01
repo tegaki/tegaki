@@ -25,12 +25,12 @@ import os
 import time
 from optparse import OptionParser
 
-from tegaki.character import CharacterCollection
+from tegaki.charcol import CharacterCollection
 from tegaki.recognizer import Recognizer, RecognizerError
 
-from tegakitools.tomoe import tomoe_dict_to_character_collection
+from tegakitools.charcol import *
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 def harmonic_mean(x1, x2):
     if x1 == 0.0 and x2 == 0.0:
@@ -48,9 +48,15 @@ class TegakiEval(object):
     def __init__(self, options, args):
         self._verbosity_level = options.verbosity_level
         self._directories = options.directories
+        self._databases = options.databases
         self._charcols = options.charcols
         self._tomoe = options.tomoe
+        self._kuchibue = options.kuchibue
         self._list = options.list
+        self._include = options.include
+        self._exclude = options.exclude
+        self._max_samples = options.max_samples
+
         if not self._list:
             self._recognizer = args[0]
             self._model = args[1]
@@ -67,25 +73,22 @@ class TegakiEval(object):
                          in avail_recognizers])
 
     def _recognize(self):
-        charcol = CharacterCollection()
+        charcol = get_aggregated_charcol(
+                        ((TYPE_CHARCOL, self._charcols),
+                         (TYPE_CHARCOL_DB, self._databases),
+                         (TYPE_DIRECTORY, self._directories),
+                         (TYPE_TOMOE, self._tomoe),
+                         (TYPE_KUCHIBUE, self._kuchibue)))
 
-        # add the directories provided
-        for directory in self._directories:
-            charcol += CharacterCollection.from_character_directory(directory)
 
-        # add the character collections provided
-        for charcol_path in self._charcols:
-            _charcol = CharacterCollection()
-            gzip = False; bz2 = False
-            if charcol_path.endswith(".gz"): gzip = True
-            if charcol_path.endswith(".bz2"): bz2 = True
-            _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
-            charcol += _charcol
+        charcol.include_characters_from_files(self._include)
+        charcol.exclude_characters_from_files(self._exclude)
 
-        # add tomoe dictionaries provided
-        for tomoe in self._tomoe:
-            charcol += tomoe_dict_to_character_collection(tomoe)
+        # max samples
+        if self._max_samples:
+            charcol.remove_samples(keep_at_most=self._max_samples)
 
+        # FIXME: don't load all characters in memory
         all_chars = charcol.get_all_characters()
 
         if len(all_chars) == 0:
@@ -279,6 +282,8 @@ parser = OptionParser(usage=usage, version="%prog " + VERSION)
 parser.add_option("-v", "--verbosity-level",
                   type="int", dest="verbosity_level", default=0,
                   help="verbosity level between 0 and 2")
+
+
 parser.add_option("-d", "--directory",
                   action="append", type="string", dest="directories",
                   default=[],
@@ -287,13 +292,39 @@ parser.add_option("-c", "--charcol",
                   action="append", type="string", dest="charcols",
                   default=[],
                   help="character collection XML files")
+parser.add_option("-b", "--db",
+                  action="append", type="string", dest="databases",
+                  default=[],
+                  help="character collection XML files")
 parser.add_option("-t", "--tomoe-dict",
                   action="append", type="string", dest="tomoe",
                   default=[],
                   help="Tomoe XML dictionary files")
+parser.add_option("-k", "--kuchibue",
+                  action="append", type="string", dest="kuchibue",
+                  default=[],
+                  help="Kuchibue unipen database")
+
+
 parser.add_option("-l", "--list",
                   action="store_true",dest="list", default=False,
                   help="List available recognizers and models")
+
+
+
+parser.add_option("-i", "--include",
+                  action="append", type="string", dest="include",
+                  default=[],
+                  help="File containing characters to include")
+parser.add_option("-e", "--exclude",
+                  action="append", type="string", dest="exclude",
+                  default=[],
+                  help="File containing characters to exclude")
+parser.add_option("-m", "--max-samples",
+                  type="int", dest="max_samples",
+                  help="Maximum number of samples per character")
+
+
 
 (options, args) = parser.parse_args()
 

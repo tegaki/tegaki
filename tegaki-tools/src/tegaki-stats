@@ -24,11 +24,10 @@ import sys
 import os
 from optparse import OptionParser
 
-from tegaki.character import CharacterCollection
-
+from tegaki.charcol import CharacterCollection
 from tegakitools.charcol import *
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 class TegakiStatsError(Exception):
     pass
@@ -41,6 +40,7 @@ class TegakiStats(object):
     def __init__(self, options, args):
         self._directories = options.directories
         self._charcols = options.charcols
+        self._databases = options.databases
         self._tomoe = options.tomoe
         self._kuchibue = options.kuchibue
         self._include = options.include
@@ -51,6 +51,7 @@ class TegakiStats(object):
     def run(self):
         charcol = get_aggregated_charcol(
                         ((TYPE_CHARCOL, self._charcols),
+                         (TYPE_CHARCOL_DB, self._databases),
                          (TYPE_DIRECTORY, self._directories),
                          (TYPE_TOMOE, self._tomoe),
                          (TYPE_KUCHIBUE, self._kuchibue)))
@@ -150,6 +151,10 @@ parser.add_option("-d", "--directory",
                   help="Directory containing individual XML character files")
 parser.add_option("-c", "--charcol",
                   action="append", type="string", dest="charcols",
+                  default=[],
+                  help="character collection XML files")
+parser.add_option("-b", "--db",
+                  action="append", type="string", dest="databases",
                   default=[],
                   help="character collection XML files")
 parser.add_option("-t", "--tomoe-dict",

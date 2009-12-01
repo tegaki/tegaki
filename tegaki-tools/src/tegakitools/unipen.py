@@ -26,8 +26,8 @@
 import re
 import os
 
-from tegaki.character import Point, Stroke, Writing, Character, \
-                             CharacterCollection
+from tegaki.character import Point, Stroke, Writing, Character
+from tegaki.charcol import CharacterCollection
 
 class UnipenEventParser(object):
     """SAX-like event-based parser"""

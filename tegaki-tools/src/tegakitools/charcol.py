@@ -20,43 +20,80 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-from tegaki.character import CharacterCollection
+import os
+
+from tegaki.charcol import CharacterCollection
 
 from tegakitools.tomoe import tomoe_dict_to_character_collection
 from tegakitools.kuchibue import kuchibue_to_character_collection
 
-TYPE_CHARCOL, TYPE_DIRECTORY, TYPE_TOMOE, TYPE_KUCHIBUE = range(4)
+TYPE_CHARCOL, TYPE_CHARCOL_DB, TYPE_DIRECTORY, TYPE_TOMOE, TYPE_KUCHIBUE = \
+range(5)
 
-def get_aggregated_charcol(tuples):
+def _get_charcol(charcol_type, charcol_path):
+    if charcol_type == TYPE_DIRECTORY:
+        # charcol_path is actually a directory here
+        return CharacterCollection.from_character_directory(charcol_path)
+
+    elif charcol_type == TYPE_CHARCOL:
+        return read_charcol_from(charcol_path)
+
+    elif charcol_type == TYPE_CHARCOL_DB:
+        return CharacterCollection(charcol_path)
+
+    elif charcol_type == TYPE_TOMOE:
+        return tomoe_dict_to_character_collection(charcol_path)
+
+    elif charcol_type == TYPE_KUCHIBUE:
+        return kuchibue_to_character_collection(charcol_path)
+    
+
+def get_aggregated_charcol(tuples, dbpath=None):
     """
     Create a character collection out of other character collections,
     character directories, tomoe dictionaries or kuchibue databases.
 
-    tuples: a list of tuples (TYPE, list)
+    tuples: a list of tuples (TYPE, path list)
     """
-    charcol = CharacterCollection()
 
-    for typ, files in tuples:
-        if typ == TYPE_DIRECTORY:
-            # files should actually contain a list of directories
-            for d in files: 
-                charcol += CharacterCollection.from_character_directory(d)
+    # number of files for each character collection type
+    n_files = [len(t[1]) for t in tuples]
+    
+    # we don't need to merge character collections if only one is provided
+    # this can save a lot of time for large collections
+    if sum(n_files) == 1 and dbpath is None:
+        idx = n_files.index(1)
+        return _get_charcol(tuples[idx][0], tuples[idx][1][0])
 
-        elif typ == TYPE_CHARCOL:
-            for charcol_path in files:
-                _charcol = CharacterCollection()
-                gzip = False; bz2 = False
-                if charcol_path.endswith(".gz"): gzip = True
-                if charcol_path.endswith(".bz2"): bz2 = True
-                _charcol.read(charcol_path, gzip=gzip, bz2=bz2)
-                charcol += _charcol
+    if dbpath is not None and dbpath.endswith(".chardb"):
+        if os.path.exists(dbpath):
+            print "%s exists already" % dbpath
+            answer = raw_input("Delete it? (y/N)")
+            if answer == "y":
+                os.unlink(dbpath)
+            else:
+                exit()
+        charcol = CharacterCollection(dbpath)
+    else:
+        charcol = CharacterCollection() # in memory db
 
-        elif typ == TYPE_TOMOE:
-            for tomoe in files:
-                charcol += tomoe_dict_to_character_collection(tomoe)
+    charcols = [_get_charcol(typ, path) \
+                    for typ, paths in tuples for path in paths]
 
-        elif typ == TYPE_KUCHIBUE:
-            for kuchibue in files:
-                charcol += kuchibue_to_character_collection(kuchibue)
+    charcol.merge(charcols)
 
     return charcol
+
+def read_charcol_from(path):
+    charcol = CharacterCollection()
+    gzip = False; bz2 = False
+    if path.endswith(".gz"): gzip = True
+    if path.endswith(".bz2"): bz2 = True
+    charcol.read(path, gzip=gzip, bz2=bz2)
+    return charcol
+
+def write_charcol_to(charcol, path):
+    gzip = False; bz2 = False
+    if path.endswith(".gz"): gzip = True
+    if path.endswith(".bz2"): bz2 = True
+    charcol.write(path, gzip=gzip, bz2=bz2)
