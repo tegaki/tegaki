@@ -19,6 +19,8 @@
 import os
 import platform
 
+from tegaki.dictutils import SortedDict
+
 class Engine(object):
 
     @classmethod
@@ -76,3 +78,16 @@ class Engine(object):
             pass
 
         return search_path
+
+    @classmethod
+    def read_meta_file(cls, meta_file):
+        f = open(meta_file)
+        ret = SortedDict()
+        for line in f.readlines():
+            try:
+                key, value = [s.strip() for s in line.strip().split("=")]
+                ret[key] = value
+            except ValueError:
+                continue
+        f.close()
+        return ret
