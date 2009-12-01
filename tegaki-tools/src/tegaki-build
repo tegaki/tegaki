@@ -26,7 +26,6 @@ from optparse import OptionParser
 
 from tegaki.charcol import CharacterCollection
 from tegaki.trainer import Trainer, TrainerError
-from tegaki.recognizer import Recognizer
 
 from tegakitools.charcol import *
 
@@ -66,7 +65,7 @@ class TegakiBuild(object):
 
         # read meta file
         try:
-            meta = Recognizer.read_meta_file(self._meta)
+            meta = Trainer.read_meta_file(self._meta)
         except IOError, e:
             raise TegakiBuildError, str(e)
 
