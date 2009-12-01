@@ -25,7 +25,7 @@ import sys
 import StringIO
 import minjson
 
-from tegaki.character import *
+from tegaki.character import Point, Stroke, Writing, Character
 
 class CharacterTest(unittest.TestCase):
 
@@ -445,8 +445,8 @@ u'pressure': 0, u'x': 4}]}
         w3.append_stroke(s1)
         w3.append_stroke(s2)
 
-        self.assertTrue(w1 == w2)
-        self.assertFalse(w1 == w3)
+        self.assertEquals(w1, w2)
+        self.assertNotEqual(w1, w3)
 
     def testWritingEqualityNone(self):
         s1 = Stroke()
@@ -602,162 +602,4 @@ u'pressure': 0, u'x': 4}]}
         sexp = f.read().strip()
         f.close()
         self.assertEquals(char.to_sexp(), sexp)
-        
-
-class CharacterCollectionTest(unittest.TestCase):
-
-    def setUp(self):
-        self.currdir = os.path.dirname(os.path.abspath(__file__))        
-
-    def testValidate(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        f = open(path)
-        buf = f.read()
-        f.close()
-
-        invalid = \
-"""
-<?xml version="1.0" encoding="UTF-8"?>
-  <character>
-    <utf8>防</utf8>
-    <strokes>
-      <stroke>
-      </stroke>
-    </strokes>
-  </character>
-"""
-
-        malformed = \
-"""
-<?xml version="1.0" encoding="UTF-8"?>
-  <character>
-"""
-
-        try:
-            self.assertTrue(CharacterCollection.validate(buf))
-            self.assertFalse(CharacterCollection.validate(invalid))
-            self.assertFalse(CharacterCollection.validate(malformed))
-        except NotImplementedError:
-            sys.stderr.write("lxml missing!\n")
-            pass
-
-    def _testReadXML(self, charcol):
-        self.assertEquals(charcol.get_set_list(), ["一", "三", "二", "四"])
-
-        c = {}
-        for k in ["19968_1", "19968_2", "19968_3", "19977_1", "19977_2",
-                 "20108_1"]:
-            c[k] = Character()
-            c[k].read(os.path.join(self.currdir, "data", "collection", 
-                      k + ".xml"))
-
-        self.assertEquals(charcol.get_characters("一"),
-                          [c["19968_1"], c["19968_2"], c["19968_3"]])
-        self.assertEquals(charcol.get_characters("三"),
-                          [c["19977_1"], c["19977_2"]])
-        self.assertEquals(charcol.get_characters("二"),
-                          [c["20108_1"]])
-        self.assertEquals(charcol.get_characters("四"), [])
-        self.assertEquals(charcol.get_all_characters(),
-                          [c["19968_1"], c["19968_2"], c["19968_3"],
-                           c["19977_1"], c["19977_2"], c["20108_1"]])
-
-    def testReadXMLFile(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-
-        self._testReadXML(charcol)
-
-    def testToXML(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-        charcol2 = CharacterCollection()
-        charcol2.read_string(charcol.to_xml())
-        self.assertEquals(charcol.get_set_list(), charcol2.get_set_list())
-        self.assertEquals(charcol.get_all_characters(),
-                          charcol2.get_all_characters())
-  
-    def testWriteGzipString(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-        charcol2 = CharacterCollection()
-        charcol2.read_string(charcol.write_string(gzip=True), gzip=True)
-        self.assertEquals(charcol.get_set_list(), charcol2.get_set_list())
-        self.assertEquals(charcol.get_all_characters(),
-                          charcol2.get_all_characters())
-
-    def testWriteBz2String(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-        charcol2 = CharacterCollection()
-        charcol2.read_string(charcol.write_string(bz2=True), bz2=True)
-        self.assertEquals(charcol.get_set_list(), charcol2.get_set_list())
-        self.assertEquals(charcol.get_all_characters(),
-                          charcol2.get_all_characters())   
-
-    def testAddSame(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-        charcol2 = CharacterCollection()
-        charcol2.read(path)
-        charcol3 = charcol + charcol2
-        self.assertEquals(charcol3.get_set_list(), ["一", "三", "二", "四"])
-        self.assertEquals(len(charcol3.get_characters("一")), 3)
-        self.assertEquals(len(charcol3.get_characters("三")), 2)
-        self.assertEquals(len(charcol3.get_characters("二")), 1)
-        self.assertEquals(len(charcol3.get_characters("四")), 0)
-
-    def testAddSame(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-        path2 = os.path.join(self.currdir, "data", "collection",
-                             "test2.charcol")
-        charcol2 = CharacterCollection()
-        charcol2.read(path2)
-        charcol3 = charcol + charcol2
-        self.assertEquals(charcol3.get_set_list(), ["一", "三", "二", "四",
-                                                    "a", "b", "c", "d"])
-        self.assertEquals(len(charcol3.get_characters("一")), 3)
-        self.assertEquals(len(charcol3.get_characters("三")), 2)
-        self.assertEquals(len(charcol3.get_characters("二")), 1)
-        self.assertEquals(len(charcol3.get_characters("四")), 0)
-        self.assertEquals(len(charcol3.get_characters("a")), 3)
-        self.assertEquals(len(charcol3.get_characters("b")), 2)
-        self.assertEquals(len(charcol3.get_characters("c")), 1)
-        self.assertEquals(len(charcol3.get_characters("d")), 0)
-
-    def testFromCharDirRecursive(self):
-        directory = os.path.join(self.currdir, "data")
-        charcol = CharacterCollection.from_character_directory(directory)
-        self.assertEquals(charcol.get_set_list(), ["防", "三", "一", "二"])
-        self.assertEquals(len(charcol.get_characters("一")), 3)
-        self.assertEquals(len(charcol.get_characters("三")), 2)
-        self.assertEquals(len(charcol.get_characters("二")), 1)
-        self.assertEquals(len(charcol.get_characters("防")), 1)
-
-    def testFromCharDirNotRecursive(self):
-        directory = os.path.join(self.currdir, "data")
-        charcol = CharacterCollection.from_character_directory(directory,
-                                        recursive=False)
-        self.assertEquals(charcol.get_set_list(), ["防"])
-        self.assertEquals(len(charcol.get_characters("防")), 1)
-
-    def testIncludeChars(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-        charcol.include_characters_from_text("一三")
-        self.assertEquals(charcol.get_set_list(), ["一", "三"])
-
-    def testExcludeChars(self):
-        path = os.path.join(self.currdir, "data", "collection", "test.charcol")
-        charcol = CharacterCollection()
-        charcol.read(path)
-        charcol.exclude_characters_from_text("三")
-        self.assertEquals(charcol.get_set_list(), ["一", "二"])
+       

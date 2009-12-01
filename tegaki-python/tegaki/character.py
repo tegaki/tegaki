@@ -28,7 +28,7 @@ except ImportError:
     pass
 from math import floor, atan, sin, cos, pi
 import os
-import re
+import hashlib
 
 try:
     # lxml is used for DTD validation
@@ -105,7 +105,7 @@ class Point(dict):
         return "(%d %d)" % (self.x, self.y)
 
     def __eq__(self, othr):
-        if not isinstance(othr, Point):
+        if not othr.__class__.__name__ in ("Point", "PointProxy"):
             return False
 
         for key in self.KEYS:
@@ -167,7 +167,7 @@ class Stroke(list):
         return "(" + "".join([p.to_sexp() for p in self]) + ")"
 
     def __eq__(self, othr):
-        if not isinstance(othr, Stroke):
+        if not othr.__class__.__name__ in ("Stroke", "StrokeProxy"):
             return False
 
         if len(self) != len(othr):
@@ -563,10 +563,10 @@ class Writing(object):
              "".join([s.to_sexp() for s in self._strokes]))                    
          
     def __str__(self):
-        return str(self.get_strokes(full=True))
+        return str(self._strokes)
 
     def __eq__(self, othr):
-        if not isinstance(othr, Writing):
+        if not othr.__class__.__name__ in ("Writing", "WritingProxy"):
             return False
 
         if self.get_n_strokes() != othr.get_n_strokes():
@@ -757,6 +757,9 @@ class Character(_XmlBase):
 
         return s
 
+    def hash(self):
+        return hashlib.sha1(self.to_xml()).hexdigest()
+
     def to_json(self):
         s = "{"
 
@@ -774,7 +777,7 @@ class Character(_XmlBase):
                     self._writing.to_sexp()[1:-1]
 
     def __eq__(self, char):
-        if not isinstance(char, Character):
+        if not char.__class__.__name__ in ("Character", "CharacterProxy"):
             return False
 
         return self._utf8 == char.get_utf8() and \
@@ -843,333 +846,3 @@ class Character(_XmlBase):
         elif self._tag == "height":
             self._writing.set_height(int(data))
 
-class CharacterCollection(_XmlBase):
-    """
-    A collection of characters is composed of sets.
-    Each set can be composed of zero, one, or more characters.
-
-    /!\ Sets do not necessarily contain only characters of the same class
-    / utf8 value. Sets may also be used to group characters in other fashions
-    (e.g. by number of strokes, by handwriting quality, etc...).
-    Therefore the set name is not guaranteed to contain the utf8 value of
-    the characters of that set. The utf8 value must be retrieved from each
-    character individually.
-    """
-
-    DTD = \
-"""
-<!ELEMENT character-collection (set*)>
-<!ELEMENT set (character*)>
-
-<!-- The name attribute identifies a set uniquely -->
-<!ATTLIST set name CDATA #REQUIRED>
-
-<!ELEMENT character (utf8?,width?,height?,strokes)>
-<!ELEMENT utf8 (#PCDATA)>
-<!ELEMENT width (#PCDATA)>
-<!ELEMENT height (#PCDATA)>
-<!ELEMENT strokes (stroke+)>
-<!ELEMENT stroke (point+)>
-<!ELEMENT point EMPTY>
-
-<!ATTLIST point x CDATA #REQUIRED>
-<!ATTLIST point y CDATA #REQUIRED>
-<!ATTLIST point timestamp CDATA #IMPLIED>
-<!ATTLIST point pressure CDATA #IMPLIED>
-<!ATTLIST point xtilt CDATA #IMPLIED>
-<!ATTLIST point ytilt CDATA #IMPLIED>
-"""
-
-    def __init__(self):
-        self._characters = SortedDict()
-
-    @staticmethod
-    def from_character_directory(directory,
-                                 extensions=["xml", "bz2", "gz"], 
-                                 recursive=True):
-        """
-        Creates a character collection from a directory containing
-        individual character files.
-        """
-        regexp = re.compile("\.(%s)$" % "|".join(extensions))
-        charcol = CharacterCollection()
-        
-        for name in os.listdir(directory):
-            full_path = os.path.join(directory, name)
-            if os.path.isdir(full_path) and recursive:
-                charcol += CharacterCollection.from_character_directory(
-                               full_path, extensions)
-            elif regexp.search(full_path):
-                char = Character()
-                gzip = False; bz2 = False
-                if full_path.endswith(".gz"): gzip = True
-                if full_path.endswith(".bz2"): bz2 = True
-                
-                try:
-                    char.read(full_path, gzip=gzip, bz2=bz2)
-                except ValueError:
-                    continue # ignore malformed XML files
-
-                utf8 = char.get_utf8()
-                if utf8 is None: utf8 = "Unknown"
-
-                charcol.add_set(utf8)
-                if not char in charcol.get_characters(utf8):
-                    charcol.append_character(utf8, char)
-                
-        return charcol
-
-    def concatenate(self, other, check_duplicate=False):
-        new = CharacterCollection()
-        for charcol in (self, other):
-            for set_name in charcol.get_set_list():
-                new.add_set(set_name)
-                characters = new.get_characters(set_name)
-                for char in charcol.get_characters(set_name):
-                    if not check_duplicate or not char in characters:
-                        new.append_character(set_name, char)
-        return new
-
-    def __add__(self, other):
-        return self.concatenate(other)
-                   
-    def add_set(self, set_name):
-        if not self._characters.has_key(set_name):
-            self._characters[set_name] = []
-
-    def remove_set(self, set_name):
-        if self._characters.has_key(set_name):
-            del self._characters[set_name]
-
-    def get_set_list(self):
-        return self._characters.keys()
-
-    def get_n_sets(self):
-        return len(self.get_set_list())
-
-    def get_characters(self, set_name):
-        if self._characters.has_key(set_name):
-            return self._characters[set_name]
-        else:
-            return []
-
-    def get_all_characters(self):
-        characters = []
-        for k in self._characters.keys():
-            characters += self._characters[k]
-        return characters
-
-    def get_total_n_characters(self):
-        n = 0
-        for k in self._characters.keys():
-            n += len(self._characters[k])
-        return n
-
-    def set_characters(self, set_name, characters):
-        self._characters[set_name] = characters
-
-    def append_character(self, set_name, character):
-        if not self._characters.has_key(set_name):
-            self._characters[set_name] = []
-
-        self._characters[set_name].append(character)
-
-    def insert_character(self, set_name, i, character):
-        if not self._characters.has_key(set_name):
-            self._characters[set_name] = []
-            self._characters[set_name].append(character)
-        else:
-            self._characters[set_name].insert(i, character)
-
-    def remove_character(self, set_name, i):
-        if self._characters.has_key(set_name):
-            if len(self._characters[set_name]) - 1 >= i:
-                del self._characters[set_name][i]
-
-    def remove_last_character(self, set_name):
-        if self._characters.has_key(set_name):
-            if len(self._characters[set_name]) > 0:
-                del self._characters[set_name][-1]
-
-    def replace_character(self, set_name, i, character):
-        if self._characters.has_key(set_name):
-            if len(self._characters[set_name]) - 1 >= i:
-                self.remove_character(set_name, i)
-                self.insert_character(set_name, i, character)
-
-    def _get_dict_from_text(self, text):
-        text = text.replace(" ", "").replace("\n", "").replace("\t", "")
-        dic = {}
-        for c in text:
-            dic[c] = 1
-        return dic
-
-    def include_characters_from_text(self, text):
-        """
-        Only keep characters found in text.
-        """
-        dic = self._get_dict_from_text(unicode(text, "utf8"))
-        for set_name in self.get_set_list():
-            i = 0
-            for char in self.get_characters(set_name)[:]:
-                if not char.get_unicode() in dic:
-                    self.remove_character(set_name, i)
-                else:
-                    i += 1
-        self.remove_empty_sets()
-
-    def include_characters_from_files(self, text_files):
-        """
-        Only keep characters found in text_files.
-        """
-        buf = ""
-        for inc_path in text_files:
-            f = open(inc_path)
-            buf += f.read()
-            f.close()
-
-        if len(buf) > 0:
-            self.include_characters_from_text(buf)
-
-    def exclude_characters_from_text(self, text):
-        """
-        Exclude characters found in text.
-        """
-        dic = self._get_dict_from_text(unicode(text, "utf8"))
-        for set_name in self.get_set_list():
-            i = 0
-            for char in self.get_characters(set_name)[:]:
-                if char.get_unicode() in dic:
-                    self.remove_character(set_name, i)
-                else:
-                    i += 1
-        self.remove_empty_sets()
-
-    def exclude_characters_from_files(self, text_files):
-        """
-        Exclude characters found in text_files.
-        """
-        buf = ""
-        for exc_path in text_files:
-            f = open(exc_path)
-            buf += f.read()
-            f.close()
-
-        if len(buf) > 0:
-            self.exclude_characters_from_text(buf)
-
-    def remove_samples(self, keep_at_most):
-        for set_name in self.get_set_list():
-            if len(self._characters[set_name]) > keep_at_most:
-                self._characters[set_name] = \
-                    self._characters[set_name][0:keep_at_most]
-
-    def remove_empty_sets(self):
-        for set_name in self.get_set_list():
-            if len(self.get_characters(set_name)) == 0:
-                self.remove_set(set_name)
-
-    def to_xml(self):
-        s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        s += "<character-collection>\n"
-
-        for set_name in self._characters.keys():
-            s += "<set name=\"%s\">\n" % set_name
-
-            for character in self._characters[set_name]:
-                s += "  <character>\n"
-
-                utf8 = character.get_utf8()
-                if utf8:
-                    s += "    <utf8>%s</utf8>\n" % utf8
-
-                for line in character.get_writing().to_xml().split("\n"):
-                    s += "    %s\n" % line
-                
-                s += "  </character>\n"
-
-            s += "</set>\n"
-
-        s += "</character-collection>\n"
-
-        return s
-
-    # Private...    
-
-    def _start_element(self, name, attrs):
-        self._tag = name
-
-        if self._first_tag:
-            self._first_tag = False
-            if self._tag != "character-collection":
-                raise ValueError, \
-                      "The very first tag should be <character-collection>"
-
-        if self._tag == "set":
-            if not attrs.has_key("name"):
-                raise ValueError, "<set> should have a name attribute"
-
-            self._curr_set_name = attrs["name"].encode("UTF-8")
-            self._curr_chars = []
-
-        if self._tag == "character":
-            self._curr_char = Character()
-            self._curr_writing = self._curr_char.get_writing()
-            self._curr_width = None
-            self._curr_height = None
-            self._curr_utf8 = None
-
-        if self._tag == "stroke":
-            self._curr_stroke = Stroke()
-            
-        elif self._tag == "point":
-            point = Point()
-
-            for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
-                if attrs.has_key(key):
-                    value = attrs[key].encode("UTF-8")
-                    if key in ("pressure", "xtilt", "ytilt"):
-                        value = float(value)
-                    else:
-                        value = int(float(value))
-                else:
-                    value = None
-
-                setattr(point, key, value)
-
-            self._curr_stroke.append_point(point)
-
-    def _end_element(self, name):
-        if name == "character-collection":
-            for s in ["_tag", "_curr_char", "_curr_writing", "_curr_width",
-                      "_curr_height", "_curr_utf8", "_curr_stroke",
-                      "_curr_chars", "_curr_set_name"]:
-                if s in self.__dict__:
-                    del self.__dict__[s]
-               
-        if name == "set":
-            self.set_characters(self._curr_set_name, self._curr_chars)
-
-        if name == "character":
-            if self._curr_utf8:
-                self._curr_char.set_utf8(self._curr_utf8)
-            if self._curr_width:
-                self._curr_writing.set_width(self._curr_width)
-            if self._curr_height:
-                self._curr_writing.set_height(self._curr_height)
-            self._curr_chars.append(self._curr_char)
-
-        if name == "stroke":
-            if len(self._curr_stroke) > 0:
-                self._curr_writing.append_stroke(self._curr_stroke)
-            self._stroke = None
-
-        self._tag = None
-
-    def _char_data(self, data):
-        if self._tag == "utf8":
-            self._curr_utf8 = data.encode("UTF-8")
-        if self._tag == "width":
-            self._curr_width = int(data)
-        elif self._tag == "height":
-            self._curr_height = int(data)
