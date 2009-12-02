@@ -191,6 +191,10 @@ def _adapt_character(char):
     # converts an object into a BLOB
     return base64.b64encode(char.write_string(gzip=True))
 
+def _gzipbz2(path):
+   return (True if path.endswith(".gz") or path.endswith(".gzip") else False,
+           True if path.endswith(".bz2") or path.endswith(".bzip2") else False)
+
 class CharacterCollection(_XmlBase):
     """
     A collection of L{Characters<Character>}.
@@ -237,7 +241,23 @@ class CharacterCollection(_XmlBase):
 """
 
     def __init__(self, path=":memory:"):
-        self.bind(path)
+        if path is None:
+            path = ":memory:"
+
+        if not path in ("", ":memory:") and not path.endswith(".chardb"):
+            # this should be an XML character collection
+
+            gzip, bz2 = _gzipbz2(path)
+
+            self.bind(":memory:")
+
+            self.read(path, gzip=gzip, bz2=bz2)
+          
+            self._path = path # contains the path to the xml file
+        else:
+            # this should be either a .chardb, ":memory:" or ""
+            self.bind(path)
+            self._path = None
 
     # DB utils
 
@@ -326,10 +346,16 @@ CREATE INDEX character_setid_index ON characters(setid);
             self._create_tables()
 
         self._update_set_ids()
-        self._path = path
+        self._dbpath = path
 
-    def get_filename(self):
-        return None if self._path in (":memory:", "") else self._path
+    def get_db_filename(self):
+        """
+        Returns the db file which is internally used by the collection.
+
+        @rtype: str or None
+        @return: file path or None if in memory db
+        """
+        return None if self._dbpath in (":memory:", "") else self._dbpath
 
     def commit(self):
         """
@@ -337,6 +363,45 @@ CREATE INDEX character_setid_index ON characters(setid);
         """
         self._charpool.clear_pool()
         self._con.commit()
+
+    def save(self, path=None):
+        """
+        Save collection to a file.
+
+        @type path: str
+        @param path: path where to write the file or None if use the path \
+                     that was given to the constructor
+
+        If path ends with .chardb, it's saved as binary db file. Otherwise, it
+        will be saved as XML.
+
+        In the latter case, the file extension is used to determine whether the
+        file must be saved as plain, gzip-compressed or bzip2-compressed XML.
+
+        If path is omitted, the path that was given to the CharacterCollection
+        constructor is used.
+        """
+        if path is None:
+            if self._path is not None:
+                # an XML file was provided to constructor
+                gzip, bz2 = _gzipbz2(self._path)
+                self.write(self._path, gzip=gzip, bz2=bz2)
+        else:
+            if path.endswith(".chardb"):
+                if self._dbpath != path:
+                    # the collection changed its database name
+                    if os.path.exists(path):
+                        os.unlink(path)
+                    newcc = CharacterCollection(path)
+                    newcc.merge([self])
+                    newcc.commit()
+                    del newcc
+                    self.bind(path)
+            else:
+                gzip, bz2 = _gzipbz2(path)
+                self.write(path, gzip=gzip, bz2=bz2)
+
+        self.commit()
 
     @staticmethod
     def from_character_directory(directory,
