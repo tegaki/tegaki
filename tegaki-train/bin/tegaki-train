@@ -567,22 +567,10 @@ class CharacterCollectionFileChooserDialog(gtk.FileChooserDialog):
 
     @staticmethod
     def open_character_collection(filename):
-        if filename.endswith(".chardb"):
+        try:
             return CharacterCollection(filename)
-        else:
-            charcol = CharacterCollection()
-
-            try:
-                if filename.endswith(".gz"):
-                    charcol.read(filename, gzip=True)
-                elif filename.endswith(".bz2"):
-                    charcol.read(filename, bz2=True)
-                else:
-                    charcol.read(filename)
-            except ValueError: # incorrect XML
-                return None
-
-            return charcol
+        except ValueError:
+            return None
 
     def set_character_collection(self, charcol):
         filename = self.get_filename()
@@ -591,26 +579,7 @@ class CharacterCollectionFileChooserDialog(gtk.FileChooserDialog):
 
     @staticmethod
     def save_character_collection(charcol, filename):
-        if filename.endswith(".chardb"):
-            charcol.commit()
-
-            if filename != charcol.get_filename():               
-                # save database to file then rebind charcol to this database
-                if os.path.exists(filename):
-                    os.unlink(filename)
-                newcc = CharacterCollection(filename)
-                newcc.merge([charcol])
-                newcc.commit()
-                del newcc
-                charcol.bind(filename)
-                
-        else:
-            if filename.endswith(".gz"):
-                charcol.write(filename, gzip=True)
-            elif filename.endswith(".bz2"):
-                charcol.write(filename, bz2=True)
-            else:
-                charcol.write(filename)
+        charcol.save(filename)
 
 class QuestionDialog(gtk.MessageDialog):
 
