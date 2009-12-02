@@ -794,10 +794,11 @@ class TegakiTrain(object):
 
     def _on_add_charset_done(self, dialog, response):
         if response == gtk.RESPONSE_OK:
-            for charset in dialog.get_charsets():
+            charsets = dialog.get_charsets()
+            for charset in charsets:
                 self._treeview.append_charset(charset)
-                self._charcol.add_set(charset)
-                self._enable_save()
+            self._charcol.add_sets(charsets)
+            self._enable_save()
 
         dialog.destroy()
 
