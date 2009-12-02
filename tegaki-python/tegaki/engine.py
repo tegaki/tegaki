@@ -22,11 +22,17 @@ import platform
 from tegaki.dictutils import SortedDict
 
 class Engine(object):
+    """
+    Base class for Recognizer and Trainer.
+    """
 
     @classmethod
     def _get_search_path(cls, what):
         """
-        what: "models" or "engines"
+        Return a list of search path.  
+
+        @typ what: str
+        @param what: "models" or "engines"
         """
         libdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -81,6 +87,14 @@ class Engine(object):
 
     @classmethod
     def read_meta_file(cls, meta_file):
+        """
+        Read a .meta file.
+
+        @type meta_file: str
+        @param meta_file: meta file file to read
+
+        @rtype: dict
+        """
         f = open(meta_file)
         ret = SortedDict()
         for line in f.readlines():

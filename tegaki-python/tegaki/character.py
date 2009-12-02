@@ -42,12 +42,25 @@ from tegaki.mathutils import euclidean_distance
 from tegaki.dictutils import SortedDict
 
 class Point(dict):
+    """
+    A point in a 2-dimensional space.
+    """
 
+    #: Attributes that a point can have.
     KEYS = ("x", "y", "pressure", "xtilt", "ytilt", "timestamp")
 
     def __init__(self, x=None, y=None,
                        pressure=None, xtilt=None, ytilt=None,
                        timestamp=None):
+        """
+        @type x: int
+        @type y: int
+        @type pressure: float
+        @type xtilt: float
+        @type ytilt: float
+        @type timestamp: int
+        @param timestamp: ellapsed time since first point in milliseconds
+        """
 
         dict.__init__(self)
 
@@ -73,17 +86,44 @@ class Point(dict):
             raise AttributeError
 
     def get_coordinates(self):
+        """
+        Return (x,y) coordinates.
+
+        @rtype: tuple of two int
+        @return: (x,y) coordinates
+        """
         return (self.x, self.y)
 
     def resize(self, xrate, yrate):
+        """
+        Scale point.
+
+        @type xrate: float
+        @param xrate: the x scaling factor 
+        @type yrate: float
+        @param yrate: the y scaling factor 
+        """
         self.x = int(self.x * xrate)
         self.y = int(self.y * yrate)
 
     def move_rel(self, dx, dy):
+        """
+        Translate point.
+
+        @type dx: int
+        @param dx: relative distance from x
+        @type dy: int
+        @param yrate: relative distance from y
+        """
         self.x = self.x + dx
         self.y = self.y + dy      
 
     def to_xml(self):
+        """
+        Converts point to XML.
+
+        @rtype: str
+        """
         attrs = []
 
         for key in self.KEYS:
@@ -93,6 +133,11 @@ class Point(dict):
         return "<point %s />" % " ".join(attrs)
 
     def to_json(self):
+        """
+        Converts point to JSON.
+
+        @rtype: str
+        """
         attrs = []
 
         for key in self.KEYS:
@@ -102,6 +147,11 @@ class Point(dict):
         return "{ %s }" % ", ".join(attrs)
 
     def to_sexp(self):
+        """
+        Converts point to S-expressions.
+
+        @rtype: str
+        """
         return "(%d %d)" % (self.x, self.y)
 
     def __eq__(self, othr):
@@ -118,33 +168,68 @@ class Point(dict):
         return not(self == othr)
 
     def copy_from(self, p):
+        """
+        Replace point with another point.
+
+        @type p: L{Point}
+        @param p: the point to copy from
+        """
         self.clear()
         for k in p.keys():
             if p[k] is not None:
                 self[k] = p[k]
 
     def copy(self):
+        """
+        Return a copy of point.
+
+        @rtype: L{Point}
+        """
         return Point(**self)
 
 class Stroke(list):
+    """
+    A sequence of L{Points<Point>}.
+    """
 
     def __init__(self):
         list.__init__(self)
         self._is_smoothed = False
 
     def get_coordinates(self):
+        """
+        Return (x,y) coordinates.
+
+        @rtype: a list of tuples
+        """
         return [(p.x, p.y) for p in self]
 
     def get_duration(self):
+        """
+        Return the time that it took to draw the stroke.
+
+        @rtype: int or None
+        @return: time in millisecons or None if the information is not available
+        """
         if len(self) > 0:
             if self[-1].timestamp is not None and self[0].timestamp is not None:
                 return self[-1].timestamp - self[0].timestamp
         return None
 
     def append_point(self, point):
+        """
+        Append point to stroke.
+
+        @type point: L{Point}
+        """
         self.append(point)
 
     def to_xml(self):
+        """
+        Converts stroke to XML.
+
+        @rtype: str
+        """        
         s = "<stroke>\n"
 
         for point in self:
@@ -155,6 +240,11 @@ class Stroke(list):
         return s
 
     def to_json(self):
+        """
+        Converts stroke to JSON.
+
+        @rtype: str
+        """        
         s = "{\"points\" : ["
         
         s += ",".join([point.to_json() for point in self])
@@ -164,6 +254,11 @@ class Stroke(list):
         return s
 
     def to_sexp(self):
+        """
+        Converts stroke to S-expressions.
+
+        @rtype: str
+        """        
         return "(" + "".join([p.to_sexp() for p in self]) + ")"
 
     def __eq__(self, othr):
@@ -183,22 +278,41 @@ class Stroke(list):
         return not(self == othr)
 
     def copy_from(self, s):
+        """
+        Replace stroke with another stroke.
+
+        @type s: L{Stroke}
+        @param s: the stroke to copy from
+        """
         self.clear()
         self._is_smoothed = s.get_is_smoothed()
         for p in s:
             self.append_point(p.copy())
 
     def copy(self):
+        """
+        Return a copy of stroke.
+
+        @rtype: L{Stroke}
+        """
         c = Stroke()
         c.copy_from(self)
         return c
 
     def get_is_smoothed(self):
+        """
+        Return whether the stroke has been smoothed already or not.
+
+        @rtype: boolean
+        """
         return self._is_smoothed
 
     def smooth(self):
         """
-        Smoothing method based on a (simple) moving average algorithm. 
+        Visually improve the rendering of stroke by averaging points
+        with their neighbours.
+
+        The method is based on a (simple) moving average algorithm. 
     
         Let p = p(0), ..., p(N) be the set points of this stroke, 
             w = w(-M), ..., w(0), ..., w(M) be a set of weights.
@@ -239,6 +353,9 @@ class Stroke(list):
         self._is_smoothed = True
 
     def clear(self):
+        """
+        Remove all points from stroke.
+        """
         while len(self) != 0:
             del self[0]
         self._is_smoothed = False
@@ -246,6 +363,8 @@ class Stroke(list):
     def downsample(self, n):
         """
         Downsample by keeping only 1 sample every n samples.
+
+        @type n: int
         """
         if len(self) == 0:
             return
@@ -261,6 +380,8 @@ class Stroke(list):
         """
         Downsample by removing consecutive samples for which
         the euclidean distance is inferior to threshold.
+
+        @type threshod: int
         """
         if len(self) == 0:
             return
@@ -285,6 +406,8 @@ class Stroke(list):
         """
         'Artificially' increase sampling by adding n linearly spaced points
         between consecutive points.
+
+        @type n: int
         """
         self._upsample(lambda d: n)
 
@@ -292,6 +415,8 @@ class Stroke(list):
         """
         'Artificially' increase sampling, using threshold to determine
         how many samples to add between consecutive points.
+
+        @type threshold: int
         """
         self._upsample(lambda d: int(floor(float(d) / threshold - 1)))
 
@@ -340,11 +465,14 @@ class Stroke(list):
         self.copy_from(new_s)
 
 class Writing(object):
+    """
+    A sequence of L{Strokes<Stroke>}.
+    """
 
-    # Default width and height of the canvas
-    # If the canvas used to create the Writing object
-    # has a different width or height, then
-    # the methods set_width and set_height need to be used
+    #: Default width and height of the canvas
+    #: If the canvas used to create the Writing object
+    #: has a different width or height, then
+    #: the methods set_width and set_height need to be used
     WIDTH = 1000
     HEIGHT = 1000
 
@@ -357,9 +485,18 @@ class Writing(object):
         self.clear()
 
     def clear(self):
+        """
+        Remove all strokes from writing.
+        """
         self._strokes = []
 
     def get_duration(self):
+        """
+        Return the time that it took to draw the strokes.
+
+        @rtype: int or None
+        @return: time in millisecons or None if the information is not available
+        """
         if self.get_n_strokes() > 0:
             if self._strokes[0][0].timestamp is not None and \
                self._strokes[-1][-1].timestamp is not None:
@@ -368,6 +505,12 @@ class Writing(object):
         return None
 
     def move_to(self, x, y):
+        """
+        Start a new stroke at (x,y).
+
+        @type x: int
+        @type y: int
+        """
         # For compatibility
         point = Point()
         point.x = x
@@ -376,6 +519,12 @@ class Writing(object):
         self.move_to_point(point)
 
     def line_to(self, x, y):
+        """
+        Add point with coordinates (x,y) to the current stroke.
+
+        @type x: int
+        @type y: int
+        """
         # For compatibility
         point = Point()
         point.x = x
@@ -384,21 +533,45 @@ class Writing(object):
         self.line_to_point(point)
               
     def move_to_point(self, point):
+        """
+        Start a new stroke at point.
+
+        @type point: L{Point}
+        """
         stroke = Stroke()
         stroke.append_point(point)
 
         self.append_stroke(stroke)
         
     def line_to_point(self, point):
+        """
+        Add point to the current stroke.
+
+        @type point: L{Point}
+        """
         self._strokes[-1].append(point)
 
     def get_n_strokes(self):
+        """
+        Return the number of strokes.
+
+        @rtype: int
+        """
         return len(self._strokes)
 
     def get_n_points(self):
+        """
+        Return the total number of points.
+        """
         return sum([len(s) for s in self._strokes])
 
     def get_strokes(self, full=False):
+        """
+        Return strokes.
+
+        @type full: boolean
+        @param full: whether to return strokes as objects or as (x,y) pairs
+        """
         if not full:
             # For compatibility
             return [[(int(p.x), int(p.y)) for p in s] for s in self._strokes]
@@ -406,25 +579,64 @@ class Writing(object):
             return self._strokes
 
     def append_stroke(self, stroke):
+        """
+        Add a new stroke.
+
+        @type stroke: L{Stroke}
+        """
         self._strokes.append(stroke)
 
     def insert_stroke(self, i, stroke):
+        """
+        Insert a stroke at a given position.
+
+        @type stroke: L{Stroke}
+        @type i: int
+        @param i: position at which to add the stroke (starts at 0)
+        """
         self._strokes.insert(i, stroke)
 
     def remove_stroke(self, i):
+        """
+        Remove the ith stroke.
+
+        @type i: int
+        @param i: position at which to delete a stroke (starts at 0)
+        """
         if self.get_n_strokes() - 1 >= i:
             del self._strokes[i]
 
     def remove_last_stroke(self):
+        """
+        Remove last stroke.
+
+        Equivalent to remove_stroke(n-1) where n is the number of strokes.
+        """
         if self.get_n_strokes() > 0:
             del self._strokes[-1]
 
     def replace_stroke(self, i, stroke):
+        """
+        Replace the ith stroke with a new stroke.
+
+        @type i: int
+        @param i: position at which to replace a stroke (starts at 0)
+        @type stroke: L{Stroke}
+        @param stroke: the new stroke
+        """
         if self.get_n_strokes() - 1 >= i:
             self.remove_stroke(i)
             self.insert_stroke(i, stroke)
 
     def resize(self, xrate, yrate):
+        """
+        Scale writing.
+
+        @type xrate: float
+        @param xrate: the x scaling factor 
+        @type yrate: float
+        @param yrate: the y scaling factor 
+        """
         for stroke in self._strokes:
             if len(stroke) == 0:
                 continue
@@ -435,6 +647,14 @@ class Writing(object):
                 point.resize(xrate, yrate)
 
     def move_rel(self, dx, dy):
+        """
+        Translate writing.
+
+        @type dx: int
+        @param dx: relative distance from current position
+        @type dy: int
+        @param yrate: relative distance from current position
+        """
         for stroke in self._strokes:
             if len(stroke) == 0:
                 continue
@@ -445,6 +665,12 @@ class Writing(object):
                 point.move_rel(dx, dy)
 
     def size(self):
+        """
+        Return writing size.
+
+        @rtype: (x, y, width, height)
+        @return: (x,y) are the coordinates of the upper-left point
+        """
         xmin, ymin = 4294967296, 4294967296 # 2^32
         xmax, ymax = 0, 0
         
@@ -458,10 +684,20 @@ class Writing(object):
         return (xmin, ymin, xmax-xmin, ymax-ymin)
 
     def normalize(self):
+        """
+        Call L{normalize_size} and L{normalize_position} consecutively.
+        """
         self.normalize_size()
         self.normalize_position()
 
     def normalize_position(self):
+        """
+        Translate character so as to have the same amount of space to
+        each side of the drawing box.
+
+        It improves the quality of characters by making them
+        more centered on the drawing box.
+        """
         x, y, width, height = self.size()
 
         dx = (self._width - width) / 2 - x
@@ -470,6 +706,12 @@ class Writing(object):
         self.move_rel(dx, dy)
 
     def normalize_size(self):
+        """
+        Scale character to match a given, fixed size.
+
+        This improves the quality of characters which are too big or too small.
+        """
+
         # Note: you should call normalize_position() after normalize_size()
         x, y, width, height = self.size()
 
@@ -492,6 +734,8 @@ class Writing(object):
     def downsample(self, n):
         """
         Downsample by keeping only 1 sample every n samples.
+
+        @type n: int
         """
         for s in self._strokes:
             s.downsample(n)
@@ -500,6 +744,8 @@ class Writing(object):
         """
         Downsample by removing consecutive samples for which
         the euclidean distance is inferior to threshold.
+
+        @type threshod: int
         """
         for s in self._strokes:
             s.downsample_threshold(threshold)
@@ -508,6 +754,8 @@ class Writing(object):
         """
         'Artificially' increase sampling by adding n linearly spaced points
         between consecutive points.
+
+        @type n: int
         """
         for s in self._strokes:
             s.upsample(n)
@@ -516,23 +764,52 @@ class Writing(object):
         """
         'Artificially' increase sampling, using threshold to determine
         how many samples to add between consecutive points.
+
+        @type threshold: int
         """
         for s in self._strokes:
             s.upsample_threshold(threshold)
 
     def get_width(self):
+        """
+        Return the width of the drawing box.
+
+        @rtype: int
+        """
         return self._width
     
     def set_width(self, width):
+        """
+        Set the drawing box width.
+
+        This is necessary if the points which are added were not drawn in
+        1000x1000 drawing box.
+        """
         self._width = width
 
     def get_height(self):
+        """
+        Return the height of the drawing box.
+
+        @rtype: int
+        """
         return self._height
 
     def set_height(self, height):
+        """
+        Set the drawing box height.
+
+        This is necessary if the points which are added were not drawn in
+        1000x1000 drawing box.
+        """
         self._height = height
 
     def to_xml(self):
+        """
+        Converts writing to XML.
+
+        @rtype: str
+        """    
         s = "<width>%d</width>\n" % self.get_width()
         s += "<height>%d</height>\n" % self.get_height()
 
@@ -547,6 +824,11 @@ class Writing(object):
         return s
 
     def to_json(self):
+        """
+        Converts writing to JSON.
+
+        @rtype: str
+        """    
         s = "{ \"width\" : %d, " % self.get_width()
         s += "\"height\" : %d, " % self.get_height()
         s += "\"strokes\" : ["
@@ -558,6 +840,11 @@ class Writing(object):
         return s
 
     def to_sexp(self):
+        """
+        Converts writing to S-expressions.
+
+        @rtype: str
+        """    
         return "((width %d)(height %d)(strokes %s))" % \
             (self._width, self._height, 
              "".join([s.to_sexp() for s in self._strokes]))                    
@@ -589,7 +876,19 @@ class Writing(object):
     def __ne__(self, othr):
         return not(self == othr)
 
+
+        self.clear()
+        self._is_smoothed = s.get_is_smoothed()
+        for p in s:
+            self.append_point(p.copy())
+
     def copy_from(self, w):
+        """
+        Replace writing with another writing.
+
+        @type w: L{Writing}
+        @param w: the writing to copy from
+        """
         self.clear()
         self.set_width(w.get_width())
         self.set_height(w.get_height())
@@ -598,18 +897,38 @@ class Writing(object):
             self.append_stroke(s.copy())
 
     def copy(self):
+        """
+        Return a copy writing.
+
+        @rtype: L{Writing}
+        """
         c = Writing()
         c.copy_from(self)
         return c
 
     def smooth(self):
+        """
+        Smooth all strokes. See L{Stroke.smooth}.
+        """
         for stroke in self._strokes:
             stroke.smooth()
 
 class _XmlBase(object):
+    """
+    Class providing XML functionality to L{Character} and \
+    L{CharacterCollection}.
+    """
 
     @classmethod
     def validate(cls, string):
+        """
+        Validate XML against a DTD.
+
+        @type string: str
+        @param string: a string containing XML
+
+        DTD must be an attribute of cls.
+        """
         try:
             dtd = etree.DTD(cStringIO.StringIO(cls.DTD))
             root = etree.XML(string.strip())
@@ -624,7 +943,21 @@ class _XmlBase(object):
        
     def read(self, file, gzip=False, bz2=False, compresslevel=9):
         """
-        raises ValueError if incorrect XML
+        Read XML from a file.
+
+        @type file: str or file
+        @param file: path to file or file object
+
+        @type gzip: boolean
+        @param gzip: whether the file is gzip-compressed or not
+
+        @type bz2: boolean
+        @param bz2: whether the file is bzip2-compressed or not
+
+        @type compresslevel: int
+        @param compresslevel: compression level (see gzip module documentation)
+
+        Raises ValueError if incorrect XML.
         """
         parser = self._get_parser()
         try:
@@ -647,6 +980,14 @@ class _XmlBase(object):
             raise ValueError
 
     def read_string(self, string, gzip=False, bz2=False, compresslevel=9):
+        """
+        Read XML from string.
+
+        @type string: str
+        @param string: string containing XML
+
+        Other parameters are identical to L{read}.
+        """
         if gzip:
             io = cStringIO.StringIO(string)
             io = gzipm.GzipFile(fileobj=io, compresslevel=compresslevel)
@@ -661,6 +1002,21 @@ class _XmlBase(object):
         parser.Parse(string)
 
     def write(self, file, gzip=False, bz2=False, compresslevel=9):
+        """
+        Write XML to a file.
+
+        @type file: str or file
+        @param file: path to file or file object
+
+        @type gzip: boolean
+        @param gzip: whether the file need be gzip-compressed or not
+
+        @type bz2: boolean
+        @param bz2: whether the file need be bzip2-compressed or not
+
+        @type compresslevel: int
+        @param compresslevel: compression level (see gzip module documentation)
+        """
         if type(file) == str:
             if gzip:
                 file = gzipm.GzipFile(file, "w", compresslevel=compresslevel)
@@ -678,6 +1034,14 @@ class _XmlBase(object):
             file.write(self.to_xml())
 
     def write_string(self, gzip=False, bz2=False, compresslevel=9):
+        """
+        Write XML to string.
+
+        @rtype: str
+        @return: string containing XML
+
+        Other parameters are identical to L{write}.
+        """
         if bz2:
             try:
                 return bz2m.compress(self.to_xml(), compresslevel=compresslevel)
@@ -702,6 +1066,12 @@ class _XmlBase(object):
         return parser
 
 class Character(_XmlBase):
+    """
+    A handwritten character.
+
+    A Character is composed of meta-data and handwriting data. 
+    Handwriting data are contained in L{Writing} objects.
+    """
 
     DTD = \
 """
@@ -727,24 +1097,66 @@ class Character(_XmlBase):
         self._utf8 = None
 
     def get_utf8(self):
+        """
+        Return the label of the character.
+
+        @rtype: str
+        """
         return self._utf8
 
     def get_unicode(self):
+        """
+        Return the label character.
+
+        @rtype: unicode
+        """
         return unicode(self.get_utf8(), "utf8")
         
     def set_utf8(self, utf8):
+        """
+        Set the label the character.
+
+        @type utf8: str
+        """
         self._utf8 = utf8
 
     def set_unicode(self, uni):
+        """
+        Set the label of the character.
+
+        @type uni: unicode
+        """
         self._utf8 = uni.encode("utf8")
 
     def get_writing(self):
+        """
+        Return the handwriting data of the character.
+
+        @rtype: L{Writing}
+        """
         return self._writing
 
     def set_writing(self, writing):
+        """
+        Set the handwriting data of the character.
+
+        @type writing: L{Writing}
+        """
+
         self._writing = writing       
 
+    def hash(self):
+        """
+        Return a sha1 digest for that character.
+        """
+        return hashlib.sha1(self.to_xml()).hexdigest()
+
     def to_xml(self):
+        """
+        Converts character to XML.
+
+        @rtype: str
+        """    
         s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         
         s += "<character>\n"
@@ -757,10 +1169,12 @@ class Character(_XmlBase):
 
         return s
 
-    def hash(self):
-        return hashlib.sha1(self.to_xml()).hexdigest()
-
     def to_json(self):
+        """
+        Converts character to JSON.
+
+        @rtype: str
+        """    
         s = "{"
 
         attrs = ["\"utf8\" : \"%s\"" % self._utf8,
@@ -773,6 +1187,11 @@ class Character(_XmlBase):
         return s
 
     def to_sexp(self):
+        """
+        Converts character to S-expressions.
+
+        @rtype: str
+        """    
         return "(character (value %s)" % self._utf8 + \
                     self._writing.to_sexp()[1:-1]
 
@@ -786,11 +1205,30 @@ class Character(_XmlBase):
     def __ne__(self, othr):
         return not(self == othr)
 
+
+        self.clear()
+        self.set_width(w.get_width())
+        self.set_height(w.get_height())
+        
+        for s in w.get_strokes(True):
+            self.append_stroke(s.copy())
+
     def copy_from(self, c):
+        """
+        Replace character with another character.
+
+        @type c: L{Character}
+        @param c: the character to copy from
+        """
         self.set_utf8(c.get_utf8())
         self.set_writing(c.get_writing().copy())
 
     def copy(self):
+        """
+        Return a copy of character.
+
+        @rtype: L{Character}
+        """
         c = Character()
         c.copy_from(self)
         return c

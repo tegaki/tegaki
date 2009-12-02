@@ -27,15 +27,40 @@ from tegaki.engine import Engine
 from tegaki.dictutils import SortedDict
 
 class RecognizerError(Exception):
+    """
+    Raised when something went wrong in a Recognizer.
+    """
     pass
 
 class Recognizer(Engine):
+    """
+    Base Recognizer class.
+
+    A recognizer can recognize handwritten characters based on a model.
+
+    The L{open} method should be used to load a model from an
+    absolute path on the disk.
+
+    The L{set_model} method should be used to load a model from its name.
+    Two models can't have the same name within one recognizer.
+    However, two models can be named the same if they belong to two different
+    recognizers.
+
+    Recognizers usually have a corresponding L{Trainer}.
+    """
 
     def __init__(self):
         self._model = None
    
     @classmethod
     def get_available_recognizers(cls):
+        """
+        Return recognizers installed on the system.
+
+        @rtype: dict
+        @return: a dict where keys are recognizer names and values \
+                 are recognizer classes
+        """
         if not "available_recognizers" in cls.__dict__:
             cls._load_available_recognizers()
         return cls.available_recognizers
@@ -65,7 +90,10 @@ class Recognizer(Engine):
     @staticmethod
     def get_all_available_models():
         """
-        Returns a flat list of available models from all recognizers.
+        Return available models from all recognizers.
+
+        @rtype: list
+        @return: a list of tuples (recognizer_name, model_name, meta_dict)
         """
         all_models = []
         for r_name, klass in Recognizer.get_available_recognizers().items():
@@ -75,6 +103,12 @@ class Recognizer(Engine):
 
     @classmethod
     def get_available_models(cls):
+        """
+        Return available models for the current recognizer.
+
+        @rtype; dict
+        @return: a dict where keys are models names and values are meta dict
+        """
         if "available_models" in cls.__dict__: 
             return cls.available_models
         else:
@@ -117,22 +151,41 @@ class Recognizer(Engine):
 
     def open(self, path):
         """
-        raises RecognizerError if could not open
+        Open a model.
+
+        @type path: str
+        @param path: model path
+        
+        Raises RecognizerError if could not open.
         """
         raise NotImplementedError
 
     def set_options(self, options):
         """
         Process recognizer/model specific options.
+
+        @type options: dict
+        @param options: a dict where keys are option names and values are \
+                        option values
         """
         pass
 
     def get_model(self):
+        """
+        Return the currently selected model.
+
+        @rtype: str
+        @return: name which identifies model uniquely on the system
+        """
         return self._model
 
     def set_model(self, model_name):
         """
-        Sets a model with a model available on the system.
+        Set the currently selected model.
+
+        @type model_name: str
+        @param model_name: name which identifies model uniquely on the system
+
         model_name must exist for that recognizer.
         """
         if not model_name in self.__class__.get_available_models():
@@ -151,8 +204,18 @@ class Recognizer(Engine):
     # To be implemented by child class
     def recognize(self, writing, n=10):
         """
-        Recognizes writing and returns n candidates.
-        A model must be set with set_model() beforehand.
+        Recognizes handwriting.
+
+        @type writing: L{Writing}
+        @param writing: the handwriting to recognize
+
+        @type n: int
+        @param n: the number of candidates to return
+
+        @rtype: list
+        @return: a list of tuple (label, probability/distance)
+        
+        A model must be loaded with open or set_model() beforehand.
         """
         raise NotImplementedError
 

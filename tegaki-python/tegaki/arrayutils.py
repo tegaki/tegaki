@@ -20,11 +20,35 @@
 # - Mathieu Blondel
 
 def array_sample(arr, rate):
+    """
+    Sample array.
+
+    @type  arr: list/tuple/array
+    @param arr: the list/tuple/array to sample
+    @type rate: float
+    @param rate: the rate (between 0 and 1.0) at which to sample
+    @rtype: list
+    @return: the sampled list
+
+    >>> array_sample([1,2,3,4,5,6], 0.5)
+    [1, 3, 5]
+    """
     n = int(round(1 / rate))
     
     return [arr[i] for i in range(0, len(arr), n)]
 
 def array_flatten(l, ltypes=(list, tuple)):
+    """
+    Reduce array of possibly multiple dimensions to one dimension.
+
+    @type  l: list/tuple/array
+    @param l: the list/tuple/array to flatten
+    @rtype: list
+    @return: the flatten list
+
+    >>> array_flatten([[1,2,3], [4,5], [[7,8]]])
+    [1, 2, 3, 4, 5, 7, 8]
+    """
     i = 0
     while i < len(l):
         while isinstance(l[i], ltypes):
@@ -38,6 +62,19 @@ def array_flatten(l, ltypes=(list, tuple)):
     return l
 
 def array_reshape(arr, n):
+    """
+    Reshape one-dimensional array to a list of n-element lists.
+
+    @type  arr: list/tuple/array
+    @param arr: the array to reshape
+    @type  n: int
+    @param n: the number of elements in each list
+    @rtype: list
+    @return: the reshaped array
+
+    >>> array_reshape([1,2,3,4,5,6,7,8,9], 3)
+    [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    """
     newarr = []
     subarr = []
     
@@ -54,6 +91,19 @@ def array_reshape(arr, n):
     return newarr
 
 def array_split(seq, p):
+    """
+    Split an array into p arrays of about the same size.
+
+    @type  seq: list/tuple/array
+    @param seq: the array to split
+    @type  p: int
+    @param p: the split size
+    @rtype: list
+    @return: the split array
+
+    >>> array_split([1,2,3,4,5,6,7], 3)
+    [[1, 2, 3], [4, 5], [6, 7]]
+    """
     newseq = []
     n = len(seq) / p    # min items per subsequence
     r = len(seq) % p    # remaindered items
@@ -66,17 +116,42 @@ def array_split(seq, p):
     return newseq
 
 def array_mean(arr):
+    """
+    Calculate the mean of the elements contained in an array.
+
+    @type  arr: list/tuple/array
+    @rtype: float
+    @return: mean
+
+    >>> array_mean([100, 150, 300])
+    183.33333333333334
+    """
     return float(sum(arr)) / float(len(arr))
 
 def array_variance(arr):
+    """
+    Calculate the variance of the elements contained in an array.
+
+    @type  arr: list/tuple/array
+    @rtype: float
+    @return: variance
+
+    >>> array_variance([100, 150, 300])
+    7222.2222222222226
+    """
     mean = array_mean(arr)
     return array_mean([(val - mean) ** 2 for val in arr])
 
 def array_mean_vector(vectors):
     """
-    Calculate the means of vector components.
-    This assumes that all vectors have the same number of dimensions.
-    Ex: array_mean_vector([ [1,2], [3,4] ]) returns [2, 3]
+    Calculate the mean of the vectors, element-wise.
+
+    @type arr: list of vectors
+    @rtype: list of floats
+    @return: list of means
+
+    >>> array_mean_vector([[10,20], [100, 200]])
+    [55.0, 110.0]
     """
     assert(len(vectors) > 0)
 
@@ -92,8 +167,14 @@ def array_mean_vector(vectors):
 
 def array_variance_vector(vectors):
     """
-    Calculate the variances of vector components.
-    This assumes that all vectors have the same number of dimensions.
+    Calculate the variance of the vectors, element-wise.
+
+    @type  arr: list of vectors
+    @rtype: list of floats
+    @return: list of variances
+
+    >>> array_variance_vector([[10,20], [100, 200]])
+    [2025.0, 8100.0]
     """
     assert(len(vectors) > 0)
 
@@ -109,8 +190,18 @@ def array_variance_vector(vectors):
 
 def array_covariance_matrix(vectors, non_diagonal=False):
     """
-    Calculate the covariance matrix for vectors.
-    If non_diagonal is True, non-diagonal values are also calculated.
+    Calculate the covariance matrix of vectors.
+
+    @type vectors: list of arrays
+    @type non_diagonal: boolean
+    @param non_diagonal: whether to calculate non-diagonal elements of the \
+                         matrix or not
+
+    >>> array_covariance_matrix([[10,20], [100, 200]])
+    [2025.0, 0.0, 0.0, 8100.0]
+
+    >>> array_covariance_matrix([[10,20], [100, 200]], non_diagonal=True)
+    [2025.0, 4050.0, 4050.0, 8100.0]
     """
     assert(len(vectors) > 0)
 
@@ -146,8 +237,10 @@ def array_covariance_matrix(vectors, non_diagonal=False):
 
 def array_add(arr1, arr2):
     """
-    Add arr1 and arr2 element by element.
-    Ex: array_add([1,2], [3,4)) returns [4, 6].
+    Add two arrays element-wise.
+
+    >>> array_add([1,2],[3,4])
+    [4, 6]
     """
     assert(len(arr1) == len(arr1))
 
@@ -160,8 +253,10 @@ def array_add(arr1, arr2):
 
 def array_mul(arr1, arr2):
     """
-    Multiply arr1 and arr2 element by element.
-    Ex: array_mul([1,2], [3,4)) returns [3, 8].
+    Multiply two arrays element-wise.
+
+    >>> array_add([1,2],[3,4])
+    [3, 8]
     """
     assert(len(arr1) == len(arr1))
 

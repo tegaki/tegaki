@@ -28,15 +28,30 @@ from tegaki.engine import Engine
 from tegaki.dictutils import SortedDict
 
 class TrainerError(Exception):
+    """
+    Raised when something went wrong in a Trainer.
+    """
     pass
 
 class Trainer(Engine):
+    """
+    Base Trainer class.
+
+    A trainer can train models based on sample data annotated with labels.
+    """
 
     def __init__(self):
         pass
    
     @classmethod
     def get_available_trainers(cls):
+        """
+        Return trainers installed on the system.
+
+        @rtype: dict
+        @return: a dict where keys are trainer names and values \
+                 are trainer classes
+        """
         if not "available_trainers" in cls.__dict__:
             cls._load_available_trainers()
         return cls.available_trainers
@@ -66,19 +81,32 @@ class Trainer(Engine):
     def set_options(self, options):
         """
         Process trainer/model specific options.
+
+        @type options: dict
+        @param options: a dict where keys are option names and values are \
+                        option values
         """
         pass
 
     # To be implemented by child class
-    def train(self, character_collection, meta):
+    def train(self, character_collection, meta, path=None):
         """
-        character_collection: a tegaki.character.CharacterCollection object
-        meta: a dictionary containing the following keys
+        Train a model.
+
+        @type character_collection: L{CharacterCollection}
+        @param character_collection: collection containing training data
+
+        @type meta: dict
+        @param meta: meta dict obtained with L{Engine.read_meta_file}
+
+        @type path: str
+        @param path: path to the ouput model \
+                     (if None, the personal directory is assumed)
+
+        The meta dict needs the following keys:
             - name: full name (mandatory)
             - shortname: name with less than 3 characters (mandatory)
             - language: model language (optional)
-        path: path to the ouput model
-              (if None, the personal directory is assumed)
         """
         raise NotImplementedError
 
