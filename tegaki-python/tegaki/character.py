@@ -1075,7 +1075,6 @@ class Character(_XmlBase):
     Building character objects
     ==========================
 
-
     A character can be built from scratch progmatically:
 
     >>> s = Stroke()
@@ -1109,6 +1108,8 @@ class Character(_XmlBase):
     file extension (.gz, .bz2).
 
     >>> c = Character("myfile.xml.gz")
+
+    The recommended extension for XML character files is .xml.
 
     Writing XML files
     =================

@@ -208,6 +208,81 @@ class CharacterCollection(_XmlBase):
     Therefore the set name is not guaranteed to contain the utf8 value of
     the characters of that set. The utf8 value must be retrieved from each
     character individually.
+
+    Building character collection objects
+    =====================================
+
+    A character collection can be built from scratch progmatically:
+
+
+    >>> char = Character()
+    >>> charcol = CharacterCollection()
+    >>> charcol.add_set("my set")
+    >>> charcol.append_character("my set", char)
+
+    Reading XML files
+    =================
+
+    A character collection can be read from an XML file:
+
+    >>> charcol = CharacterCollection()
+    >>> charcol.read("myfile")
+
+    Gzip-compressed and bzip2-compressed XML files can also be read:
+
+    >>> charcol = CharacterCollection()
+    >>> charcol.read("myfilegz", gzip=True)
+
+    >>> charcol = Character()
+    >>> charcol.read("myfilebz", bz2=True)
+
+    A similar method read_string exists to read the XML from a string
+    instead of a file.
+
+    For convenience, you can directly load a character collection by passing it
+    the file to load. In that case, compression is automatically detected based
+    on file extension (.gz, .bz2).
+
+    >>> charcol = Character("myfile.xml.gz")
+
+    The recommended extension for XML character collection files is .charcol.
+
+    Writing XML files
+    =================
+
+    A character collection can be saved to an XML file by using the write()
+    method.
+
+    >>> charcol.write("myfile")
+
+    The write method has gzip and bz2 arguments just like read(). In addition,
+    there is a write_string method which generates a string instead of a file.
+
+    For convenience, you can save a character collection with the save() method.
+    It automatically detects compression based on the file extension.
+
+    >>> charcol.save("mynewfile.xml.bz2")
+
+    If the CharacterCollection object was passed a file when it was constructed,
+    the path can ce omitted.
+
+    >>> charcol = Character("myfile.gz")
+    >>> charcol.save()
+
+    Using .chardb files
+    ===================
+
+    XML files allow to retain human-readability and are ideal for small
+    character collections. However, they force the whole database to be kept
+    in memory. For larger collections, it's recommended to use .chardb files
+    instead. Their loading is faster and the whole collection doesn't
+    need be kept entirely in memory. However human-readability ist lost.
+
+    >>> charcol = CharacterCollection("charcol.chardb")
+    [...]
+    >>> charcol.save()
+
+    The .chardb extension is required.
     """
 
     #: With PROXY set to True, proxy objects are returned in place of
@@ -241,6 +316,12 @@ class CharacterCollection(_XmlBase):
 """
 
     def __init__(self, path=":memory:"):
+        """
+        Construct a collection.
+
+        @type path: str
+        @param path: an XML file or a DB file (see also L{bind})
+        """
         if path is None:
             path = ":memory:"
 
