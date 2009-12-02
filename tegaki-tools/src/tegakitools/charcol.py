@@ -35,10 +35,7 @@ def _get_charcol(charcol_type, charcol_path):
         # charcol_path is actually a directory here
         return CharacterCollection.from_character_directory(charcol_path)
 
-    elif charcol_type == TYPE_CHARCOL:
-        return read_charcol_from(charcol_path)
-
-    elif charcol_type == TYPE_CHARCOL_DB:
+    elif charcol_type in (TYPE_CHARCOL, TYPE_CHARCOL_DB):
         return CharacterCollection(charcol_path)
 
     elif charcol_type == TYPE_TOMOE:
@@ -83,17 +80,3 @@ def get_aggregated_charcol(tuples, dbpath=None):
     charcol.merge(charcols)
 
     return charcol
-
-def read_charcol_from(path):
-    charcol = CharacterCollection()
-    gzip = False; bz2 = False
-    if path.endswith(".gz"): gzip = True
-    if path.endswith(".bz2"): bz2 = True
-    charcol.read(path, gzip=gzip, bz2=bz2)
-    return charcol
-
-def write_charcol_to(charcol, path):
-    gzip = False; bz2 = False
-    if path.endswith(".gz"): gzip = True
-    if path.endswith(".bz2"): bz2 = True
-    charcol.write(path, gzip=gzip, bz2=bz2)

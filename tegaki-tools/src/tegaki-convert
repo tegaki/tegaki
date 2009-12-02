@@ -73,12 +73,7 @@ class TegakiConvert(object):
             # outputs to stdout if not output path specified
             print charcol.to_xml()
         else:
-            if self._output_path.endswith(".chardb"):
-                charcol.commit()                
-            else:
-                # save in XML format (with support for .gz and .bz2)
-                write_charcol_to(charcol, self._output_path)
-
+            charcol.save(self._output_path)
 
 parser = OptionParser(usage="usage: %prog [options] [output-path]",
                       version="%prog " + VERSION)
