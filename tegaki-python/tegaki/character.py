@@ -1071,6 +1071,74 @@ class Character(_XmlBase):
 
     A Character is composed of meta-data and handwriting data. 
     Handwriting data are contained in L{Writing} objects.
+
+    Building character objects
+    ==========================
+
+
+    A character can be built from scratch progmatically:
+
+    >>> s = Stroke()
+    >>> s.append_point(Point(10, 20))
+    >>> w = Writing()
+    >>> w.append_stroke(s)
+    >>> c = Character()
+    >>> c.set_writing(writing)
+
+    Reading XML files
+    =================
+
+    A character can be read from an XML file:
+
+    >>> c = Character()
+    >>> c.read("myfile")
+
+    Gzip-compressed and bzip2-compressed XML files can also be read:
+
+    >>> c = Character()
+    >>> c.read("myfilegz", gzip=True)
+
+    >>> c = Character()
+    >>> c.read("myfilebz", bz2=True)
+
+    A similar method read_string exists to read the XML from a string
+    instead of a file.
+
+    For convenience, you can directly load a character by passing it the
+    file to load. In that case, compression is automatically detected based on
+    file extension (.gz, .bz2).
+
+    >>> c = Character("myfile.xml.gz")
+
+    Writing XML files
+    =================
+
+    A character can be saved to an XML file by using the write() method.
+
+    >>> c.write("myfile")
+
+    The write method has gzip and bz2 arguments just like read(). In addition,
+    there is a write_string method which generates a string instead of a file.
+
+    For convenience, you can save a character with the save() method.
+    It automatically detects compression based on the file extension.
+
+    >>> c.save("mynewfile.xml.bz2")
+
+    If the Character object was passed a file when it was constructed,
+    the path can ce omitted.
+
+    >>> c = Character("myfile.gz")
+    >>> c.save()
+
+    >>> c = Character()
+    >>> c.save()
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    File "tegaki/character.py", line 1238, in save
+        raise ValueError, "A path must be specified"
+    ValueError: A path must be specified
+
     """
 
     DTD = \
@@ -1092,9 +1160,27 @@ class Character(_XmlBase):
 
 """
 
-    def __init__(self):
+    def __init__(self, path=None):
+        """
+        Creates a new Character.
+
+        @type path: str or None
+        @param path: path to file to load or None if empty character
+
+        The file extension is used to determine whether the file is plain,
+        gzip-compressed or bzip2-compressed XML.
+        """
         self._writing = Writing()
         self._utf8 = None
+        self._path = path
+
+        if path is not None:
+            gzip = True if path.endswith(".gz") or path.endswith(".gzip") \
+                        else False
+            bz2 = True if path.endswith(".bz2") or path.endswith(".bzip2") \
+                       else False
+
+            self.read(path, gzip=gzip, bz2=bz2)
 
     def get_utf8(self):
         """
@@ -1151,6 +1237,29 @@ class Character(_XmlBase):
         """
         return hashlib.sha1(self.to_xml()).hexdigest()
 
+    def save(self, path=None):
+        """
+        Save character to file.
+
+        @type path: str
+        @param path: path where to write the file or None if use the path \
+                     that was given to the constructor
+
+        The file extension is used to determine whether the file is plain,
+        gzip-compressed or bzip2-compressed XML.
+        """
+        if [path, self._path] == [None, None]:
+            raise ValueError, "A path must be specified"
+        elif path is None:
+            path = self._path
+
+        gzip = True if path.endswith(".gz") or path.endswith(".gzip") \
+                    else False
+        bz2 = True if path.endswith(".bz2") or path.endswith(".bzip2") \
+                       else False
+
+        self.write(path, gzip=gzip, bz2=bz2)
+
     def to_xml(self):
         """
         Converts character to XML.
@@ -1160,7 +1269,9 @@ class Character(_XmlBase):
         s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         
         s += "<character>\n"
-        s += "  <utf8>%s</utf8>\n" % self._utf8
+
+        if self._utf8:
+            s += "  <utf8>%s</utf8>\n" % self._utf8
 
         for line in self._writing.to_xml().split("\n"):
             s += "  %s\n" % line

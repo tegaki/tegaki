@@ -24,6 +24,7 @@ import os
 import sys
 import StringIO
 import minjson
+import tempfile
 
 from tegaki.character import Point, Stroke, Writing, Character
 
@@ -118,6 +119,40 @@ class CharacterTest(unittest.TestCase):
 
         self.assertEquals(self.strokes, char.get_writing().get_strokes())      
  
+
+    def testConstructorAndSave(self):
+        file_ = os.path.join(self.currdir, "data", "character.xml")
+
+        for f in (file_, file_ + ".gzip", file_ + ".bz2", None):
+            char = Character(f)
+            if f:
+                self._testReadXML(char) # check that it is correctly loaded
+
+            files = map(tempfile.mkstemp, (".xml", ".xml.gz", ".xml.bz2"))
+            output_paths = [path for fd,path in files]
+            
+            for path in output_paths:                
+                try:
+                    # check that save with a path argument works
+                    char.save(path)
+                    newchar = Character(path)
+                    self.assertEquals(char, newchar)
+                finally:
+                    os.unlink(path)
+
+                try:
+                    # check that save with a path argument works
+                    newchar.save()
+                    newchar2 = Character(path)
+                    self.assertEquals(char, newchar2)
+                finally:
+                    os.unlink(path)
+
+        char = Character()
+        self.assertRaises(ValueError, char.save)
+
+                
+
 
     def testReadXMLFile(self):
         file = os.path.join(self.currdir, "data", "character.xml")
