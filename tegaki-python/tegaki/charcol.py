@@ -266,6 +266,11 @@ class CharacterCollection(_XmlBase):
         #print req, a, kw
         return self._c.execute(req, *a, **kw)
 
+    def _em(self, req, *a, **kw):
+        self._charpool.clear_pool()
+        #print req, a, kw
+        return self._c.executemany(req, *a, **kw)
+
     def _fo(self):
         return self._c.fetchone()
 
@@ -471,12 +476,21 @@ CREATE INDEX character_setid_index ON characters(setid);
                    
     def add_set(self, set_name):
         """
-        Add a new set_name to collection.
+        Add a new set to collection.
 
         @type set_name: str
         """
-        if set_name in self._SETIDS: return
-        self._e("INSERT INTO character_sets(name) VALUES (?)", (set_name,))
+        self.add_sets([set_name])
+
+    def add_sets(self, set_names):
+        """
+        Add new sets to collection.
+
+        @type set_names: list of str
+        """
+        set_names = [(set_name,) for set_name in set_names  \
+                        if not set_name in self._SETIDS]
+        self._em("INSERT INTO character_sets(name) VALUES (?)", set_names)
         self._update_set_ids()
 
     def remove_set(self, set_name):
