@@ -32,16 +32,25 @@ class Canvas(gtk.Widget):
     """
     A character drawing canvas.
 
-    A port of Takuro Ashie's TomoeCanvas to pygtk + additional features.
-    Also based on a tutorial by Mark Mruss.
+    This widget receives the input from the user and can return the
+    corresponding L{tegaki.Writing} objects.
+
+    It also has a "replay" method which can display a stroke-by-stroke
+    animation of the current writing.
+
+    The code was originally ported from Tomoe (C language).
+    Since then many additional features were added.
     """
 
-    # Default canvas size
+    #: Default canvas size
     DEFAULT_WIDTH = 400
     DEFAULT_HEIGHT = 400
 
+    #: Default canvas size
     DEFAULT_REPLAY_SPEED = 50 # msec
 
+    #: - the stroke-added signal is emitted when the user has added a stroke
+    #: - the drawing-stopped signal is emitted when the user has stopped drawing
     __gsignals__ = {
         "stroke_added" :     (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
         "drawing_stopped" :  (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
@@ -580,18 +589,41 @@ class Canvas(gtk.Widget):
     # Public...
 
     def get_drawing_stopped_time(self):
+        """
+        Get the inactivity time after which a character is considered drawn.
+
+        @rtype: int
+        @return: time in milliseconds
+        """
         return self._drawing_stopped_time
 
     def set_drawing_stopped_time(self, time_msec):
+        """
+        Set the inactivity time after which a character is considered drawn.
+
+        @type time_msec: int
+        @param time_msec: time in milliseconds
+        """
         self._drawing_stopped_time = time_msec
 
     def set_draw_annotations(self, draw_annotations):
+        """
+        Set whether to display stroke-number annotations or not.
+
+        @type draw_annotations: boolean
+        """
         self._draw_annotations = draw_annotations
 
     def get_draw_annotations(self):
+        """
+        Return whether stroke-number annotations are displayed or not.
+        """
         return self._draw_annotations
 
     def refresh(self, n_strokes=None, force_draw=False):
+        """
+        Update the screen.
+        """
         if self._writing:
             self._refresh(self._writing,
                          n_strokes=n_strokes,
@@ -604,6 +636,9 @@ class Canvas(gtk.Widget):
 
         If speed is None, uses the writing original speed when available or
         DEFAULT_REPLAY_SPEED when not available.
+
+        @type speed: int
+        @type speed: time between each point in milliseconds
         """
         self._draw_background()
         self._redraw()
@@ -623,6 +658,18 @@ class Canvas(gtk.Widget):
         gobject.timeout_add(speed, self._on_animate)
 
     def get_writing(self, writing_width=None, writing_height=None):
+        """
+        Return a L{tegaki.Writing} object for the current handwriting.
+
+        @type writing_width: int
+        @param writing_width: the width that the writing should have or \
+                              None if default
+        @type writing_height: int
+        @param writing_height: the height that the writing should have or \
+                              None if default
+        @rtype: Writing
+
+        """
 
         if writing_width and writing_height:
             # Convert to requested size
@@ -648,11 +695,17 @@ class Canvas(gtk.Widget):
         self.refresh(force_draw=True)
 
     def clear(self):
+        """
+        Erase the current writing.
+        """
         self._writing.clear()
 
         self.refresh(force_draw=True)
 
     def revert_stroke(self):
+        """
+        Undo the latest stroke
+        """
         n = self._writing.get_n_strokes()
 
         if n > 0:
@@ -660,20 +713,40 @@ class Canvas(gtk.Widget):
             self.refresh(force_draw=True)
 
     def normalize(self):
+        """
+        Normalize the current writing. (See L{tegaki.normalize})
+        """
         self._writing.normalize()
         self.refresh(force_draw=True)
 
     def smooth(self):
+        """
+        Smooth the current writing. (See L{tegaki.smooth})
+        """
         self._writing.smooth()
         self.refresh(force_draw=True)
 
     def set_background_character(self, character):
+        """
+        Set a character as background.
+
+        @type character: str
+        """
         self._background_character = character
 
     def get_background_writing(self):
         return self._background_writing
     
     def set_background_writing(self, writing, speed=25):
+        """
+        Set a writing as background. 
+
+        Strokes of the background writing are displayed one at a time. 
+        This is intended to let users "follow" the background writing like a
+        template.
+
+        @type writing: L{tegaki.Writing}
+        """
         self.clear()
         self._background_writing = writing
         self._speed = speed
@@ -682,6 +755,16 @@ class Canvas(gtk.Widget):
         self.refresh(force_draw=True)
 
     def set_background_color(self, r, g, b):
+        """
+        Set background color.
+
+        @type r: int
+        @param r: red
+        @type g: int
+        @param g: green
+        @type b: int
+        @param b: blue
+        """
         self._background_color = (r, g, b)
         
         if self._background_gc:
