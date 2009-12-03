@@ -133,6 +133,9 @@ class CharacterProxy(ObjectProxy):
                      "read", "read_string"]
     READ_METHODS = ["get_writing"]
 
+    def __repr__(self):
+        return "<CharacterProxy %s (%d)>" % (str(self.get_utf8()), id(self))
+
 OBJ_PROXY = {Character: CharacterProxy,
              Writing : WritingProxy,
              Stroke : StrokeProxy,
@@ -623,6 +626,24 @@ CREATE INDEX character_setid_index ON characters(setid);
         i = self._SETIDS[set_name]
         self._e("""SELECT * FROM characters 
 WHERE setid=? ORDER BY charid LIMIT ? OFFSET ?""", (i, int(limit), int(offset)))
+        return (self.get_character_from_row(r) for r in self._fa())
+
+    def get_random_characters(self, n):
+        """
+        Return characters at random.
+
+        @type n: int
+        @param n: number of random characters needed.
+        """
+        return list(self.get_random_characters_gen(n))
+
+    def get_random_characters_gen(self, n):
+        """
+        Return a generator to iterate over random characters. See \
+        L{get_random_characters).
+        """
+        self._e("""SELECT DISTINCT * from characters 
+ORDER BY RANDOM() LIMIT ?""", (int(n),))
         return (self.get_character_from_row(r) for r in self._fa())
 
     def get_n_characters(self, set_name):

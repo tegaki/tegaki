@@ -1344,6 +1344,9 @@ class Character(_XmlBase):
         c = Character()
         c.copy_from(self)
         return c
+
+    def __repr__(self):
+        return "<Character %s (%d)>" % (str(self.get_utf8()), id(self))
         
     # Private...    
 
