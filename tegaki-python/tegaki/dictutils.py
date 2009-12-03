@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (c) 2005, the Lawrence Journal-World
 # All rights reserved.
 #
@@ -30,6 +31,11 @@ class SortedDict(dict):
     """
     A dictionary that keeps its keys in the order in which they're inserted.
     """
+    def __new__(cls, *args, **kwargs):
+        instance = super(SortedDict, cls).__new__(cls, *args, **kwargs)
+        instance.keyOrder = []
+        return instance
+
     def __init__(self, data=None):
         if data is None:
             data = {}
@@ -88,7 +94,7 @@ class SortedDict(dict):
         return iter(self.keyOrder)
 
     def values(self):
-        return [super(SortedDict, self).__getitem__(k) for k in self.keyOrder]
+        return map(super(SortedDict, self).__getitem__, self.keyOrder)
 
     def itervalues(self):
         for key in self.keyOrder:
