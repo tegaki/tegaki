@@ -285,11 +285,11 @@ class CharacterCollection(_XmlBase):
     The .chardb extension is required.
     """
 
-    #: With PROXY set to True, proxy objects are returned in place of
+    #: With WRITE_BACK set to True, proxy objects are returned in place of
     #: character, writing, stroke and point objects in order to automatically
     #: reflect changes to these objects back to the sqlite db.
     #: However, there is probably overhead usigng them.
-    PROXY = True
+    WRITE_BACK = True
 
     DTD = \
 """
@@ -393,7 +393,7 @@ CREATE INDEX character_setid_index ON characters(setid);
         # charid, setid, utf8, n_strokes, data, sha1
         char = _convert_character(row['data'])
         char.charid = row['charid']
-        if self.PROXY:
+        if self.WRITE_BACK:
             return CharacterProxy(self._charpool, char)
         else:
             return char

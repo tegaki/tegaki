@@ -194,7 +194,7 @@ class CharacterCollectionTest(unittest.TestCase):
         self.assertEquals(char, char2)
 
     def testNoProxy(self):
-        self.cc.PROXY = False
+        self.cc.WRITE_BACK = False
 
         char = self.cc.get_all_characters()[0]
         writing = char.get_writing()
