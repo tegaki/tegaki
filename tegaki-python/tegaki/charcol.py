@@ -614,10 +614,16 @@ CREATE INDEX character_setid_index ON characters(setid);
 
         @rtype: list of L{Character}
         """
+        return list(self.get_characters_gen(set_name, limit, offset))
+
+    def get_characters_gen(self, set_name, limit=-1, offset=0):
+        """
+        Return a generator to iterate over characters. See L{get_characters).
+        """
         i = self._SETIDS[set_name]
         self._e("""SELECT * FROM characters 
 WHERE setid=? ORDER BY charid LIMIT ? OFFSET ?""", (i, int(limit), int(offset)))
-        return map(self.get_character_from_row, self._fa())
+        return (self.get_character_from_row(r) for r in self._fa())
 
     def get_n_characters(self, set_name):
         """
@@ -644,9 +650,16 @@ WHERE setid=?""", (i,))[0]
 
         @rtype: list of L{Character}
         """
+        return list(self.get_all_characters_gen(limit=-1, offset=0))
+
+    def get_all_characters_gen(self, limit=-1, offset=0):
+        """
+        Return a generator to iterate over all characters. See \
+        L{get_all_characters).
+        """
         self._e("""SELECT * FROM characters 
 ORDER BY charid LIMIT ? OFFSET ?""", (int(limit), int(offset)))
-        return map(self.get_character_from_row, self._fa())
+        return (self.get_character_from_row(r) for r in self._fa())
 
     def get_total_n_characters(self):
         """
