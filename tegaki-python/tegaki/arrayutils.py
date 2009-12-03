@@ -19,6 +19,8 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
+__doctest__ = True
+
 def array_sample(arr, rate):
     """
     Sample array.
@@ -255,7 +257,7 @@ def array_mul(arr1, arr2):
     """
     Multiply two arrays element-wise.
 
-    >>> array_add([1,2],[3,4])
+    >>> array_mul([1,2],[3,4])
     [3, 8]
     """
     assert(len(arr1) == len(arr1))
@@ -266,3 +268,7 @@ def array_mul(arr1, arr2):
         newarr.append(arr1[i] * arr2[i])
 
     return newarr
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

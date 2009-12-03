@@ -24,6 +24,9 @@ import glob
 import os
 import sys
 import unittest
+import doctest
+
+import tegaki
 
 currdir = os.path.dirname(os.path.abspath(__file__))
 parentdir = os.path.join(currdir, "..")
@@ -34,6 +37,16 @@ sys.path = sys.path + [parentdir]
 def gettestnames():
     return [name[:-3] for name in glob.glob('test_*.py')]
 
+# Run doctests
+
+for attr in dir(tegaki):
+    attr = getattr(tegaki, attr)
+    if type(attr) == type(tegaki):
+        if hasattr(attr, "__doctest__") and attr.__doctest__:
+            doctest.testmod(attr)
+
+# Run unittests
+
 suite = unittest.TestSuite()
 loader = unittest.TestLoader()
 
@@ -42,3 +55,5 @@ for name in gettestnames():
 
 testRunner = unittest.TextTestRunner(verbosity=1)
 testRunner.run(suite)
+
+
