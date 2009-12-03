@@ -130,7 +130,7 @@ def array_mean(arr):
     """
     return float(sum(arr)) / float(len(arr))
 
-def array_variance(arr):
+def array_variance(arr, mean=None):
     """
     Calculate the variance of the elements contained in an array.
 
@@ -141,8 +141,13 @@ def array_variance(arr):
     >>> array_variance([100, 150, 300])
     7222.2222222222226
     """
-    mean = array_mean(arr)
-    return array_mean([(val - mean) ** 2 for val in arr])
+    if mean is None:
+        mean = array_mean(arr)
+    var = array_mean([(val - mean) ** 2 for val in arr])
+    if var == 0.0:
+        return 1.0
+    else:
+        return var
 
 def array_mean_vector(vectors):
     """
@@ -167,7 +172,7 @@ def array_mean_vector(vectors):
         
     return mean_vector
 
-def array_variance_vector(vectors):
+def array_variance_vector(vectors, means=None):
     """
     Calculate the variance of the vectors, element-wise.
 
@@ -179,14 +184,19 @@ def array_variance_vector(vectors):
     [2025.0, 8100.0]
     """
     assert(len(vectors) > 0)
-
+    
     n_dimensions = len(vectors[0])
+
+    if means is not None:
+        assert(n_dimensions == len(means))
+    else:
+        means = array_mean_vector(vectors)
 
     variance_vector = []
 
     for i in range(n_dimensions):
         arr = [vector[i] for vector in vectors]
-        variance_vector.append(array_variance(arr))
+        variance_vector.append(array_variance(arr, means[i]))
         
     return variance_vector
 
