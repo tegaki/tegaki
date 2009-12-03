@@ -669,6 +669,14 @@ ORDER BY charid LIMIT ? OFFSET ?""", (int(limit), int(offset)))
         """
         return self._efo("SELECT count(charid) FROM characters")[0]
 
+    def get_average_n_strokes(self, set_name):
+        """
+        Return the average number of stroke of the characters in that set.
+        """
+        i = self._SETIDS[set_name]
+        return self._efo("""SELECT avg(n_strokes) FROM characters
+WHERE setid=?""", (i,))[0]
+
     def set_characters(self, set_name, characters):
         """
         Set/Replace the characters of a set.
