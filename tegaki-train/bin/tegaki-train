@@ -438,6 +438,13 @@ class CharacterSetListView(gtk.TreeView):
             self._model.append((charset,))
             self._charsets[charset] = 1
 
+    def remove_selected_charset(self):
+        seliter = self.get_selection().get_selected()[1]
+        charset = self.get_model().get_value(seliter, 0)
+        self.get_model().remove(seliter)
+        del self._charsets[charset]
+        return charset
+
     def includes_charset(self, charset):
         return charset in self._charsets
 
@@ -802,9 +809,7 @@ class TegakiTrain(object):
         dialog.destroy()
 
     def _on_remove_charset(self, widget):
-        seliter = self._treeview.get_selection().get_selected()[1]
-        charset = self._treeview.get_model().get_value(seliter, 0)
-        self._treeview.get_model().remove(seliter)
+        charset = self._treeview.remove_selected_charset()
         self._charcol.remove_set(charset)
         self._enable_save()
 
