@@ -77,6 +77,8 @@ class TegakiStats(object):
 
         print "Total number of samples: ", charcol.get_total_n_characters()
 
+        print "Total number of strokes: ", charcol.get_total_n_strokes()
+
         n_samples = samp_by_class.values()
         avg = float(sum(n_samples)) / len(n_samples)
         print "Average number of samples per character/class: %0.2f" % avg
