@@ -1,5 +1,9 @@
-Dependency on ghmm
-------------------
+- Character transition model (bigram)
 
-- Write a HMM library in pure python, possibly using numpy.
-(at least the viterbi decoder)
+- API to retrieve the most suitable recognizer and model available for some task
+  or given some requirements (language, characters included, stroke-order
+  free...)
+
+    -> This is useful for applications (e.g. games) that want to use Tegaki
+       as a service without asking the user to explicitly choose a recognizer
+       or model.
