@@ -830,6 +830,9 @@ class TegakiTrain(object):
         # Iconview
         self._iconview.set_characters(characters)
 
+        # Status bar msg
+        self._statusbar_push("%d samples loaded!" % len(characters), sec=5)
+
     def _on_add_sample(self, widget):
         window = EditCharacterSampleWindow(self._window)
         charset = self._treeview.get_selected_charset()
