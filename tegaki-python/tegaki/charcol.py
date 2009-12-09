@@ -182,7 +182,7 @@ WHERE charid=?""", (char.get_utf8(), char.get_writing().get_n_strokes(),
     def clear_pool(self):        
         for charid, char in self.items():
             self._update_character(char)
-            self.clear()
+        self.clear()
 
 def _convert_character(data):
     # converts a BLOB into an object
@@ -293,6 +293,15 @@ class CharacterCollection(_XmlBase):
     #: reflect changes to these objects back to the sqlite db.
     #: However, there is probably overhead usigng them.
     WRITE_BACK = True
+
+    def get_auto_commit(self):
+        return True if self._con.isolation_level is None else False
+
+    def set_auto_commit(self, auto):
+        self._con.isolation_level = None if auto else ""
+
+    #: With AUTO_COMMIT set to true, data is immediately written to disk
+    AUTO_COMMIT = property(get_auto_commit, set_auto_commit)
 
     DTD = \
 """
@@ -479,6 +488,8 @@ CREATE INDEX character_setid_index ON characters(setid);
             if path.endswith(".chardb"):
                 if self._dbpath != path:
                     # the collection changed its database name
+                    # FIXME: this can rewritten more efficiently with
+                    # the ATTACH command
                     if os.path.exists(path):
                         os.unlink(path)
                     newcc = CharacterCollection(path)
@@ -547,13 +558,27 @@ CREATE INDEX character_setid_index ON characters(setid);
         @type charcols: list
         @param charcols: a list of CharacterCollection to merge
         """
-        for charcol in charcols:
-            for set_name in charcol.get_set_list():
-                self.add_set(set_name)
-                characters = self.get_characters(set_name)
-                for char in charcol.get_characters(set_name):
-                    if not check_duplicate or not char in characters:
-                        self.append_character(set_name, char)
+
+        try:
+            # it's faster to delete the whole index and rewrite it afterwards
+            self._e("""DROP INDEX character_setid_index;""")
+
+            for charcol in charcols:
+                for set_name in charcol.get_set_list():
+                    self.add_set(set_name)
+
+                    if check_duplicate:
+                        existing_chars = self.get_characters(set_name)
+                        chars = charcol.get_characters(set_name)               
+                        chars = [c for c in chars if not c in existing_chars]
+                        self.append_characters(set_name, chars)
+                    else:
+                        chars = charcol.get_character_rows(set_name)
+                        self.append_character_rows(set_name, chars)
+                        
+        finally:
+            self._e("""CREATE INDEX character_setid_index 
+ON characters(setid);""")
 
     def __add__(self, other):
         return self.concatenate(other)
@@ -583,7 +608,16 @@ CREATE INDEX character_setid_index ON characters(setid);
 
         @type set_name: str
         """
-        self._e("DELETE FROM character_sets WHERE name=?", (set_name,))
+        self.remove_sets([set_name])
+
+    def remove_sets(self, set_names):
+        """
+        Remove set_name from collection.
+
+        @type set_name: str
+        """
+        set_names = [(set_name,) for set_name in set_names]
+        self._em("DELETE FROM character_sets WHERE name=?", set_names)
         self._update_set_ids()
 
     def get_set_list(self):
@@ -623,10 +657,14 @@ CREATE INDEX character_setid_index ON characters(setid);
         """
         Return a generator to iterate over characters. See L{get_characters).
         """
+        rows = self.get_character_rows(set_name, limit, offset)
+        return (self.get_character_from_row(r) for r in rows)
+
+    def get_character_rows(self, set_name, limit=-1, offset=0):
         i = self._SETIDS[set_name]
         self._e("""SELECT * FROM characters 
 WHERE setid=? ORDER BY charid LIMIT ? OFFSET ?""", (i, int(limit), int(offset)))
-        return (self.get_character_from_row(r) for r in self._fa())
+        return self._fa()
 
     def get_random_characters(self, n):
         """
@@ -729,12 +767,24 @@ WHERE setid=?""", (i,))[0]
 
         @type character: L{Character}
         """
+        self.append_characters(set_name, [character])
+
+    def append_characters(self, set_name, characters):        
+        rows = [{'utf8':c.get_utf8(),
+                 'n_strokes':c.get_writing().get_n_strokes(),
+                 'data':_adapt_character(c),
+                 'sha1':c.hash()} for c in characters]
+                
+        self.append_character_rows(set_name, rows)
+
+    def append_character_rows(self, set_name, rows):
         i = self._SETIDS[set_name]
-        self._e("""INSERT INTO 
+        tupls = [(i, r['utf8'], r['n_strokes'], r['data'], r['sha1']) \
+                  for r in rows]
+
+        self._em("""INSERT INTO 
 characters (setid, utf8, n_strokes, data, sha1) 
-VALUES (?,?,?,?,?)""", (i, character.get_utf8(),
-                        character.get_writing().get_n_strokes(),
-                        _adapt_character(character), character.hash()))
+VALUES (?,?,?,?,?)""", tupls)
 
     def insert_character(self, set_name, i, character):
         """
@@ -834,13 +884,8 @@ WHERE setid=? ORDER BY charid LIMIT 1 OFFSET ?""", (setid, i))[0]
         @type text: str
         """
         dic = self._get_dict_from_text(unicode(text, "utf8"))
-        for set_name in self.get_set_list():
-            i = 0
-            for char in self.get_characters(set_name)[:]:
-                if not char.get_unicode() in dic:
-                    self.remove_character(set_name, i)
-                else:
-                    i += 1
+        utf8values = ",".join(["'%s'" % k for k in dic.keys()])
+        self._e("DELETE FROM characters WHERE utf8 NOT IN(%s)" % utf8values)
         self.remove_empty_sets()
 
     def include_characters_from_files(self, text_files):
@@ -866,13 +911,8 @@ WHERE setid=? ORDER BY charid LIMIT 1 OFFSET ?""", (setid, i))[0]
         @type text: str
         """
         dic = self._get_dict_from_text(unicode(text, "utf8"))
-        for set_name in self.get_set_list():
-            i = 0
-            for char in self.get_characters(set_name)[:]:
-                if char.get_unicode() in dic:
-                    self.remove_character(set_name, i)
-                else:
-                    i += 1
+        utf8values = ",".join(["'%s'" % k for k in dic.keys()])
+        self._e("DELETE FROM characters WHERE utf8 IN(%s)" % utf8values)
         self.remove_empty_sets()
 
     def exclude_characters_from_files(self, text_files):
@@ -906,13 +946,29 @@ WHERE setid=? ORDER BY charid LIMIT -1 OFFSET ?""", (setid, keep_at_most))
                 self._e("""DELETE FROM characters WHERE charid IN(?)""", 
                         (charids,))
 
+    def _get_set_char_counts(self):
+        rows = self._efa("""SELECT setid, COUNT(charid) AS n_chars
+FROM characters GROUP BY setid""")
+        d = {}
+        for row in rows:
+            d[row['setid']] = row['n_chars']
+        return d
+
     def remove_empty_sets(self):
         """
         Remove sets that don't include any character.
         """
-        for set_name in self.get_set_list():
-            if self.get_n_characters(set_name) == 0:
-                self.remove_set(set_name)
+        charcounts = self._get_set_char_counts()
+        empty_sets = []
+
+        for set_name, setid in self._SETIDS.items():
+            try:
+                if charcounts[setid] == 0:
+                    empty_sets.append(set_name)
+            except KeyError:
+                empty_sets.append(set_name)
+        
+        self.remove_sets(empty_sets)
 
     def to_xml(self):
         """
