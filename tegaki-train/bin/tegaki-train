@@ -410,6 +410,7 @@ class CharacterSetListView(gtk.TreeView):
         gtk.TreeView.__init__(self, self._model)
         self._init()
         self._parentw = parent
+        self._charsets = {}
 
     def _init(self):
         column = gtk.TreeViewColumn("Character sets")
@@ -435,12 +436,10 @@ class CharacterSetListView(gtk.TreeView):
     def append_charset(self, charset):
         if not self.includes_charset(charset):
             self._model.append((charset,))
+            self._charsets[charset] = 1
 
     def includes_charset(self, charset):
-        for row in self._model:
-            if row[0] == charset:
-                return True
-        return False
+        return charset in self._charsets
 
     def get_selected_charset(self):
         if self.get_selection().count_selected_rows() == 0:
