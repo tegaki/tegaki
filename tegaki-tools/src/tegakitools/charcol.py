@@ -64,12 +64,20 @@ def get_aggregated_charcol(tuples, dbpath=None):
 
     if dbpath is not None and dbpath.endswith(".chardb"):
         if os.path.exists(dbpath):
-            print "%s exists already" % dbpath
-            answer = raw_input("Delete it? (y/N)")
+            print "%s exists already." % dbpath
+            print "Continuing will modify it..."
+            answer = raw_input("Continue anyway? (y/N)")
             if answer == "y":
-                os.unlink(dbpath)
+                print "Overwrite to concatenate collections together " + \
+                      "in a new database"
+                print "Don't overwrite to append new characters or "  + \
+                      "filter (-i,-e,-m) existing database"
+                answer = raw_input("Overwrite it? (y/N)")
+                if answer == "y":
+                    os.unlink(dbpath)
             else:
                 exit()
+
         charcol = CharacterCollection(dbpath)
         #charcol.WRITE_BACK = False
         #charcol.AUTO_COMMIT = True
