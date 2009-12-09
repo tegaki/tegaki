@@ -77,14 +77,14 @@ class TegakiStats(object):
 
         print "Total number of samples: ", charcol.get_total_n_characters()
 
-        n_samples = [len(samp_by_class[k]) for k in samp_by_class.keys()]
+        n_samples = samp_by_class.values()
         avg = float(sum(n_samples)) / len(n_samples)
         print "Average number of samples per character/class: %0.2f" % avg
 
         if self._verbosity_level >= 2:
             print "\nNumber of samples for each character:"
-            for utf8, chars in samp_by_class.items():
-                print "%s: %d" % (utf8, len(chars))
+            for utf8, n_chars in samp_by_class.items():
+                print "%s: %d" % (utf8, n_chars)
             print "\n"
 
         classes_by_sc = self._get_classes_by_stroke_count(charcol)
@@ -113,17 +113,17 @@ class TegakiStats(object):
     def _get_samples_by_class(self, charcol):
         d = {}
         for set_name in charcol.get_set_list():
-            for char in charcol.get_characters(set_name):
-                utf8 = char.get_utf8()
-                d[utf8] = d.get(utf8, []) + [char]
+            for row in charcol.get_character_rows(set_name):
+                utf8 = row['utf8'].encode("utf8")
+                d[utf8] = d.get(utf8, 0) + 1
         return d
 
     def _get_classes_by_stroke_count(self, charcol):
         d = {}
         for set_name in charcol.get_set_list():
-            for char in charcol.get_characters(set_name):
-                n_strokes = char.get_writing().get_n_strokes()
-                utf8 = char.get_utf8()
+            for row in charcol.get_character_rows(set_name):
+                n_strokes = row['n_strokes']
+                utf8 = row['utf8'].encode("utf8")
                 d[n_strokes] = d.get(n_strokes, [])
                 if not utf8 in d[n_strokes]:
                     d[n_strokes].append(utf8)
@@ -132,9 +132,9 @@ class TegakiStats(object):
     def _get_stroke_counts_by_class(self, charcol):
         d = {}
         for set_name in charcol.get_set_list():
-            for char in charcol.get_characters(set_name):
-                n_strokes = char.get_writing().get_n_strokes()
-                utf8 = char.get_utf8()
+            for row in charcol.get_character_rows(set_name):
+                n_strokes = row['n_strokes']
+                utf8 = row['utf8'].encode("utf8")
                 d[utf8] = d.get(utf8, [])
                 if not n_strokes in d[utf8]:
                     d[utf8].append(n_strokes)

@@ -71,6 +71,8 @@ def get_aggregated_charcol(tuples, dbpath=None):
             else:
                 exit()
         charcol = CharacterCollection(dbpath)
+        #charcol.WRITE_BACK = False
+        #charcol.AUTO_COMMIT = True
     else:
         charcol = CharacterCollection() # in memory db
 

@@ -147,8 +147,17 @@ class UnipenParser(UnipenEventParser):
     def get_character_collection(self):
         charcol = CharacterCollection()
         assert(len(self._labels) == len(self._characters))
+
+        # group characters with the same label into sets
+        sets = {}
         for i in range(len(self._characters)):
-            self._characters[i].set_utf8(self._labels[i])
-            charcol.add_set(self._labels[i])
-            charcol.append_character(self._labels[i], self._characters[i])
+            utf8 = self._labels[i]
+            self._characters[i].set_utf8(utf8)
+            sets[utf8] = sets.get(utf8, []) + [self._characters[i]]
+
+        charcol.add_sets(sets.keys())
+
+        for set_name, characters in sets.items():
+            charcol.append_characters(set_name, characters)
+
         return charcol
