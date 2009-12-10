@@ -693,9 +693,13 @@ ORDER BY RANDOM() LIMIT ?""", (int(n),))
 
         @rtype int
         """
-        i = self._SETIDS[set_name]
-        return self._efo("""SELECT count(charid) FROM characters
+        try:
+            i = self._SETIDS[set_name]
+            return self._efo("""SELECT count(charid) FROM characters
 WHERE setid=?""", (i,))[0]
+
+        except KeyError:
+            return 0
 
     def get_all_characters(self, limit=-1, offset=0):
         """
