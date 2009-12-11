@@ -134,7 +134,7 @@ class CharacterProxy(ObjectProxy):
     READ_METHODS = ["get_writing"]
 
     def __repr__(self):
-        return "<CharacterProxy %s (%d)>" % (str(self.get_utf8()), id(self))
+        return "<CharacterProxy %s (ref %d)>" % (str(self.get_utf8()), id(self))
 
 OBJ_PROXY = {Character: CharacterProxy,
              Writing : WritingProxy,
@@ -416,6 +416,10 @@ CREATE INDEX character_setid_index ON characters(setid);
             self._SETIDS[row['name'].encode("utf8")] = row['setid']    
 
     # Public API
+
+    def __repr__(self):
+        return "<CharacterCollection %d characters (ref %d)>" % \
+                    (self.get_total_n_characters(), id(self))
 
     def bind(self, path):
         """ 

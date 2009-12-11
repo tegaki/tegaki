@@ -187,6 +187,9 @@ class Point(dict):
         """
         return Point(**self)
 
+    def __repr__(self):
+        return "<Point (%s, %s) (ref %d)>" % (self.x, self.y, id(self))
+
 class Stroke(list):
     """
     A sequence of L{Points<Point>}.
@@ -463,6 +466,9 @@ class Stroke(list):
         new_s.append_point(self[-1])
 
         self.copy_from(new_s)
+
+    def __repr__(self):
+        return "<Stroke %d pts (ref %d)>" % (len(self), id(self))
 
 class Writing(object):
     """
@@ -848,10 +854,7 @@ class Writing(object):
         return "((width %d)(height %d)(strokes %s))" % \
             (self._width, self._height, 
              "".join([s.to_sexp() for s in self._strokes]))                    
-         
-    def __str__(self):
-        return str(self._strokes)
-
+        
     def __eq__(self, othr):
         if not othr.__class__.__name__ in ("Writing", "WritingProxy"):
             return False
@@ -912,6 +915,10 @@ class Writing(object):
         """
         for stroke in self._strokes:
             stroke.smooth()
+
+    def __repr__(self):
+        return "<Writing %d strokes (ref %d)>" % (self.get_n_strokes(),
+                                                  id(self))
 
 class _XmlBase(object):
     """
@@ -1346,7 +1353,7 @@ class Character(_XmlBase):
         return c
 
     def __repr__(self):
-        return "<Character %s (%d)>" % (str(self.get_utf8()), id(self))
+        return "<Character %s (ref %d)>" % (str(self.get_utf8()), id(self))
         
     # Private...    
 
