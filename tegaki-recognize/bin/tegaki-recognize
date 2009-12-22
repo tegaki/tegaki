@@ -27,8 +27,9 @@ import gtk
 from gtk import gdk
 
 from tegakigtk.recognizer import SmartRecognizerWidget, SimpleRecognizerWidget
+from tegakigtk.fakekey import send_unicode
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 ICON = \
 """iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAyUlE
@@ -68,6 +69,8 @@ class TegakiRecognize(object):
         self._window.set_icon(self._pixbuf)
         self._window.set_position(gtk.WIN_POS_CENTER)
         self._window.set_title("Tegaki")
+        self._window.set_accept_focus(False)
+
         if self._simple:
             rw = SimpleRecognizerWidget()
         else:
@@ -124,8 +127,10 @@ class TegakiRecognize(object):
         menu.popup(None, None, None, button, time)
 
     def _on_commit(self, widget, string):
-        clipboard = gtk.Clipboard()
-        clipboard.set_text(string)
+        if not send_unicode(unicode(string, "utf8")):
+            # save to clipboard if send_unicode isn't supported
+            clipboard = gtk.Clipboard()
+            clipboard.set_text(string)
 
     def run(self):
         gtk.main()
