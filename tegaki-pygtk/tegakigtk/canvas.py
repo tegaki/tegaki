@@ -72,6 +72,7 @@ class Canvas(gtk.Widget):
         self._drawing_stopped_time = 0
         self._drawing_stopped_id = 0
         self._draw_annotations = True
+        self._need_draw_axis = True
 
         self._handwriting_line_gc = None
         self._annotation_gc = None
@@ -445,7 +446,7 @@ class Canvas(gtk.Widget):
         if force_draw:
             self.queue_draw_area(x-2, y-2, width+4, height+4)
 
-    def _draw_axis(self):
+    def _draw_axis(self):        
         self._pixmap.draw_line(self._axis_gc,
                                self._width / 2, 0,
                                self._width / 2, self._height)
@@ -461,7 +462,8 @@ class Canvas(gtk.Widget):
                                     self.allocation.width,
                                     self.allocation.height)
 
-        self._draw_axis()
+        if self._need_draw_axis:
+            self._draw_axis()
 
 
     def _draw_background_character(self):
@@ -619,6 +621,12 @@ class Canvas(gtk.Widget):
         Return whether stroke-number annotations are displayed or not.
         """
         return self._draw_annotations
+
+    def set_draw_axis(self, draw_axis):
+        self._need_draw_axis = draw_axis
+
+    def get_draw_axis(self):
+        return self._need_draw_axis
 
     def refresh(self, n_strokes=None, force_draw=False):
         """
