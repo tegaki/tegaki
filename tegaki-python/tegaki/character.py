@@ -776,6 +776,20 @@ class Writing(object):
         for s in self._strokes:
             s.upsample_threshold(threshold)
 
+    def get_size(self):
+        """
+        Return the size of the drawing box.
+
+        @rtype: tuple
+
+        Not to be confused with size() which returns the size the writing.
+        """
+        return (self.get_width(), self.get_height())
+
+    def set_size(self, w, h):
+        self.set_width(w)
+        self.set_height(h)
+
     def get_width(self):
         """
         Return the width of the drawing box.
