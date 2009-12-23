@@ -348,8 +348,8 @@ class Canvas(gtk.Widget):
         """
         Converts window coordinates to internal coordinates.
         """
-        sx = float(Writing.WIDTH) / self._width
-        sy = float(Writing.HEIGHT) / self._height
+        sx = float(elf._writing.get_width()) / self._width
+        sy = float(self._writing.get_height()) / self._height
         
         return (int(x * sx), int(y * sy))
     
@@ -357,8 +357,8 @@ class Canvas(gtk.Widget):
         """
         Converts internal coordinates to window coordinates.
         """
-        sx = float(self._width) / Writing.WIDTH
-        sy = float(self._height) / Writing.WIDTH
+        sx = float(self._width) / self._writing.get_width()
+        sy = float(self._height) / self._writing.get_height()
         
         return (int(x * sx), int(y * sy))
 
@@ -681,8 +681,8 @@ class Canvas(gtk.Widget):
 
         if writing_width and writing_height:
             # Convert to requested size
-            xratio = float(writing_width) / Writing.WIDTH
-            yratio = float(writing_height) / Writing.HEIGHT
+            xratio = float(writing_width) / self._writing.get_width()
+            yratio = float(writing_height) / self._writing.get_height()
 
             return self._writing.resize(xratio, yratio)
         else:
@@ -692,8 +692,8 @@ class Canvas(gtk.Widget):
 
         if writing_width and writing_height:
             # Convert to internal size
-            xratio = float(Writing.WIDTH) / writing_width
-            yratio = float(Writing.HEIGHT) / writing_height
+            xratio = float(self._writing.get_width()) / writing_width
+            yratio = float(self._writing.get_height()) / writing_height
            
             self._writing = self._writing.resize(xratio, yratio)
         else:
