@@ -117,7 +117,9 @@ else:
         def _send_unicode_x11(unistr):
             if Xlib is None: raise NameError
 
-            dpy = Xtst.XOpenDisplay(None)
+            dpy = Xlib.XOpenDisplay(None)
+
+            if not dpy: raise OSError # no display
 
             min_, max_, numcodes = c_int(0), c_int(0), c_int(0)
             Xlib.XDisplayKeycodes(dpy, byref(min_), byref(max_))
