@@ -348,7 +348,7 @@ class Canvas(gtk.Widget):
         """
         Converts window coordinates to internal coordinates.
         """
-        sx = float(elf._writing.get_width()) / self._width
+        sx = float(self._writing.get_width()) / self._width
         sy = float(self._writing.get_height()) / self._height
         
         return (int(x * sx), int(y * sy))
