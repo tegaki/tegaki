@@ -948,11 +948,10 @@ WHERE setid=? ORDER BY charid LIMIT 1 OFFSET ?""", (setid, i))[0]
         for set_name in self.get_set_list():
             if self.get_n_characters(set_name) > keep_at_most:
                 setid = self._SETIDS[set_name]
-                charids = self._efa("""SELECT charid FROM characters
-WHERE setid=? ORDER BY charid LIMIT -1 OFFSET ?""", (setid, keep_at_most))
-                charids = ",".join([str(row['charid']) for row in charids])
-                self._e("""DELETE FROM characters WHERE charid IN(?)""", 
-                        (charids,))
+                self._e("""DELETE FROM characters 
+WHERE charid IN(SELECT charid FROM characters
+                WHERE setid=? ORDER BY charid LIMIT -1 OFFSET ?)""", 
+                        (setid, keep_at_most))
 
     def _get_set_char_counts(self):
         rows = self._efa("""SELECT setid, COUNT(charid) AS n_chars
