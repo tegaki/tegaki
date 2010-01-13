@@ -25,10 +25,11 @@ def pkg_config(package, option):
     sub.wait()
     return [a[2:] for a in args]
 
-if platform.system() == "Darwin":
-    macros = [("OSX", None)]
-else:
+if platform.system() in ["Darwin", "Windows"]:
     macros = []
+else:
+    macros = [("HAVE_MEMALIGN", None)]
+    
 
 setup(
     name="tegaki-wagomu",

@@ -27,6 +27,12 @@
 #include <float.h>
 #include <math.h>
 
+#ifdef HAVE_MEMALIGN
+#include <malloc.h>
+#else
+#define memalign(a,b) malloc((b))
+#endif
+
 #include "wagomu.h"
 
 #define MAGIC_NUMBER 0x77778888
@@ -59,10 +65,6 @@
 
 #undef SWAP
 #define SWAP(a,b,tmp) tmp = a; a = b; b = tmp
-
-#ifdef OSX
-#define memalign(a,b) malloc((b))
-#endif
 
 namespace wagomu {
 
