@@ -26,8 +26,6 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
-#include <inttypes.h>
-#include <malloc.h>
 
 #include "wagomu.h"
 
@@ -61,6 +59,10 @@
 
 #undef SWAP
 #define SWAP(a,b,tmp) tmp = a; a = b; b = tmp
+
+#ifdef OSX
+#define memalign(a,b) malloc((b))
+#endif
 
 namespace wagomu {
 

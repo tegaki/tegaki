@@ -3,6 +3,7 @@
 import os
 import re
 import subprocess
+import platform
 from distutils.core import setup, Extension
 
 def getversion():
@@ -24,6 +25,11 @@ def pkg_config(package, option):
     sub.wait()
     return [a[2:] for a in args]
 
+if platform.system() == "Darwin":
+    macros = [("OSX", None)]
+else:
+    macros = []
+
 setup(
     name="tegaki-wagomu",
     description = 'Simple handwriting recognition engine based on DTW',
@@ -37,6 +43,7 @@ setup(
                            ["wagomu.i","wagomu.cpp"],
                            include_dirs = pkg_config('glib-2.0','--cflags'),
                            libraries = pkg_config('glib-2.0','--libs'),
+                           define_macros=macros,
                            #library_dirs = pkg_config('glib-2.0','--libs'),
                            swig_opts=['-c++'])],
 
