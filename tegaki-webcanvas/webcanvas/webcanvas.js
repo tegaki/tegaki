@@ -116,32 +116,40 @@ WebCanvas.prototype._initListeners = function() {
                                 callback(this, this._onButtonReleased));                                     
     }
     else if (this.canvas.addEventListener) {
-        this.canvas.addEventListener("mousemove",
-                                     callback(this, this._onMove), false);
-        this.canvas.addEventListener("mousedown",
-                                     callback(this, this._onButtonPressed),
-                                              false);
-        this.canvas.addEventListener("mouseup",
-                                     callback(this, this._onButtonReleased),
-                                     false);
-        this.canvas.addEventListener("mouseout",
-                                     callback(this, this._onButtonReleased),
-                                     false);                                     
-        // iPhone/iTouch events
-        this.canvas.addEventListener("touchstart",
-                                     callback(this, this._onButtonPressed),
-                                              false);
-        this.canvas.addEventListener("touchend",
-                                     callback(this, this._onButtonReleased),
-                                     false);
-        this.canvas.addEventListener("touchcancel",
-                                     callback(this, this._onButtonReleased),
-                                     false);
-        this.canvas.addEventListener("touchmove",
-                                     callback(this, this._onMove), false);
+        // Browser sniffing is evil, but I can't figure out a good way to ask in
+        // advance if this browser will send touch or mouse events.
+        // If we generate both touch and mouse events, the canvas gets confused
+        // on iPhone/iTouch with the "revert stroke" command
+        if (navigator.userAgent.toLowerCase().indexOf('iphone')!=-1) {
+            // iPhone/iTouch events
+            this.canvas.addEventListener("touchstart",
+                                        callback(this, this._onButtonPressed),
+                                                false);
+            this.canvas.addEventListener("touchend",
+                                        callback(this, this._onButtonReleased),
+                                        false);
+            this.canvas.addEventListener("touchcancel",
+                                        callback(this, this._onButtonReleased),
+                                        false);
+            this.canvas.addEventListener("touchmove",
+                                        callback(this, this._onMove), false);
 
-        // Disable page scrolling via dragging inside the canvas
-        this.canvas.addEventListener("touchmove", function(e){e.preventDefault();}, false);
+            // Disable page scrolling via dragging inside the canvas
+            this.canvas.addEventListener("touchmove", function(e){e.preventDefault();}, false);
+        }
+        else {
+            this.canvas.addEventListener("mousemove",
+                                        callback(this, this._onMove), false);
+            this.canvas.addEventListener("mousedown",
+                                        callback(this, this._onButtonPressed),
+                                                false);
+            this.canvas.addEventListener("mouseup",
+                                        callback(this, this._onButtonReleased),
+                                        false);
+            this.canvas.addEventListener("mouseout",
+                                        callback(this, this._onButtonReleased),
+                                        false);
+        }
     }
     else
         alert("Your browser does not support interaction.");
