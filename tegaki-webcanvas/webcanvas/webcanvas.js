@@ -222,11 +222,18 @@ WebCanvas.prototype._onMove = function(event) {
 WebCanvas.prototype._getRelativePosition = function(event) {
     var t = this.canvas;
 
+    var x, y;
     // targetTouches is iPhone/iTouch-specific; it's a list of finger drags
-    var e = event.targetTouches ? event.targetTouches[0] : event;
+    if (event.targetTouches) {
+       var e = event.targetTouches[0];
 
-    var x = e.clientX + (window.pageXOffset || 0);
-    var y = e.clientY + (window.pageYOffset || 0);
+       x = e.pageX;
+       y = e.pageY;
+    }
+    else {
+        x = event.clientX + (window.pageXOffset || 0);
+        y = event.clientY + (window.pageYOffset || 0);
+    }
 
     do
         x -= t.offsetLeft + parseInt(t.style.borderLeftWidth || 0),
