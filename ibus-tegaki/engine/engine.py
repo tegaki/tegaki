@@ -30,35 +30,32 @@ class Engine(ibus.EngineBase):
 
     def __init__(self, bus, object_path):
         super(Engine, self).__init__(bus, object_path)
+        self._window = None
 
-    def process_key_event(self, keyval, keycode, state):
-        # ignore key release events
-        # (key events should be handled directly in SmartRecognizerWidget)
-        return False
+    # See ibus.EngineBase for a list of overridable methods
 
     def enable(self):
-        self._window = gtk.Window()
-        self._window.set_title("Tegaki")
-        self._window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
-        self._window.set_accept_focus(False)
-        rw = SmartRecognizerWidget()
-        self._window.add(rw)
+        if not self._window:
+            self._window = gtk.Window()
+            self._window.set_title("Tegaki")
+            self._window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+            self._window.set_accept_focus(False)
+            rw = SmartRecognizerWidget()
+            self._window.add(rw)
 
-        self._window.show_all()
+            self._window.show_all()
 
-        self._window.connect("delete-event", self._on_close)
-        rw.connect("commit-string", self._on_commit)
+            self._window.connect("delete-event", self._on_close)
+            rw.connect("commit-string", self._on_commit)
 
     def disable(self):
         if self._window:
             self._window.destroy()
             self._window = None
 
-    def reset(self):
-        pass
-
-    def property_activate(self, prop_name):
-        pass
+    def do_destroy(self):
+        self.disable()
+        super(ibus.EngineBase, self).do_destroy()
 
     def _on_close(self, *args):
         self.disable()
