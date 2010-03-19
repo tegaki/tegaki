@@ -1,0 +1,94 @@
+/* padding: top right bottom left */
+
+body {
+font-family: arial, helvetica,  sans-serif;
+font-size: 16px;
+color: #666;
+line-height: 1.2em;
+background-color: #fff;
+padding: 0px;
+margin: 0px;
+}
+
+#topbar {
+float: left;
+width: 100%;
+background-color: #2b2525;
+padding-top: 8px;
+padding-bottom: 8px;
+}
+
+#header {
+float: left;
+width: 100%;
+color: #ccc;
+font-size: 1.2em;
+letter-spacing: 0.02em;
+border-top: 1px solid #333333;
+border-bottom: 1px solid #333333;
+background-color: #1e1918;
+}
+
+#main {
+float:left;
+width: 90%;
+margin-left: 10px;
+text-align: justify;
+}
+
+#footer {
+float: left;
+padding-left: 10px;
+font-size: 0.8em;
+}
+
+a:link, a:visited, a:hover {
+color: #ff7b14;
+text-decoration: none;
+}
+
+a:hover {
+text-decoration: underline;
+}
+
+h1 {
+color: #fff;
+font-size: 3.0em;
+font-weight: lighter;
+}
+
+#header h1 {
+padding-left: 30px;
+}
+
+#header p {
+padding-left: 40px;
+}
+
+h2 {
+margin: 4px 0;
+padding: 8px 0;
+font-size: 2.0em;
+font-weight: lighter;
+border-bottom:1px solid #e9e9e9;
+}
+
+h3 {
+padding: 8px 0 0 0;
+margin: 5px 0 0 0;
+font-size: 1.3em;
+font-weight: lighter;
+}
+
+h2, h3 {
+color: #1a1a1a;
+}
+
+img {
+border: 0px;
+}
+
+.black {
+color: #000;
+}
+
