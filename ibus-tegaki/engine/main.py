@@ -1,22 +1,23 @@
-# vim:set et sts=4 sw=4:
-#
-# ibus-tmpl - The Input Bus template project
-#
-# Copyright (c) 2007-2008 Huang Peng <shawn.p.huang@gmail.com>
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2010 The Tegaki project contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Contributors to this file:
+# - Mathieu Blondel
 
 import os
 import sys
@@ -25,29 +26,33 @@ import ibus
 import factory
 import gobject
 
-VERSION = "0.4.0"
+from __init__ import *
 
 class IMApp:
     def __init__(self, exec_by_ibus):
-        self.__component = ibus.Component("org.freedesktop.IBus.Tegaki",
-                                          "Tegaki Component",
+        self.__component = ibus.Component(BUS_NAME,
+                                          BUS_DESCRIPTION,
                                           VERSION,
-                                          "GPL",
-                                       "Mathieu Blondel <mathieu@mblondel.org>")
-        self.__component.add_engine("tegaki",
-                                    "tegaki",
-                                    "Tegaki",
-                                    "other",
-                                    "GPL",
-                                    "Mathieu Blondel <mathieu@mblondel.org>",
-                                    "",
-                                    "other")
+                                          LICENSE,
+                                          AUTHOR,
+                                          HOMEPAGE)
+
+        self.__component.add_engine(ENGINE_NAME,
+                                    ENGINE_LONG_NAME,
+                                    ENGINE_DESCRIPTION,
+                                    LANGUAGE,
+                                    LICENSE,
+                                    AUTHOR,
+                                    ICON,
+                                    LAYOUT)
+
+
         self.__mainloop = gobject.MainLoop()
         self.__bus = ibus.Bus()
         self.__bus.connect("disconnected", self.__bus_disconnected_cb)
         self.__factory = factory.EngineFactory(self.__bus)
         if exec_by_ibus:
-            self.__bus.request_name("org.freedesktop.IBus.Tegaki", 0)
+            self.__bus.request_name(BUS_NAME, 0)
         else:
             self.__bus.register_component(self.__component)
 

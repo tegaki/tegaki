@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python @PREFIX/share/ibus-tegaki/engine/main.py $@

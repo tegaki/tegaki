@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component>
+  <name>@BUS_NAME</name>
+  <description>@BUS_DESCRIPTION</description>
+  <exec>@PREFIX/lib/ibus-tegaki/ibus-engine-tegaki --ibus</exec>
+  <version>@VERSION</version>
+  <author>@AUTHOR</author>
+  <license>@LICENSE</license>
+  <homepage>@HOMEPAGE</homepage>
+  <textdomain>@TEXTDOMAIN</textdomain>
+
+  <engines>
+    <engine>
+      <name>@ENGINE_NAME</name>
+      <language>@LANGUAGE</language>
+      <license>@LICENSE</license>
+      <author>@AUTHOR</author>
+      <icon>@PREFIX/share/ibus-tegaki/icons/ibus-tegaki.png</icon>
+      <layout>@LAYOUT</layout>
+      <longname>@ENGINE_LONG_NAME</longname>
+      <description>@ENGINE_DESCRIPTION</description>
+      <rank>0</rank>
+    </engine>
+  </engines>
+</component>
