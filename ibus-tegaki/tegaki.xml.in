@@ -15,7 +15,7 @@
       <language>@LANGUAGE</language>
       <license>@LICENSE</license>
       <author>@AUTHOR</author>
-      <icon>@PREFIX/share/ibus-tegaki/icons/ibus-tegaki.png</icon>
+      <icon>@PREFIX/share/ibus-tegaki/icons/ibus-tegaki.svg</icon>
       <layout>@LAYOUT</layout>
       <longname>@ENGINE_LONG_NAME</longname>
       <description>@ENGINE_DESCRIPTION</description>

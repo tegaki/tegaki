@@ -68,6 +68,7 @@ setup(
     url = 'http://www.tegaki.org',
     version = engine.VERSION,
     license='GPL',
-    data_files=[('share/ibus-tegaki/engine', glob("engine/*.py"))],
+    data_files=[('share/ibus-tegaki/engine', glob("engine/*.py")),
+                ('share/ibus-tegaki/icons', glob("*.svg"))],
     cmdclass={'install':install}
 )
