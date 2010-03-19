@@ -1,0 +1,4 @@
+include AUTHORS COPYING COPYRIGHT README MANIFEST.in ChangeLog *.in *.svg
+exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST
+recursive-include engine *
+recursive-exclude engine *~ *.orig *.bak *.tmp *.pyc
