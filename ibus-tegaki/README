@@ -7,7 +7,8 @@ Requirements
 ------------
 
 Python         2.4         http://www.python.org
-ibus           1.3         http://code.google.com/p/ibus/
+ibus           1.2         http://code.google.com/p/ibus/
+tegaki-pygtk   0.3
 
 Install
 -------
