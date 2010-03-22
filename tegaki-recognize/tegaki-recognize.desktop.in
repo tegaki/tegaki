@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Tegaki Recognize
+GenericName=Handwriting Recognition
+Comment=Handwriting Recognition
+Exec=@PREFIX/bin/tegaki-recognize
+Terminal=false
+Type=Application
+Categories=Utility;
+Icon=tegaki-recognize

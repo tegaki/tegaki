@@ -1,0 +1,5 @@
+?package(tegaki-recognize):\
+	needs="x11"\
+	section="Applications/Text"\
+	title="Tegaki Recognize"\
+	command="@PREFIX/bin/tegaki-recognize"
