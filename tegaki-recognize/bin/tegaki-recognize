@@ -73,17 +73,19 @@ class TegakiRecognize(object):
         self._hide = options.hide
         self._simple = options.simple
         self._dont_quit = options.dont_quit
-        self._init_icon()
+        self._init_pixbuf()
         self._create_window()
+        self._init_status_icon()
         self._size = None
 
-    def _init_icon(self):
+    def _init_pixbuf(self):
         data = base64.b64decode(ICON.replace("\n", ""))
         loader = gdk.PixbufLoader()
         loader.write(data)
         loader.close()
         self._pixbuf = loader.get_pixbuf()
 
+    def _init_status_icon(self):
         self._status_icon = gtk.StatusIcon()
         self._status_icon.set_from_pixbuf(self._pixbuf)
 
