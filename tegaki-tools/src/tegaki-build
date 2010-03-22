@@ -29,7 +29,7 @@ from tegaki.trainer import Trainer, TrainerError
 
 from tegakitools.charcol import *
 
-VERSION = '0.4'
+VERSION = '0.3.1'
 
 class TegakiBuildError(Exception):
     pass

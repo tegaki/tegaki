@@ -19,7 +19,7 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-VERSION = '0.3'
+VERSION = '0.3.1'
 
 import os
 import struct

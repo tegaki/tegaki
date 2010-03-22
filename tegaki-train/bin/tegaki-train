@@ -35,7 +35,7 @@ from tegaki.trainer import Trainer
 from tegakigtk.iconview import WritingIconView, _WritingPixbufRenderer
 from tegakigtk.canvas import Canvas
 
-VERSION = '0.4'
+VERSION = '0.3.1'
 
 PREDEFINED_SETS = {
 "Digits" : [[48,57]],
