@@ -5,8 +5,7 @@ MKDIR="`which mkdir` -p"
 
 DIST_DIR="`pwd`/dist/"
 PACKAGES="tegaki-python tegaki-pygtk scim-tegaki tegaki-recognize"
-PACKAGES="$PACKAGES tegaki-train tegaki-tools"
-PACKAGES="$PACKAGES tegaki-train tegaki-tools"
+PACKAGES="$PACKAGES tegaki-train tegaki-tools ibus-tegaki"
 PACKAGES="$PACKAGES tegaki-engines/tegaki-wagomu"
 
 echo "Creating dist directory $DIST_DIR..."
