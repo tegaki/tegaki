@@ -1,4 +1,4 @@
-include AUTHORS COPYING COPYRIGHT README TODO MANIFEST.in ChangeLog
+include AUTHORS COPYING COPYRIGHT README TODO MANIFEST.in ChangeLog *.in
 exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST
 recursive-include tests *
 recursive-include data *
