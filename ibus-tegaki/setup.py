@@ -40,6 +40,8 @@ class install(installbase):
         txt = load_file(filename)
         txt = replace_constants(self._replace_prefix(txt))
         outdir = os.path.join(self._getprefix(), folder)
+        if self.root is not None:
+            outdir = self.root + outdir
         out = os.path.join(outdir, filename.replace(".in", ""))
         if not os.path.exists(outdir):
             os.makedirs(outdir)
