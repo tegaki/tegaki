@@ -26,6 +26,34 @@ import imp
 from tegaki.engine import Engine
 from tegaki.dictutils import SortedDict
 
+SMALL_HIRAGANA = {
+"あ":"ぁ","い":"ぃ","う":"ぅ","え":"ぇ","お":"ぉ","つ":"っ",
+"や":"ゃ","ゆ":"ゅ","よ":"ょ","わ":"ゎ"
+}
+
+SMALL_KATAKANA = {
+"ア":"ァ","イ":"ィ","ウ":"ゥ","エ":"ェ","オ":"ォ","ツ":"ッ",
+"ヤ":"ャ","ユ":"ュ","ヨ":"ョ","ワ":"ヮ"
+}
+
+class Results(list):
+    """
+    Object containing recognition results.
+    """
+
+    def get_candidates(self):
+        return [c[0] for c in self]
+
+    def get_scores(self):
+        return [c[1] for c in self]
+
+    def to_small_kana(self):
+        cand = [SMALL_HIRAGANA[c] if c in SMALL_HIRAGANA else c \
+                    for c in self.get_candidates()]
+        cand = [SMALL_KATAKANA[c] if c in SMALL_KATAKANA else c \
+                    for c in cand]
+        return Results(zip(cand, self.get_scores()))
+
 class RecognizerError(Exception):
     """
     Raised when something went wrong in a Recognizer.
@@ -51,6 +79,7 @@ class Recognizer(Engine):
 
     def __init__(self):
         self._model = None
+        self._lang = None
    
     @classmethod
     def get_available_recognizers(cls):
@@ -197,9 +226,9 @@ class Recognizer(Engine):
 
         self.set_options(meta)
 
-        path = meta["path"]
+        if "language" in meta: self._lang = meta["language"]
 
-        self.open(path)
+        self.open(meta["path"])
 
     # To be implemented by child class
     def recognize(self, writing, n=10):
@@ -217,7 +246,16 @@ class Recognizer(Engine):
         
         A model must be loaded with open or set_model() beforehand.
         """
-        raise NotImplementedError
+        is_small = False
+        if self._lang == "ja":
+            is_small = writing.is_small()
+
+        results = self._recognize(writing, n)
+
+        if is_small:
+            return results.to_small_kana()
+        else:
+            return results
 
 
 if __name__ == "__main__":

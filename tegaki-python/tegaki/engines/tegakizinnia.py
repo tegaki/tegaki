@@ -21,7 +21,7 @@
 
 import os
 
-from tegaki.recognizer import Recognizer, RecognizerError
+from tegaki.recognizer import Results, Recognizer, RecognizerError
 from tegaki.trainer import Trainer, TrainerError
 
 try:
@@ -39,7 +39,7 @@ try:
             ret = self._recognizer.open(path) 
             if not ret: raise RecognizerError, "Could not open!"
 
-        def recognize(self, writing, n=10):
+        def _recognize(self, writing, n=10):
             s = zinnia.Character()
 
             s.set_width(writing.get_width())
@@ -55,8 +55,8 @@ try:
             result = self._recognizer.classify(s, n+1)
             size = result.size()
 
-            return [(result.value(i), result.score(i)) \
-                        for i in range(0, (size - 1))]
+            return Results([(result.value(i), result.score(i)) \
+                               for i in range(0, (size - 1))])
 
     RECOGNIZER_CLASS = ZinniaRecognizer
 
