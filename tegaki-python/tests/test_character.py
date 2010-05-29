@@ -637,4 +637,14 @@ u'pressure': 0, u'x': 4}]}
         sexp = f.read().strip()
         f.close()
         self.assertEquals(char.to_sexp(), sexp)
+
+    def testIsSmall(self):
+        for filename, res in (("small.xml", True),
+                              ("small2.xml", True),
+                              ("non-small.xml", False)):
+            f = os.path.join(self.currdir, "data", "small", filename)
+            char = Character()
+            char.read(f)
+            self.assertEquals(char.get_writing().is_small(), res)
+
        

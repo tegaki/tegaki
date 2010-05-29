@@ -159,7 +159,7 @@ class CharacterCollectionTest(unittest.TestCase):
         directory = os.path.join(self.currdir, "data")
         charcol = CharacterCollection.from_character_directory(directory,
                                                         check_duplicate=True)
-        self.assertEquals(charcol.get_set_list(), ["防", "三", "一", "二"])
+        self.assertEquals(charcol.get_set_list(), ["yo", "防", "三", "一", "二"])
         self.assertEquals(len(charcol.get_characters("一")), 3)
         self.assertEquals(len(charcol.get_characters("三")), 2)
         self.assertEquals(len(charcol.get_characters("二")), 1)

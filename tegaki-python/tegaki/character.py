@@ -689,6 +689,23 @@ class Writing(object):
 
         return (xmin, ymin, xmax-xmin, ymax-ymin)
 
+    def is_small(self):
+        """
+        Return whether the writing is small or not.
+
+        A writing is considered small when it is written in the bottom-right
+        corner. This is used in Japanese to detect small hiragana and katakana.
+
+        Note: is_small() should be used before normalize().
+
+        @rtype: boolean
+        @return: whether the writing is small or not
+        """
+        x, y, w, h = self.size()
+        # 0.44 is used instead of 0.5 to allow the character to go a little
+        # bit beyond the bottom-right corner
+        return x >= 0.44 * self.get_width() and y >= 0.44 * self.get_height()
+
     def normalize(self):
         """
         Call L{normalize_size} and L{normalize_position} consecutively.
