@@ -25,7 +25,7 @@ import os
 import struct
 from array import array
 
-from tegaki.recognizer import Recognizer, RecognizerError
+from tegaki.recognizer import Results, Recognizer, RecognizerError
 from tegaki.trainer import Trainer, TrainerError
 from tegaki.arrayutils import array_flatten
 from tegaki.dictutils import SortedDict
@@ -231,7 +231,7 @@ try:
             if not ret: 
                 raise RecognizerError, self._recognizer.get_error_message()
 
-        def recognize(self, writing, n=10):
+        def _recognize(self, writing, n=10):
             n_strokes = writing.get_n_strokes()
             feat = self.get_features(writing)
             nfeat = len(feat) 
@@ -248,7 +248,7 @@ try:
                 utf8 = unichr(res.get_unicode(i)).encode("utf8")
                 candidates.append((utf8, res.get_distance(i)))
 
-            return candidates
+            return Results(candidates)
 
     RECOGNIZER_CLASS = WagomuRecognizer
 
