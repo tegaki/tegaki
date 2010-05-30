@@ -641,6 +641,9 @@ u'pressure': 0, u'x': 4}]}
     def testIsSmall(self):
         for filename, res in (("small.xml", True),
                               ("small2.xml", True),
+                              ("small3.xml", True),
+                              ("small4.xml", True),
+                              ("small5.xml", True),
                               ("non-small.xml", False)):
             f = os.path.join(self.currdir, "data", "small", filename)
             char = Character()

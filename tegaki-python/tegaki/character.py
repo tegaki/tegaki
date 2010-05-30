@@ -693,8 +693,8 @@ class Writing(object):
         """
         Return whether the writing is small or not.
 
-        A writing is considered small when it is written in the bottom-right
-        corner. This is used in Japanese to detect small hiragana and katakana.
+        A writing is considered small when it is written in a corner. 
+        This is used in Japanese to detect small hiragana and katakana.
 
         Note: is_small() should be used before normalize().
 
@@ -702,9 +702,16 @@ class Writing(object):
         @return: whether the writing is small or not
         """
         x, y, w, h = self.size()
-        # 0.44 is used instead of 0.5 to allow the character to go a little
-        # bit beyond the bottom-right corner
-        return x >= 0.44 * self.get_width() and y >= 0.44 * self.get_height()
+        # 0.44 and 0.56 are used instead of 0.5 to allow the character to go a
+        # little bit beyond the corners
+        return ((x+w <= self.get_width() * 0.56 and 
+                 y+h <= 0.56 * self.get_height()) or # top-left
+                (x >= 0.44 * self.get_width() and
+                 y+h <= 0.56 * self.get_height()) or # top-right
+                (x+w <= self.get_width() * 0.56 and
+                 y >= 0.44 * self.get_height()) or # bottom-left
+                (x >= 0.44 * self.get_width() and
+                 y >= 0.44 * self.get_height())) # bottom-right
 
     def normalize(self):
         """
