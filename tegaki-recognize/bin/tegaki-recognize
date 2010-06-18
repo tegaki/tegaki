@@ -23,13 +23,10 @@
 import base64
 from optparse import OptionParser
 
-import gtk
-from gtk import gdk
+from tegaki.character import Character
+from tegaki.recognizer import Recognizer
 
-from tegakigtk.recognizer import SmartRecognizerWidget, SimpleRecognizerWidget
-from tegakigtk.fakekey import send_unicode
-
-VERSION = '0.3.1.2'
+VERSION = '0.4'
 
 ICON = \
 """
@@ -65,6 +62,9 @@ V6fr8AfHD/xURM4/bPxKRO6/bROBmJG0m8KtUfFTM5KixyemWyOiU0fwpPt43Hg7/kCQgTuDgY/r
 jmzsvdX6bxG5/oXQmCeUsgD2kRyFP5JsH5+QZomITgPoamt+1+Vs+Bg4KiLB/xv6Ejxm1NEHNItI
 zxfd+x8njL5ng4fNdwAAAABJRU5ErkJggg==
 """
+
+class TegakiRecognizeError(Exception):
+    pass
 
 class TegakiRecognize(object):
 
@@ -165,7 +165,37 @@ class TegakiRecognize(object):
     def run(self):
         gtk.main()
 
-parser = OptionParser(version="%prog " + VERSION)
+def recognize(recognizer, model, fileobj):
+    char = Character()
+    char.read(fileobj)
+    writing = char.get_writing()
+
+    recognizers = Recognizer.get_available_recognizers()
+
+    if not recognizer in recognizers:
+        raise TegakiRecognizeError, "Not an available recognizer."
+
+    recognizer_klass = recognizers[recognizer]
+    recognizer = recognizer_klass()
+
+    models = recognizer_klass.get_available_models()
+
+    if not model in models:
+        raise TegakiRecognizeError, "Not an available model."
+
+    recognizer.set_model(model)
+
+    print "\n".join(["%s %f" % (c,s) for c,s in recognizer.recognize(writing)])
+
+
+usage = """usage: %prog [options] recognizer model [xmlfile]
+
+recognizer        a recognizer available on the system
+
+model             a model name available for that recognizer on the system
+"""
+
+parser = OptionParser(usage=usage, version="%prog " + VERSION)
 parser.add_option("", "--hide",
                   action="store_true", dest="hide", default=False,
                   help="don't show window on startup")
@@ -178,4 +208,28 @@ parser.add_option("-d", "--dont-quit",
 
 (options, args) = parser.parse_args()
 
-TegakiRecognize(options).run()
+import sys
+
+try:
+    if len(args) >= 2:
+        # command line
+        fileobj = sys.stdin if len(args) == 2 or args[2] == "-" else open(args[2])
+        recognize(args[0], args[1], fileobj)
+    else:
+        # GUI
+        import gtk
+        from gtk import gdk
+
+        from tegakigtk.recognizer import SmartRecognizerWidget,SimpleRecognizerWidget
+        from tegakigtk.fakekey import send_unicode
+
+        TegakiRecognize(options).run()
+
+except TegakiRecognizeError,e:
+    sys.stderr.write(str(e) + "\n\n")
+
+    sys.stderr.write("Available recognizers and models:" + "\n")
+    sys.stderr.write("\n".join(["%s (%s)" % (model, recog) \
+        for recog, model, meta in Recognizer.get_all_available_models()]) + "\n")
+
+
