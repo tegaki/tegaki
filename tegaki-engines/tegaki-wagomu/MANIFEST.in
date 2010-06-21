@@ -1,0 +1,4 @@
+include AUTHORS COPYING COPYRIGHT README TODO MANIFEST.in ChangeLog tegakiwagomu.py wagomu.h
+exclude *~ *.orig *.bak *.tmp *.pyc MANIFEST wagomu.py
+recursive-include tests *
+recursive-include data *
