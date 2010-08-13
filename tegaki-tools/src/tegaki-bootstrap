@@ -59,7 +59,8 @@ import random
 random.seed(12345) # provide deterministic results
 from optparse import OptionParser
 
-from tegaki.character import CharacterCollection, Writing, Character
+from tegaki.character import Writing, Character
+from tegaki.charcol import CharacterCollection
 
 from tegakitools.charcol import *
 
