@@ -31,7 +31,8 @@ TODO:
 import sys
 from optparse import OptionParser
 
-from tegaki.character import CharacterCollection, Character
+from tegaki.character import Character
+from tegaki.charcol import CharacterCollection
 from tegakitools.tomoe import tomoe_dict_to_character_collection
 from tegakitools.kuchibue import kuchibue_to_character_collection
 
