@@ -174,12 +174,13 @@ class TegakiBootstrap(object):
         missing_single_characters = []
         # iterate through all characters of the target character set
         for target_char in self._cjk.getDomainCharacterIterator():
-        #for target_char in iter([u'亄', u'乿', u'仜', u'伳']): # DEBUG
+        #for target_char in iter([u'亄', u'乿', u'仜', u'伳', u'丟']): # DEBUG
             n_chars += 1
             if n_chars % 100 == 0:
                 sys.stdout.write('.')
                 sys.stdout.flush()
             char_set = target_char.encode('utf8')
+            to_charcol.add_set(char_set)
             source_character_lookup = self._get_source_character_lookup()
 
             exact_transformations = 0
@@ -187,7 +188,6 @@ class TegakiBootstrap(object):
                 and not self._no_exact_transformation):
                 char_n_exact_transformations += 1
 
-                to_charcol.add_set(char_set)
                 source_chars = source_character_lookup[target_char]
                 for character in source_chars[:self._max_samples]:
                     exact_transformations += 1
