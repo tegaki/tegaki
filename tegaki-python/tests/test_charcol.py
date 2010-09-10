@@ -30,10 +30,10 @@ from tegaki.charcol import CharacterCollection
 class CharacterCollectionTest(unittest.TestCase):
 
     def setUp(self):
-        self.currdir = os.path.dirname(os.path.abspath(__file__))      
+        self.currdir = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(self.currdir, "data", "collection", "test.charcol")
         self.cc = CharacterCollection()
-        self.cc.read(path)  
+        self.cc.read(path)
         f = os.path.join(self.currdir, "data", "character.xml")
         self.c = Character()
         self.c.read(f)
@@ -77,7 +77,7 @@ class CharacterCollectionTest(unittest.TestCase):
         for k in ["19968_1", "19968_2", "19968_3", "19977_1", "19977_2",
                  "20108_1"]:
             c[k] = Character()
-            c[k].read(os.path.join(self.currdir, "data", "collection", 
+            c[k].read(os.path.join(self.currdir, "data", "collection",
                       k + ".xml"))
 
         self.assertEquals(charcol.get_characters("一"),
@@ -100,7 +100,7 @@ class CharacterCollectionTest(unittest.TestCase):
         self.assertEquals(self.cc.get_set_list(), charcol2.get_set_list())
         self.assertEquals(self.cc.get_all_characters(),
                           charcol2.get_all_characters())
-  
+
     def testWriteGzipString(self):
         charcol2 = CharacterCollection()
         charcol2.read_string(self.cc.write_string(gzip=True), gzip=True)
@@ -113,7 +113,7 @@ class CharacterCollectionTest(unittest.TestCase):
         charcol2.read_string(self.cc.write_string(bz2=True), bz2=True)
         self.assertEquals(self.cc.get_set_list(), charcol2.get_set_list())
         self.assertEquals(self.cc.get_all_characters(),
-                          charcol2.get_all_characters())   
+                          charcol2.get_all_characters())
 
     def testAddSame(self):
         path = os.path.join(self.currdir, "data", "collection", "test.charcol")
@@ -133,7 +133,7 @@ class CharacterCollectionTest(unittest.TestCase):
         self.assertEquals(self.cc.get_characters("一", limit=2), all_[0:2])
         self.assertEquals(self.cc.get_characters("一", offset=2), all_[2:])
         self.assertEquals(self.cc.get_characters("一", limit=1, offset=1),
-                          all_[1:2])                          
+                          all_[1:2])
 
     def testAdd(self):
         path = os.path.join(self.currdir, "data", "collection", "test.charcol")
@@ -159,7 +159,8 @@ class CharacterCollectionTest(unittest.TestCase):
         directory = os.path.join(self.currdir, "data")
         charcol = CharacterCollection.from_character_directory(directory,
                                                         check_duplicate=True)
-        self.assertEquals(charcol.get_set_list(), ["yo", "防", "三", "一", "二"])
+        self.assertEquals(sorted(charcol.get_set_list()),
+                          sorted(["yo", "防", "三", "一", "二"]))
         self.assertEquals(len(charcol.get_characters("一")), 3)
         self.assertEquals(len(charcol.get_characters("三")), 2)
         self.assertEquals(len(charcol.get_characters("二")), 1)
@@ -248,13 +249,13 @@ class CharacterCollectionTest(unittest.TestCase):
         self.cc.set_characters("一", before)
         after = self.cc.get_characters("一")
         self.assertEquals(before, after)
-    
-    def testAppendCharacter(self):        
+
+    def testAppendCharacter(self):
         len_before = len(self.cc.get_characters("一"))
         self.cc.append_character("一", self.c)
         len_after = len(self.cc.get_characters("一"))
         self.assertEquals(len_before + 1, len_after)
-    
+
     def testInsertCharacter(self):
         before = self.cc.get_characters("一")[0]
         len_before = len(self.cc.get_characters("一"))
