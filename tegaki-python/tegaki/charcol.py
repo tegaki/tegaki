@@ -40,7 +40,7 @@ class ObjectProxy(object):
 
     Object proxies are used to automatically reflect back in the db
     changes that are made to objects. For example:
-    
+
     >>> char = charcol.get_all_characters()[0]
     >>> char.set_utf8(newvalue) # will be automatically changed in the db
     """
@@ -60,7 +60,7 @@ class ObjectProxy(object):
         attr = getattr(self._obj, attr_)
 
         write = False
-        if attr_ in self.WRITE_METHODS: 
+        if attr_ in self.WRITE_METHODS:
             write = True
         elif not attr_ in self.READ_METHODS:
             return attr
@@ -77,7 +77,7 @@ self._charobj)
             setattr(self._obj, attr, value)
         self.__dict__[attr] = value
 
-    def __eq__(self, othr):        
+    def __eq__(self, othr):
         if othr.__class__.__name__.endswith("Proxy"):
             othr = othr._obj
         return self._obj == othr
@@ -100,7 +100,7 @@ class StrokeProxy(ObjectProxy):
     Proxy to Stroke.
     """
 
-    WRITE_METHODS = ["append_point", "insert", "smooth", "clear", 
+    WRITE_METHODS = ["append_point", "insert", "smooth", "clear",
                      "downsample", "downsample_threshold",
                      "upsample", "upsample_threshod"]
     READ_METHODS = []
@@ -117,19 +117,19 @@ class WritingProxy(ObjectProxy):
     """
 
     # Note: Some method calls need not be mentioned below
-    # because they automatically update the db thanks to 
+    # because they automatically update the db thanks to
     # Point and Stroke methods that are being used in their implementation.
 
     WRITE_METHODS = ["clear", "move_to_point", "line_to_point",
                      "set_width", "set_height", "remove_stroke"]
-    READ_METHODS = ["get_strokes"]    
+    READ_METHODS = ["get_strokes"]
 
 class CharacterProxy(ObjectProxy):
     """
     Proxy to Writing.
     """
 
-    WRITE_METHODS = ["set_utf8", "set_unicode", "set_writing", 
+    WRITE_METHODS = ["set_utf8", "set_unicode", "set_writing",
                      "read", "read_string"]
     READ_METHODS = ["get_writing"]
 
@@ -162,15 +162,15 @@ class _CharPool(dict):
     for performance reasons. The _CharPool keeps track of what objects need
     be updated.
     """
-    
+
     def __init__(self, cursor):
         self._c = cursor
 
-    def add_char(self, char):        
+    def add_char(self, char):
         self[char.charid] = char
 
     def _update_character(self, char):
-        self._c.execute("""UPDATE characters 
+        self._c.execute("""UPDATE characters
 SET utf8=?, n_strokes=?, data=?, sha1=?
 WHERE charid=?""", (char.get_utf8(), char.get_writing().get_n_strokes(),
                     _adapt_character(char), char.hash(), char.charid))
@@ -178,8 +178,8 @@ WHERE charid=?""", (char.get_utf8(), char.get_writing().get_n_strokes(),
     def clear_pool_threshold(self, threshold=100):
         if len(self) > threshold:
             self.clear_pool()
-    
-    def clear_pool(self):        
+
+    def clear_pool(self):
         for charid, char in self.items():
             self._update_character(char)
         self.clear()
@@ -345,7 +345,7 @@ class CharacterCollection(_XmlBase):
             self.bind(":memory:")
 
             self.read(path, gzip=gzip, bz2=bz2)
-          
+
             self._path = path # contains the path to the xml file
         else:
             # this should be either a .chardb, ":memory:" or ""
@@ -385,7 +385,7 @@ class CharacterCollection(_XmlBase):
     def _create_tables(self):
         self._c.executescript("""
 CREATE TABLE character_sets(
-  setid    INTEGER PRIMARY KEY, 
+  setid    INTEGER PRIMARY KEY,
   name     TEXT
 );
 
@@ -413,7 +413,7 @@ CREATE INDEX character_setid_index ON characters(setid);
     def _update_set_ids(self):
         self._SETIDS = SortedDict()
         for row in self._efa("SELECT * FROM character_sets ORDER BY setid"):
-            self._SETIDS[row['name'].encode("utf8")] = row['setid']    
+            self._SETIDS[row['name'].encode("utf8")] = row['setid']
 
     # Public API
 
@@ -422,10 +422,10 @@ CREATE INDEX character_setid_index ON characters(setid);
                     (self.get_total_n_characters(), id(self))
 
     def bind(self, path):
-        """ 
+        """
         Bind database to a db file.
 
-        All changes to the previous binded database will be lost 
+        All changes to the previous binded database will be lost
         if you haven't committed changes with commit().
 
         @type path: str
@@ -433,14 +433,14 @@ CREATE INDEX character_setid_index ON characters(setid);
         Possible values for path:
             ":memory:"                  for fully in memory database
 
-            ""                          for a in memory database that uses 
+            ""                          for a in memory database that uses
                                         temp files under pressure
 
             "/path/to/file.chardb"      for file-based database
         """
         self._con = sqlite3.connect(path)
         self._con.text_factory = sqlite3.OptimizedUnicode
-        self._con.row_factory = _dict_factory #sqlite3.Row 
+        self._con.row_factory = _dict_factory #sqlite3.Row
         self._c = self._con.cursor()
         self._charpool = _CharPool(self._c)
 
@@ -509,7 +509,7 @@ CREATE INDEX character_setid_index ON characters(setid);
 
     @staticmethod
     def from_character_directory(directory,
-                                 extensions=["xml", "bz2", "gz"], 
+                                 extensions=["xml", "bz2", "gz"],
                                  recursive=True,
                                  check_duplicate=False):
         """
@@ -518,7 +518,7 @@ CREATE INDEX character_setid_index ON characters(setid);
         """
         regexp = re.compile("\.(%s)$" % "|".join(extensions))
         charcol = CharacterCollection()
-        
+
         for name in os.listdir(directory):
             full_path = os.path.join(directory, name)
             if os.path.isdir(full_path) and recursive:
@@ -529,7 +529,7 @@ CREATE INDEX character_setid_index ON characters(setid);
                 gzip = False; bz2 = False
                 if full_path.endswith(".gz"): gzip = True
                 if full_path.endswith(".bz2"): bz2 = True
-                
+
                 try:
                     char.read(full_path, gzip=gzip, bz2=bz2)
                 except ValueError:
@@ -542,12 +542,12 @@ CREATE INDEX character_setid_index ON characters(setid);
                 if not check_duplicate or \
                    not char in charcol.get_characters(utf8):
                     charcol.append_character(utf8, char)
-                
+
         return charcol
 
     def concatenate(self, other, check_duplicate=False):
-        """ 
-        Merge two charcols together and return a new charcol 
+        """
+        Merge two charcols together and return a new charcol
 
         @type other: CharacterCollection
         """
@@ -556,7 +556,7 @@ CREATE INDEX character_setid_index ON characters(setid);
         return new
 
     def merge(self, charcols, check_duplicate=False):
-        """ 
+        """
         Merge several charcacter collections into the current collection.
 
         @type charcols: list
@@ -573,20 +573,20 @@ CREATE INDEX character_setid_index ON characters(setid);
 
                     if check_duplicate:
                         existing_chars = self.get_characters(set_name)
-                        chars = charcol.get_characters(set_name)               
+                        chars = charcol.get_characters(set_name)
                         chars = [c for c in chars if not c in existing_chars]
                         self.append_characters(set_name, chars)
                     else:
                         chars = charcol.get_character_rows(set_name)
                         self.append_character_rows(set_name, chars)
-                        
+
         finally:
-            self._e("""CREATE INDEX character_setid_index 
+            self._e("""CREATE INDEX character_setid_index
 ON characters(setid);""")
 
     def __add__(self, other):
         return self.concatenate(other)
-                   
+
     def add_set(self, set_name):
         """
         Add a new set to collection.
@@ -666,7 +666,7 @@ ON characters(setid);""")
 
     def get_character_rows(self, set_name, limit=-1, offset=0):
         i = self._SETIDS[set_name]
-        self._e("""SELECT * FROM characters 
+        self._e("""SELECT * FROM characters
 WHERE setid=? ORDER BY charid LIMIT ? OFFSET ?""", (i, int(limit), int(offset)))
         return self._fa()
 
@@ -684,7 +684,7 @@ WHERE setid=? ORDER BY charid LIMIT ? OFFSET ?""", (i, int(limit), int(offset)))
         Return a generator to iterate over random characters. See \
         L{get_random_characters).
         """
-        self._e("""SELECT DISTINCT * from characters 
+        self._e("""SELECT DISTINCT * from characters
 ORDER BY RANDOM() LIMIT ?""", (int(n),))
         return (self.get_character_from_row(r) for r in self._fa())
 
@@ -708,7 +708,7 @@ WHERE setid=?""", (i,))[0]
     def get_all_characters(self, limit=-1, offset=0):
         """
         Return all characters in collection.
-    
+
         @type limit: int
         @param limit: the number of characters needed or -1 if all
 
@@ -724,7 +724,7 @@ WHERE setid=?""", (i,))[0]
         Return a generator to iterate over all characters. See \
         L{get_all_characters).
         """
-        self._e("""SELECT * FROM characters 
+        self._e("""SELECT * FROM characters
 ORDER BY charid LIMIT ? OFFSET ?""", (int(limit), int(offset)))
         return (self.get_character_from_row(r) for r in self._fa())
 
@@ -777,12 +777,12 @@ WHERE setid=?""", (i,))[0]
         """
         self.append_characters(set_name, [character])
 
-    def append_characters(self, set_name, characters):        
+    def append_characters(self, set_name, characters):
         rows = [{'utf8':c.get_utf8(),
                  'n_strokes':c.get_writing().get_n_strokes(),
                  'data':_adapt_character(c),
                  'sha1':c.hash()} for c in characters]
-                
+
         self.append_character_rows(set_name, rows)
 
     def append_character_rows(self, set_name, rows):
@@ -790,8 +790,8 @@ WHERE setid=?""", (i,))[0]
         tupls = [(i, r['utf8'], r['n_strokes'], r['data'], r['sha1']) \
                   for r in rows]
 
-        self._em("""INSERT INTO 
-characters (setid, utf8, n_strokes, data, sha1) 
+        self._em("""INSERT INTO
+characters (setid, utf8, n_strokes, data, sha1)
 VALUES (?,?,?,?,?)""", tupls)
 
     def insert_character(self, set_name, i, character):
@@ -849,11 +849,11 @@ WHERE setid=? ORDER BY charid DESC LIMIT 1""", (setid,))[0]
         """
         if not hasattr(character, "charid"):
             raise ValueError, "The character object needs a charid attribute"
-        self._e("""UPDATE characters 
+        self._e("""UPDATE characters
 SET utf8=?, n_strokes=?, data=?, sha1=?
 WHERE charid=?""", (character.get_utf8(),
                     character.get_writing().get_n_strokes(),
-                    _adapt_character(character), 
+                    _adapt_character(character),
                     character.hash(),
                     character.charid))
 
@@ -875,7 +875,7 @@ WHERE setid=? ORDER BY charid LIMIT 1 OFFSET ?""", (setid, i))[0]
         if charid:
             character.charid = charid
             self.update_character_object(character)
-           
+
     def _get_dict_from_text(self, text):
         text = text.replace(" ", "").replace("\n", "").replace("\t", "")
         dic = {}
@@ -948,9 +948,9 @@ WHERE setid=? ORDER BY charid LIMIT 1 OFFSET ?""", (setid, i))[0]
         for set_name in self.get_set_list():
             if self.get_n_characters(set_name) > keep_at_most:
                 setid = self._SETIDS[set_name]
-                self._e("""DELETE FROM characters 
+                self._e("""DELETE FROM characters
 WHERE charid IN(SELECT charid FROM characters
-                WHERE setid=? ORDER BY charid LIMIT -1 OFFSET ?)""", 
+                WHERE setid=? ORDER BY charid LIMIT -1 OFFSET ?)""",
                         (setid, keep_at_most))
 
     def _get_set_char_counts(self):
@@ -974,8 +974,11 @@ FROM characters GROUP BY setid""")
                     empty_sets.append(set_name)
             except KeyError:
                 empty_sets.append(set_name)
-        
+
         self.remove_sets(empty_sets)
+
+    def to_str(self):
+        return self.to_xml()
 
     def to_xml(self):
         """
@@ -998,7 +1001,7 @@ FROM characters GROUP BY setid""")
 
                 for line in character.get_writing().to_xml().split("\n"):
                     s += "    %s\n" % line
-                
+
                 s += "  </character>\n"
 
             s += "</set>\n"
@@ -1007,7 +1010,7 @@ FROM characters GROUP BY setid""")
 
         return s
 
-    # XML processing...    
+    # XML processing...
 
     def _start_element(self, name, attrs):
         self._tag = name
@@ -1034,7 +1037,7 @@ FROM characters GROUP BY setid""")
 
         if self._tag == "stroke":
             self._curr_stroke = Stroke()
-            
+
         elif self._tag == "point":
             point = Point()
 
@@ -1059,7 +1062,7 @@ FROM characters GROUP BY setid""")
                       "_curr_chars", "_curr_set_name"]:
                 if s in self.__dict__:
                     del self.__dict__[s]
-               
+
         if name == "character":
             if self._curr_utf8:
                 self._curr_char.set_utf8(self._curr_utf8)

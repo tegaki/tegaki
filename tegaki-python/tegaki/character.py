@@ -99,9 +99,9 @@ class Point(dict):
         Scale point.
 
         @type xrate: float
-        @param xrate: the x scaling factor 
+        @param xrate: the x scaling factor
         @type yrate: float
-        @param yrate: the y scaling factor 
+        @param yrate: the y scaling factor
         """
         self.x = int(self.x * xrate)
         self.y = int(self.y * yrate)
@@ -116,7 +116,7 @@ class Point(dict):
         @param yrate: relative distance from y
         """
         self.x = self.x + dx
-        self.y = self.y + dy      
+        self.y = self.y + dy
 
     def to_xml(self):
         """
@@ -232,7 +232,7 @@ class Stroke(list):
         Converts stroke to XML.
 
         @rtype: str
-        """        
+        """
         s = "<stroke>\n"
 
         for point in self:
@@ -247,11 +247,11 @@ class Stroke(list):
         Converts stroke to JSON.
 
         @rtype: str
-        """        
+        """
         s = "{\"points\" : ["
-        
+
         s += ",".join([point.to_json() for point in self])
-        
+
         s += "]}"
 
         return s
@@ -261,7 +261,7 @@ class Stroke(list):
         Converts stroke to S-expressions.
 
         @rtype: str
-        """        
+        """
         return "(" + "".join([p.to_sexp() for p in self]) + ")"
 
     def __eq__(self, othr):
@@ -315,15 +315,15 @@ class Stroke(list):
         Visually improve the rendering of stroke by averaging points
         with their neighbours.
 
-        The method is based on a (simple) moving average algorithm. 
-    
-        Let p = p(0), ..., p(N) be the set points of this stroke, 
+        The method is based on a (simple) moving average algorithm.
+
+        Let p = p(0), ..., p(N) be the set points of this stroke,
             w = w(-M), ..., w(0), ..., w(M) be a set of weights.
-        
+
         This algorithm aims at replacing p with a set p' such as
-        
+
             p'(i) = (w(-M)*p(i-M) + ... + w(0)*p(i) + ... + w(M)*p(i+M)) / S
-        
+
         and where S = w(-M) + ... + w(0) + ... w(M). End points are not
         affected.
         """
@@ -352,7 +352,7 @@ class Stroke(list):
 
                 self[i].x = int(round(self[i].x / wsum))
                 self[i].y = int(round(self[i].y / wsum))
-        
+
         self._is_smoothed = True
 
     def clear(self):
@@ -460,7 +460,7 @@ class Stroke(list):
             for j in range(1, n+1):
                 dx = cosalpha * 1.0 / (n + 1) * d
                 dy = sinalpha * 1.0 / (n + 1) * d
-                new_s.append_point(Point(x=int(x1+j*dx*signx), 
+                new_s.append_point(Point(x=int(x1+j*dx*signx),
                                          y=int(y1+j*dy*signy)))
 
         new_s.append_point(self[-1])
@@ -535,9 +535,9 @@ class Writing(object):
         point = Point()
         point.x = x
         point.y = y
-               
+
         self.line_to_point(point)
-              
+
     def move_to_point(self, point):
         """
         Start a new stroke at point.
@@ -548,7 +548,7 @@ class Writing(object):
         stroke.append_point(point)
 
         self.append_stroke(stroke)
-        
+
     def line_to_point(self, point):
         """
         Add point to the current stroke.
@@ -639,16 +639,16 @@ class Writing(object):
         Scale writing.
 
         @type xrate: float
-        @param xrate: the x scaling factor 
+        @param xrate: the x scaling factor
         @type yrate: float
-        @param yrate: the y scaling factor 
+        @param yrate: the y scaling factor
         """
         for stroke in self._strokes:
             if len(stroke) == 0:
                 continue
 
             stroke[0].resize(xrate, yrate)
-            
+
             for point in stroke[1:]:
                 point.resize(xrate, yrate)
 
@@ -666,7 +666,7 @@ class Writing(object):
                 continue
 
             stroke[0].move_rel(dx, dy)
-            
+
             for point in stroke[1:]:
                 point.move_rel(dx, dy)
 
@@ -679,7 +679,7 @@ class Writing(object):
         """
         xmin, ymin = 4294967296, 4294967296 # 2^32
         xmax, ymax = 0, 0
-        
+
         for stroke in self._strokes:
             for point in stroke:
                 xmin = min(xmin, point.x)
@@ -693,7 +693,7 @@ class Writing(object):
         """
         Return whether the writing is small or not.
 
-        A writing is considered small when it is written in a corner. 
+        A writing is considered small when it is written in a corner.
         This is used in Japanese to detect small hiragana and katakana.
 
         Note: is_small() should be used before normalize().
@@ -704,7 +704,7 @@ class Writing(object):
         x, y, w, h = self.size()
         # 0.44 and 0.56 are used instead of 0.5 to allow the character to go a
         # little bit beyond the corners
-        return ((x+w <= self.get_width() * 0.56 and 
+        return ((x+w <= self.get_width() * 0.56 and
                  y+h <= 0.56 * self.get_height()) or # top-left
                 (x >= 0.44 * self.get_width() and
                  y+h <= 0.56 * self.get_height()) or # top-right
@@ -745,7 +745,7 @@ class Writing(object):
         # Note: you should call normalize_position() after normalize_size()
         x, y, width, height = self.size()
 
-        
+
         if float(width) / self._width > Writing.NORMALIZE_MIN_SIZE:
             xrate = self._width * Writing.NORMALIZE_PROPORTION / width
         else:
@@ -758,7 +758,7 @@ class Writing(object):
         else:
             # Don't normalize if too thin in height
             yrate = 1.0
-        
+
         self.resize(xrate, yrate)
 
     def downsample(self, n):
@@ -821,7 +821,7 @@ class Writing(object):
         @rtype: int
         """
         return self._width
-    
+
     def set_width(self, width):
         """
         Set the drawing box width.
@@ -853,7 +853,7 @@ class Writing(object):
         Converts writing to XML.
 
         @rtype: str
-        """    
+        """
         s = "<width>%d</width>\n" % self.get_width()
         s += "<height>%d</height>\n" % self.get_height()
 
@@ -872,7 +872,7 @@ class Writing(object):
         Converts writing to JSON.
 
         @rtype: str
-        """    
+        """
         s = "{ \"width\" : %d, " % self.get_width()
         s += "\"height\" : %d, " % self.get_height()
         s += "\"strokes\" : ["
@@ -888,11 +888,11 @@ class Writing(object):
         Converts writing to S-expressions.
 
         @rtype: str
-        """    
+        """
         return "((width %d)(height %d)(strokes %s))" % \
-            (self._width, self._height, 
-             "".join([s.to_sexp() for s in self._strokes]))                    
-        
+            (self._width, self._height,
+             "".join([s.to_sexp() for s in self._strokes]))
+
     def __eq__(self, othr):
         if not othr.__class__.__name__ in ("Writing", "WritingProxy"):
             return False
@@ -911,7 +911,7 @@ class Writing(object):
         for i in range(len(self._strokes)):
             if self._strokes[i] != othr_strokes[i]:
                 return False
-        
+
         return True
 
     def __ne__(self, othr):
@@ -933,7 +933,7 @@ class Writing(object):
         self.clear()
         self.set_width(w.get_width())
         self.set_height(w.get_height())
-        
+
         for s in w.get_strokes(True):
             self.append_stroke(s.copy())
 
@@ -958,7 +958,161 @@ class Writing(object):
         return "<Writing %d strokes (ref %d)>" % (self.get_n_strokes(),
                                                   id(self))
 
-class _XmlBase(object):
+class _IOBase(object):
+    """
+    Class providing IO functionality to L{Character} and \
+    L{CharacterCollection}.
+    """
+
+    def __init__(self, path=None):
+        self._path = path
+
+        if path is not None:
+            gzip = True if path.endswith(".gz") or path.endswith(".gzip") \
+                        else False
+            bz2 = True if path.endswith(".bz2") or path.endswith(".bzip2") \
+                       else False
+
+            self.read(path, gzip=gzip, bz2=bz2)
+
+    def read(self, file, gzip=False, bz2=False, compresslevel=9):
+        """
+        Read XML from a file.
+
+        @type file: str or file
+        @param file: path to file or file object
+
+        @type gzip: boolean
+        @param gzip: whether the file is gzip-compressed or not
+
+        @type bz2: boolean
+        @param bz2: whether the file is bzip2-compressed or not
+
+        @type compresslevel: int
+        @param compresslevel: compression level (see gzip module documentation)
+
+        Raises ValueError if incorrect XML.
+        """
+        try:
+            if type(file) == str:
+                if gzip:
+                    file = gzipm.GzipFile(file, compresslevel=compresslevel)
+                elif bz2:
+                    try:
+                        file = bz2m.BZ2File(file, compresslevel=compresslevel)
+                    except NameError:
+                        raise NotImplementedError
+                else:
+                    file = open(file)
+
+                self._parse_file(file)
+                file.close()
+            else:
+                self._parse_file(file)
+        except (IOError, xml.parsers.expat.ExpatError):
+            raise ValueError
+
+    def read_string(self, string, gzip=False, bz2=False, compresslevel=9):
+        """
+        Read XML from string.
+
+        @type string: str
+        @param string: string containing XML
+
+        Other parameters are identical to L{read}.
+        """
+        if gzip:
+            io = cStringIO.StringIO(string)
+            io = gzipm.GzipFile(fileobj=io, compresslevel=compresslevel)
+            string = io.read()
+        elif bz2:
+            try:
+                string = bz2m.decompress(string)
+            except NameError:
+                raise NotImplementedError
+
+        self._parse_str(string)
+
+    def write(self, file, gzip=False, bz2=False, compresslevel=9):
+        """
+        Write XML to a file.
+
+        @type file: str or file
+        @param file: path to file or file object
+
+        @type gzip: boolean
+        @param gzip: whether the file need be gzip-compressed or not
+
+        @type bz2: boolean
+        @param bz2: whether the file need be bzip2-compressed or not
+
+        @type compresslevel: int
+        @param compresslevel: compression level (see gzip module documentation)
+        """
+        if type(file) == str:
+            if gzip:
+                file = gzipm.GzipFile(file, "w", compresslevel=compresslevel)
+            elif bz2:
+                try:
+                    file = bz2m.BZ2File(file, "w", compresslevel=compresslevel)
+                except NameError:
+                    raise NotImplementedError
+            else:
+                file = open(file, "w")
+
+            file.write(self.to_str())
+            file.close()
+        else:
+            file.write(self.to_str())
+
+    def write_string(self, gzip=False, bz2=False, compresslevel=9):
+        """
+        Write XML to string.
+
+        @rtype: str
+        @return: string containing XML
+
+        Other parameters are identical to L{write}.
+        """
+        if bz2:
+            try:
+                return bz2m.compress(self.to_str(), compresslevel=compresslevel)
+            except NameError:
+                raise NotImplementedError
+        elif gzip:
+            io = cStringIO.StringIO()
+            f = gzipm.GzipFile(fileobj=io, mode="w",
+                               compresslevel=compresslevel)
+            f.write(self.to_str())
+            f.close()
+            return io.getvalue()
+        else:
+            return self.to_str()
+
+    def save(self, path=None):
+        """
+        Save character to file.
+
+        @type path: str
+        @param path: path where to write the file or None if use the path \
+                     that was given to the constructor
+
+        The file extension is used to determine whether the file is plain,
+        gzip-compressed or bzip2-compressed XML.
+        """
+        if [path, self._path] == [None, None]:
+            raise ValueError, "A path must be specified"
+        elif path is None:
+            path = self._path
+
+        gzip = True if path.endswith(".gz") or path.endswith(".gzip") \
+                    else False
+        bz2 = True if path.endswith(".bz2") or path.endswith(".bzip2") \
+                       else False
+
+        self.write(path, gzip=gzip, bz2=bz2)
+
+class _XmlBase(_IOBase):
     """
     Class providing XML functionality to L{Character} and \
     L{CharacterCollection}.
@@ -985,122 +1139,14 @@ class _XmlBase(object):
             # system so you have to catch that exception if you want to
             # ignore it
             raise NotImplementedError
-       
-    def read(self, file, gzip=False, bz2=False, compresslevel=9):
-        """
-        Read XML from a file.
 
-        @type file: str or file
-        @param file: path to file or file object
-
-        @type gzip: boolean
-        @param gzip: whether the file is gzip-compressed or not
-
-        @type bz2: boolean
-        @param bz2: whether the file is bzip2-compressed or not
-
-        @type compresslevel: int
-        @param compresslevel: compression level (see gzip module documentation)
-
-        Raises ValueError if incorrect XML.
-        """
+    def _parse_file(self, file):
         parser = self._get_parser()
-        try:
-            if type(file) == str:
-                if gzip:
-                    file = gzipm.GzipFile(file, compresslevel=compresslevel)
-                elif bz2:
-                    try:
-                        file = bz2m.BZ2File(file, compresslevel=compresslevel)
-                    except NameError:
-                        raise NotImplementedError
-                else:
-                    file = open(file)
-                    
-                parser.ParseFile(file)
-                file.close()
-            else:                
-                parser.ParseFile(file)
-        except (IOError, xml.parsers.expat.ExpatError):
-            raise ValueError
+        parser.ParseFile(file)
 
-    def read_string(self, string, gzip=False, bz2=False, compresslevel=9):
-        """
-        Read XML from string.
-
-        @type string: str
-        @param string: string containing XML
-
-        Other parameters are identical to L{read}.
-        """
-        if gzip:
-            io = cStringIO.StringIO(string)
-            io = gzipm.GzipFile(fileobj=io, compresslevel=compresslevel)
-            string = io.read()
-        elif bz2:
-            try:
-                string = bz2m.decompress(string)
-            except NameError:
-                raise NotImplementedError
-            
+    def _parse_str(self, string):
         parser = self._get_parser()
         parser.Parse(string)
-
-    def write(self, file, gzip=False, bz2=False, compresslevel=9):
-        """
-        Write XML to a file.
-
-        @type file: str or file
-        @param file: path to file or file object
-
-        @type gzip: boolean
-        @param gzip: whether the file need be gzip-compressed or not
-
-        @type bz2: boolean
-        @param bz2: whether the file need be bzip2-compressed or not
-
-        @type compresslevel: int
-        @param compresslevel: compression level (see gzip module documentation)
-        """
-        if type(file) == str:
-            if gzip:
-                file = gzipm.GzipFile(file, "w", compresslevel=compresslevel)
-            elif bz2:
-                try:
-                    file = bz2m.BZ2File(file, "w", compresslevel=compresslevel)
-                except NameError:
-                    raise NotImplementedError
-            else:            
-                file = open(file, "w")
-                
-            file.write(self.to_xml())
-            file.close()
-        else:
-            file.write(self.to_xml())
-
-    def write_string(self, gzip=False, bz2=False, compresslevel=9):
-        """
-        Write XML to string.
-
-        @rtype: str
-        @return: string containing XML
-
-        Other parameters are identical to L{write}.
-        """
-        if bz2:
-            try:
-                return bz2m.compress(self.to_xml(), compresslevel=compresslevel)
-            except NameError:
-                raise NotImplementedError
-        elif gzip:
-            io = cStringIO.StringIO()
-            f = gzipm.GzipFile(fileobj=io, mode="w",
-                               compresslevel=compresslevel)
-            f.write(self.to_xml())
-            f.close()
-            return io.getvalue()
-        else:
-            return self.to_xml()
 
     def _get_parser(self):
         parser = xml.parsers.expat.ParserCreate(encoding="UTF-8")
@@ -1114,7 +1160,7 @@ class Character(_XmlBase):
     """
     A handwritten character.
 
-    A Character is composed of meta-data and handwriting data. 
+    A Character is composed of meta-data and handwriting data.
     Handwriting data are contained in L{Writing} objects.
 
     Building character objects
@@ -1218,15 +1264,7 @@ class Character(_XmlBase):
         """
         self._writing = Writing()
         self._utf8 = None
-        self._path = path
-
-        if path is not None:
-            gzip = True if path.endswith(".gz") or path.endswith(".gzip") \
-                        else False
-            bz2 = True if path.endswith(".bz2") or path.endswith(".bzip2") \
-                       else False
-
-            self.read(path, gzip=gzip, bz2=bz2)
+        _XmlBase.__init__(self, path)
 
     def get_utf8(self):
         """
@@ -1243,7 +1281,7 @@ class Character(_XmlBase):
         @rtype: unicode
         """
         return unicode(self.get_utf8(), "utf8")
-        
+
     def set_utf8(self, utf8):
         """
         Set the label the character.
@@ -1275,7 +1313,7 @@ class Character(_XmlBase):
         @type writing: L{Writing}
         """
 
-        self._writing = writing       
+        self._writing = writing
 
     def hash(self):
         """
@@ -1283,37 +1321,17 @@ class Character(_XmlBase):
         """
         return hashlib.sha1(self.to_xml()).hexdigest()
 
-    def save(self, path=None):
-        """
-        Save character to file.
-
-        @type path: str
-        @param path: path where to write the file or None if use the path \
-                     that was given to the constructor
-
-        The file extension is used to determine whether the file is plain,
-        gzip-compressed or bzip2-compressed XML.
-        """
-        if [path, self._path] == [None, None]:
-            raise ValueError, "A path must be specified"
-        elif path is None:
-            path = self._path
-
-        gzip = True if path.endswith(".gz") or path.endswith(".gzip") \
-                    else False
-        bz2 = True if path.endswith(".bz2") or path.endswith(".bzip2") \
-                       else False
-
-        self.write(path, gzip=gzip, bz2=bz2)
+    def to_str(self):
+        return self.to_xml()
 
     def to_xml(self):
         """
         Converts character to XML.
 
         @rtype: str
-        """    
+        """
         s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        
+
         s += "<character>\n"
 
         if self._utf8:
@@ -1321,7 +1339,7 @@ class Character(_XmlBase):
 
         for line in self._writing.to_xml().split("\n"):
             s += "  %s\n" % line
-        
+
         s += "</character>"
 
         return s
@@ -1331,7 +1349,7 @@ class Character(_XmlBase):
         Converts character to JSON.
 
         @rtype: str
-        """    
+        """
         s = "{"
 
         attrs = ["\"utf8\" : \"%s\"" % self._utf8,
@@ -1348,7 +1366,7 @@ class Character(_XmlBase):
         Converts character to S-expressions.
 
         @rtype: str
-        """    
+        """
         return "(character (value %s)" % self._utf8 + \
                     self._writing.to_sexp()[1:-1]
 
@@ -1366,7 +1384,7 @@ class Character(_XmlBase):
         self.clear()
         self.set_width(w.get_width())
         self.set_height(w.get_height())
-        
+
         for s in w.get_strokes(True):
             self.append_stroke(s.copy())
 
@@ -1392,8 +1410,8 @@ class Character(_XmlBase):
 
     def __repr__(self):
         return "<Character %s (ref %d)>" % (str(self.get_utf8()), id(self))
-        
-    # Private...    
+
+    # Private...
 
     def _start_element(self, name, attrs):
         self._tag = name
@@ -1405,7 +1423,7 @@ class Character(_XmlBase):
 
         if self._tag == "stroke":
             self._stroke = Stroke()
-            
+
         elif self._tag == "point":
             point = Point()
 
