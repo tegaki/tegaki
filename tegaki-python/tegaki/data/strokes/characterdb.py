@@ -56,13 +56,13 @@ def strokeorder_entry_preparator(entryList):
         return []
 
 DATA_SETS = {
-             'ja': ({'query': '[[Category:Glyph]] [[Locale::J]] [[StrokeOrderForms::!]]',
+             'ja': ({'query': '[[Category:Glyph]] [[Locale::J]] [[StrokeOrderForms::!]] [[StrokeOrderForms::!~*span*]]',
                      'properties': ['StrokeOrderForms']},
                     strokeorder_entry_preparator),
-             'zh_CN': ({'query': '[[Category:Glyph]] [[Locale::C]] [[StrokeOrderForms::!]]',
+             'zh_CN': ({'query': '[[Category:Glyph]] [[Locale::C]] [[StrokeOrderForms::!]] [[StrokeOrderForms::!~*span*]]',
                         'properties': ['StrokeOrderForms']},
                        strokeorder_entry_preparator),
-             'zh_TW': ({'query': '[[Category:Glyph]] [[Locale::T]] [[StrokeOrderForms::!]]',
+             'zh_TW': ({'query': '[[Category:Glyph]] [[Locale::T]] [[StrokeOrderForms::!]] [[StrokeOrderForms::!~*span*]]',
                         'properties': ['StrokeOrderForms']},
                        strokeorder_entry_preparator),
             }
