@@ -20,6 +20,11 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
+"""
+Convert a character collection to a stroke collection,
+i.e., group data by stroke class.
+"""
+
 import sys
 import os
 from optparse import OptionParser
