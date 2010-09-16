@@ -27,6 +27,30 @@ except ImportError:
     pass
 
 from tegaki.character import _IOBase
+from tegaki.dag import Node
+
+class StrokeNode(Node):
+    def __init__(self, *args, **kw):
+        Node.__init__(self, *args, **kw)
+        self.char_label = None
+
+    def __repr__(self):
+        value = self.get_value_string()
+        if value is None:
+            return "Stroke()"
+        elif self.char_label is not None:
+            return "Stroke(%s, %s)" % (value, self.char_label)
+        else:
+            return "Stroke(%s)" % value
+
+    def __str__(self):
+        value = self.get_value_string()
+        if value is None:
+            return ""
+        elif self.char_label is not None:
+            return "%s (%s)" % (value, self.char_label)
+        else:
+            return value
 
 class CharacterStrokeDictionary(dict, _IOBase):
     """
@@ -79,3 +103,40 @@ class CharacterStrokeDictionary(dict, _IOBase):
                                  " ".join(stroke_list).encode("utf8"))
         return s
 
+    def to_dag(self):
+        root = StrokeNode()
+
+        for char in self.get_characters():
+            utf8 = char.encode("utf8")
+            node = root
+
+            for stroke_list in self.get_strokes(char):
+                for i, stroke_label in enumerate(stroke_list):
+                    stroke_label = stroke_label.encode("utf8")
+                    if not node.has_child_node_value(stroke_label):
+                        node.set_child_node(StrokeNode(stroke_label))
+
+                    # we reached the last stroke of the character
+                    # so we assign the utf8 value of the character to it
+                    if i == len(stroke_list)-1:
+                        node.get_child_node(stroke_label).char_label = utf8
+
+                    node = node.get_child_node(stroke_label)
+
+        root.update_depths()
+
+        return root
+
+if __name__ == "__main__":
+    import os
+    import sys
+    import pickle
+
+#     if not os.path.exists("dag.pp"):
+#         chardict = CharacterStrokeDictionary(sys.argv[1])
+#         pickle.dump(chardict.to_dag(), file("dag.pp", "w"), pickle.HIGHEST_PROTOCOL)
+#     else:
+#         chardict = pickle.load(file("dag.pp"))
+
+    chardict = CharacterStrokeDictionary(sys.argv[1])
+    print chardict.to_dag().tree()
