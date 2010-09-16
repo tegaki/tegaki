@@ -507,6 +507,36 @@ CREATE INDEX character_setid_index ON characters(setid);
 
         self.commit()
 
+    def to_stroke_collection(self, dictionary, silent=True):
+        """
+        @type dictionary: L{CharacterStrokeDictionary
+        """
+        strokecol = CharacterCollection()
+        for char in self.get_all_characters_gen():
+            stroke_labels = dictionary.get_strokes(char.get_unicode())[0]
+            strokes = char.get_writing().get_strokes(full=True)
+
+            if len(strokes) != len(stroke_labels):
+                if silent:
+                    continue
+                else:
+                    raise ValueError, "The number of strokes doesn't " \
+                                      "match with reference character"
+
+            for stroke, label in zip(strokes, stroke_labels):
+                utf8 = label.encode("utf-8")
+                strokecol.add_set(utf8)
+                writing = Writing()
+                writing.append_stroke(stroke)
+                writing.normalize_position()
+                schar = Character()
+                schar.set_utf8(utf8)
+                schar.set_writing(writing)
+                strokecol.append_character(utf8, schar)
+
+        return strokecol
+
+
     @staticmethod
     def from_character_directory(directory,
                                  extensions=["xml", "bz2", "gz"],
