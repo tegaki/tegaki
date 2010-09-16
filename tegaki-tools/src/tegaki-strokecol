@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2010 The Tegaki project contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Contributors to this file:
+# - Mathieu Blondel
+
+import sys
+import os
+from optparse import OptionParser
+
+from tegaki.chardict import CharacterStrokeDictionary
+from tegaki.charcol import CharacterCollection
+from tegakitools.charcol import *
+
+VERSION = '0.4'
+
+class TegakiStrokecolError(Exception):
+    pass
+
+class TegakiStrokecol(object):
+
+    def __init__(self, options, args):
+        self._directories = options.directories
+        self._charcols = options.charcols
+        self._databases = options.databases
+        self._tomoe = options.tomoe
+        self._kuchibue = options.kuchibue
+
+        if len(args) > 2:
+            raise TegakiStrokecolError, "tegaki-strokecol needs only 2 arguments"
+        elif len(args) < 1:
+            raise TegakiStrokecolError, "tegaki-strokecol needs at least 1" \
+                                        " argument"
+        
+        if len(args) == 2:
+            self._output_path = args[1]
+        else:
+            self._output_path = None
+
+        self._dictionary = args[0]
+
+    def run(self):
+        charcol = get_aggregated_charcol(
+                        ((TYPE_CHARCOL, self._charcols),
+                         (TYPE_CHARCOL_DB, self._databases),
+                         (TYPE_DIRECTORY, self._directories),
+                         (TYPE_TOMOE, self._tomoe),
+                         (TYPE_KUCHIBUE, self._kuchibue)), self._output_path)
+
+        dictionary = CharacterStrokeDictionary(self._dictionary)
+
+        # output
+        if not self._output_path:
+            # outputs to stdout if not output path specified
+            print charcol.to_stroke_collection(dictionary).to_xml()
+        else:
+            charcol.to_stroke_collection(dictionary).save(self._output_path)
+
+parser = OptionParser(usage="usage: %prog [options] dictionary [output-path]",
+                      version="%prog " + VERSION)
+
+parser.add_option("-d", "--directory",
+                  action="append", type="string", dest="directories",
+                  default=[],
+                  help="Directory containing individual XML character files")
+parser.add_option("-c", "--charcol",
+                  action="append", type="string", dest="charcols",
+                  default=[],
+                  help="character collection XML files")
+parser.add_option("-b", "--db",
+                  action="append", type="string", dest="databases",
+                  default=[],
+                  help="character collection XML files")
+parser.add_option("-t", "--tomoe-dict",
+                  action="append", type="string", dest="tomoe",
+                  default=[],
+                  help="Tomoe XML dictionary files")
+parser.add_option("-k", "--kuchibue",
+                  action="append", type="string", dest="kuchibue",
+                  default=[],
+                  help="Kuchibue unipen database")
+
+(options, args) = parser.parse_args()
+
+try:
+    TegakiStrokecol(options, args).run()
+except TegakiStrokecolError, e:
+    sys.stderr.write(str(e) + "\n\n")
+    parser.print_help()
+    sys.exit(1)
