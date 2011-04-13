@@ -40,6 +40,7 @@ class TegakiConvert(object):
         self._charcols = options.charcols
         self._databases = options.databases
         self._tomoe = options.tomoe
+        self._kanjivg = options.kanjivg
         self._kuchibue = options.kuchibue
         self._include = options.include
         self._exclude = options.exclude
@@ -58,6 +59,7 @@ class TegakiConvert(object):
                          (TYPE_CHARCOL_DB, self._databases),
                          (TYPE_DIRECTORY, self._directories),
                          (TYPE_TOMOE, self._tomoe),
+                         (TYPE_KANJIVG, self._kanjivg),
                          (TYPE_KUCHIBUE, self._kuchibue)), self._output_path)
 
 
@@ -94,6 +96,10 @@ parser.add_option("-t", "--tomoe-dict",
                   action="append", type="string", dest="tomoe",
                   default=[],
                   help="Tomoe XML dictionary files")
+parser.add_option("-a", "--kanjivg-dict",
+                  action="append", type="string", dest="kanjivg",
+                  default=[],
+                  help="KanjiVG XML dictionary files")
 parser.add_option("-k", "--kuchibue",
                   action="append", type="string", dest="kuchibue",
                   default=[],
