@@ -26,9 +26,14 @@ from tegaki.charcol import CharacterCollection
 
 from tegakitools.tomoe import tomoe_dict_to_character_collection
 from tegakitools.kuchibue import kuchibue_to_character_collection
+try:
+  from tegakitools.kanjivg import kanjivg_to_character_collection
+  HAS_KANJIVG_SUPPORT = True
+except:
+  HAS_KANJIVG_SUPPORT = False
 
-TYPE_CHARCOL, TYPE_CHARCOL_DB, TYPE_DIRECTORY, TYPE_TOMOE, TYPE_KUCHIBUE = \
-range(5)
+TYPE_CHARCOL, TYPE_CHARCOL_DB, TYPE_DIRECTORY, TYPE_TOMOE, TYPE_KANJIVG, TYPE_KUCHIBUE = \
+range(6)
 
 def _get_charcol(charcol_type, charcol_path):
     if charcol_type == TYPE_DIRECTORY:
@@ -43,6 +48,9 @@ def _get_charcol(charcol_type, charcol_path):
 
     elif charcol_type == TYPE_KUCHIBUE:
         return kuchibue_to_character_collection(charcol_path)
+
+    elif charcol_type == TYPE_KANJIVG:
+        return kanjivg_to_character_collection(charcol_path)
     
 
 def get_aggregated_charcol(tuples, dbpath=None):

@@ -227,6 +227,9 @@ class Stroke(list):
         """
         self.append(point)
 
+    def append_points(self, points):
+        self.extend(points)
+
     def to_xml(self):
         """
         Converts stroke to XML.
