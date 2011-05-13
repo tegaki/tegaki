@@ -45,6 +45,9 @@ class TegakiConvert(object):
         self._exclude = options.exclude
         self._max_samples = options.max_samples
 
+        if HAS_KANJIVG_SUPPORT:
+          self._kanjivg = options.kanjivg
+
         if len(args) > 1:
             raise TegakiConvertError, "tegaki-convert needs only 1 argument"
         elif len(args) == 1:
@@ -53,12 +56,22 @@ class TegakiConvert(object):
             self._output_path = None
 
     def run(self):
-        charcol = get_aggregated_charcol(
-                        ((TYPE_CHARCOL, self._charcols),
-                         (TYPE_CHARCOL_DB, self._databases),
-                         (TYPE_DIRECTORY, self._directories),
-                         (TYPE_TOMOE, self._tomoe),
-                         (TYPE_KUCHIBUE, self._kuchibue)), self._output_path)
+        if HAS_KANJIVG_SUPPORT:
+          charcol = get_aggregated_charcol(
+                          ((TYPE_CHARCOL, self._charcols),
+                           (TYPE_CHARCOL_DB, self._databases),
+                           (TYPE_DIRECTORY, self._directories),
+                           (TYPE_TOMOE, self._tomoe),
+                           (TYPE_KANJIVG, self._kanjivg),
+                           (TYPE_KUCHIBUE, self._kuchibue)), self._output_path)
+        else:
+          charcol = get_aggregated_charcol(
+                          ((TYPE_CHARCOL, self._charcols),
+                           (TYPE_CHARCOL_DB, self._databases),
+                           (TYPE_DIRECTORY, self._directories),
+                           (TYPE_TOMOE, self._tomoe),
+                           (TYPE_KUCHIBUE, self._kuchibue)), self._output_path)
+          
 
 
         charcol.include_characters_from_files(self._include)
@@ -94,6 +107,11 @@ parser.add_option("-t", "--tomoe-dict",
                   action="append", type="string", dest="tomoe",
                   default=[],
                   help="Tomoe XML dictionary files")
+if HAS_KANJIVG_SUPPORT:
+  parser.add_option("-a", "--kanjivg-dict",
+                    action="append", type="string", dest="kanjivg",
+                    default=[],
+                    help="KanjiVG XML dictionary files")
 parser.add_option("-k", "--kuchibue",
                   action="append", type="string", dest="kuchibue",
                   default=[],
