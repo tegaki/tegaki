@@ -26,7 +26,11 @@ from tegaki.charcol import CharacterCollection
 
 from tegakitools.tomoe import tomoe_dict_to_character_collection
 from tegakitools.kuchibue import kuchibue_to_character_collection
-from tegakitools.kanjivg import kanjivg_to_character_collection
+try:
+  from tegakitools.kanjivg import kanjivg_to_character_collection
+  HAS_KANJIVG_SUPPORT = True
+except:
+  HAS_KANJIVG_SUPPORT = False
 
 TYPE_CHARCOL, TYPE_CHARCOL_DB, TYPE_DIRECTORY, TYPE_TOMOE, TYPE_KANJIVG, TYPE_KUCHIBUE = \
 range(6)
