@@ -22,7 +22,7 @@ Tegaki is composed of the following subprojects:
 
 In order to download the latest source code, please use git.
 
-$ git clone http://www.mblondel.org/code/hwr.git
+$ git clone git://github.com/tegaki/tegaki.git
 
 License
 -------
