@@ -1132,11 +1132,14 @@ class _XmlBase(_IOBase):
         DTD must be an attribute of cls.
         """
         try:
-            dtd = etree.DTD(cStringIO.StringIO(cls.DTD))
-            root = etree.XML(string.strip())
-            return dtd.validate(root)
-        except etree.XMLSyntaxError:
-            return False
+            # first check whether etree is available or not
+            etree
+            try:
+                dtd = etree.DTD(cStringIO.StringIO(cls.DTD))
+                root = etree.XML(string.strip())
+                return dtd.validate(root)
+            except etree.XMLSyntaxError:
+                return False
         except NameError:
             # this means that the functionality is not available on that
             # system so you have to catch that exception if you want to
