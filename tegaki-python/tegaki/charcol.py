@@ -413,7 +413,7 @@ CREATE INDEX character_setid_index ON characters(setid);
     def _update_set_ids(self):
         self._SETIDS = SortedDict()
         for row in self._efa("SELECT * FROM character_sets ORDER BY setid"):
-            self._SETIDS[row['name'].encode("utf8")] = row['setid']
+            self._SETIDS[row['name']] = row['setid']
 
     # Public API
 
@@ -439,7 +439,7 @@ CREATE INDEX character_setid_index ON characters(setid);
             "/path/to/file.chardb"      for file-based database
         """
         self._con = sqlite3.connect(path)
-        self._con.text_factory = sqlite3.OptimizedUnicode
+        self._con.text_factory = str
         self._con.row_factory = _dict_factory #sqlite3.Row
         self._c = self._con.cursor()
         self._charpool = _CharPool(self._c)

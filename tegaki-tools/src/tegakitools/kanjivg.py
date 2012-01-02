@@ -166,22 +166,22 @@ class KVGXmlDictionaryReader(_XmlBase):
 
         if self._first_tag:
             self._first_tag = False
-            if self._tag != "kanjis":
-                raise ValueError, "The very first tag should be <kanjis>"
+            if self._tag != "kanjivg":
+                raise ValueError, "The very first tag should be <kanjivg>"
 
         if self._tag == "kanji":
             self._writing = Writing()
-            self._utf8 = attrs["midashi"].encode("UTF-8")
+            self._utf8 = unichr(int(attrs["id"].split('_')[1], 16)).encode("UTF-8")
 
-        if self._tag == "stroke":
+        if self._tag == "path":
             self._stroke = Stroke()
-            if attrs.has_key("path"):
-                self._stroke_svg = attrs["path"].encode("UTF-8")
+            if attrs.has_key("d"):
+                self._stroke_svg = attrs["d"].encode("UTF-8")
                 svg_parser = SVG_Parser(self._stroke_svg) 
                 svg_parser.parse()
                 self._stroke.append_points(svg_parser.get_points())
             else:
-                sys.stderr.write("Missing path in <stroke> element: " + self._utf8 + "\n")
+                sys.stderr.write("Missing data in <path> element: " + self._utf8 + "\n")
     
             
     def _end_element(self, name):
@@ -195,7 +195,7 @@ class KVGXmlDictionaryReader(_XmlBase):
                 if s in self.__dict__:
                     del self.__dict__[s]
 
-        if name == "stroke":
+        if name == "path":
             self._writing.append_stroke(self._stroke)
             self._stroke = None
 
