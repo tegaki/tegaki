@@ -25,8 +25,10 @@ def pkg_config(package, option):
     sub.wait()
     return [a[2:] for a in args]
 
-if platform.system() in ["Darwin", "Windows"]:
+if platform.system() in ["Darwin", "OpenBSD", "Windows"]:
     macros = []
+elif platform.system() in ["NetBSD", "FreeBSD", "DragonFly"]:
+    macros = [("HAVE_POSIX_MEMALIGN", None)]
 else:
     macros = [("HAVE_MEMALIGN", None)]
     

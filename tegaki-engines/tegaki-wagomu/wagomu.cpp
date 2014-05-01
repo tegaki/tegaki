@@ -78,7 +78,11 @@ Character::Character(unsigned int n_vec, unsigned int n_stro) {
         ptr += diff;
         ((char*)ptr)[-1]= diff;
         */
+#ifdef HAVE_POSIX_MEMALIGN
+        posix_memalign((void**)&points, 16, n_vec * VEC_DIM_MAX *
+#else
         points = (float *) memalign(16, n_vec * VEC_DIM_MAX *
+#endif
                                         sizeof(float));
 }
 
@@ -198,16 +202,32 @@ bool Recognizer::open(char *path) {
     max_n_vectors = get_max_n_vectors();
 
 #ifdef __SSE__
+#ifdef HAVE_POSIX_MEMALIGN
+    posix_memalign((void**)&dtw1v, 16, max_n_vectors * VEC_DIM_MAX *
+#else
     dtw1v = (wg_v4sf *) memalign(16, max_n_vectors * VEC_DIM_MAX *
+#endif
                                      sizeof(wg_v4sf));
+#ifdef HAVE_POSIX_MEMALIGN
+    posix_memalign((void**)&dtw2v, 16, max_n_vectors * VEC_DIM_MAX *
+#else
     dtw2v = (wg_v4sf *) memalign(16, max_n_vectors * VEC_DIM_MAX *
+#endif
                                      sizeof(wg_v4sf));
     dtw1 = (float *) dtw1v;
     dtw2 = (float *) dtw2v;
 #else
+#ifdef HAVE_POSIX_MEMALIGN
+    posix_memalign((void**)&dtw1, 16, max_n_vectors * VEC_DIM_MAX *
+#else
     dtw1 = (float *) memalign(16, max_n_vectors * VEC_DIM_MAX *
+#endif
                                   sizeof(float));
+#ifdef HAVE_POSIX_MEMALIGN
+    posix_memalign((void**)&dtw2, 16, max_n_vectors * VEC_DIM_MAX *
+#else
     dtw2 = (float *) memalign(16, max_n_vectors * VEC_DIM_MAX *
+#endif
                                   sizeof(float));
 #endif
 
