@@ -76,29 +76,29 @@ class RecognizerWidgetBase(gtk.HBox):
 
     def _create_clear_button(self):
         self._clear_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_CLEAR, gtk.IconSize.BUTTON)
         self._clear_button.set_image(image)
         self._clear_button.connect("clicked", self._on_clear)
         self._toolbar.pack_start(self._clear_button, False, False, 0)
 
     def _create_find_button(self):
         self._find_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_FIND, gtk.IconSize.BUTTON)
         self._find_button.set_image(image)
         self._find_button.connect("clicked", self._on_find)
         self._toolbar.pack_start(self._find_button, False, False, 0)
 
     def _create_undo_button(self):
         self._undo_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_UNDO, gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_UNDO, gtk.IconSize.BUTTON)
         self._undo_button.set_image(image)
         self._undo_button.connect("clicked", self._on_undo)
         self._toolbar.pack_start(self._undo_button, False, False, 0)
 
     def _create_prefs_button(self):
         self._prefs_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_PREFERENCES,
-                                         gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_PREFERENCES,
+                                         gtk.IconSize.BUTTON)
         self._prefs_button.set_image(image)
         self._prefs_button.connect("clicked", self._on_prefs)
         self._toolbar.pack_start(self._prefs_button, False, False, 0)
@@ -630,22 +630,22 @@ class CandidatePopup(gtk.Window):
         vbox.pack_start(frame)
 
         self._edit_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_EDIT,
-                                         gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_EDIT,
+                                         gtk.IconSize.BUTTON)
         self._edit_button.set_image(image)
         self._edit_button.set_relief(gtk.RELIEF_NONE)
         self._edit_button.connect("clicked", self._on_edit)
 
         self._delete_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_DELETE,
-                                         gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_DELETE,
+                                         gtk.IconSize.BUTTON)
         self._delete_button.set_image(image)
         self._delete_button.set_relief(gtk.RELIEF_NONE)
         self._delete_button.connect("clicked", self._on_delete)
 
         self._close_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_CLOSE,
-                                         gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_CLOSE,
+                                         gtk.IconSize.BUTTON)
         self._close_button.set_image(image)
         self._close_button.set_relief(gtk.RELIEF_NONE)
         self._close_button.connect("clicked", self._on_close)

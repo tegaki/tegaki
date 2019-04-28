@@ -571,7 +571,7 @@ class Canvas(gtk.Widget):
         return True
 
     def _refresh(self, writing, n_strokes=None, force_draw=False):
-        if self.flags() & gtk.REALIZED and self._pixmap:
+        if self.get_realized() and self._pixmap:
             self._draw_background()
 
             self._draw_background_character()
