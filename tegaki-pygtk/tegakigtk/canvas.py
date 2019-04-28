@@ -19,10 +19,11 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-import gtk
-from gtk import gdk
-import gobject
-import pango
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk as gtk
+from gi.repository import Pango as pango
+from gi.repository import GObject as gobject
 import math
 import time
 
@@ -55,10 +56,10 @@ class Canvas(gtk.Widget):
         "stroke_added" :     (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
         "drawing_stopped" :  (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
     }
-    
+
     def __init__(self):
         gtk.Widget.__init__(self)
-        
+
         self._width = self.DEFAULT_WIDTH
         self._height = self.DEFAULT_HEIGHT
 
@@ -89,7 +90,7 @@ class Canvas(gtk.Widget):
         self._first_point_time = None
 
         self.connect("motion_notify_event", self.motion_notify_event)
-        
+
     # Events...
 
     def do_realize(self):
@@ -149,7 +150,7 @@ class Canvas(gtk.Widget):
         De-associate the window we created in do_realize with ourselves
         """
         self.window.destroy()
-    
+
     def do_size_request(self, requisition):
        """
        The do_size_request method Gtk+ is called on a widget to ask it the
@@ -168,11 +169,11 @@ class Canvas(gtk.Widget):
 
         self.allocation = allocation
         self._width = self.allocation.width
-        self._height = self.allocation.height        
- 
+        self._height = self.allocation.height
+
         if self.flags() & gtk.REALIZED:
             self.window.move_resize(*allocation)
-            
+
             self._pixmap = gdk.Pixmap(self.window,
                                       self._width,
                                       self._height)
@@ -184,7 +185,7 @@ class Canvas(gtk.Widget):
         This is where the widget must draw itself.
         """
         retval = False
-        
+
         self.window.draw_drawable(self.style.fg_gc[self.state],
                                   self._pixmap,
                                   event.area.x, event.area.y,
@@ -192,7 +193,7 @@ class Canvas(gtk.Widget):
                                   event.area.width, event.area.height)
 
         return retval
-    
+
     def motion_notify_event(self, widget, event):
         retval = False
 
@@ -247,13 +248,13 @@ class Canvas(gtk.Widget):
                     # in the case we add strokes to an imported character
                     self._first_point_time = event.time - \
                                              self._writing.get_duration() - 50
-                                         
+
                 point.timestamp = event.time - self._first_point_time
-                
+
             #point.pressure = pressure
             #point.xtilt = xtilt
             #point.ytilt = ytilt
-            
+
             self._writing.move_to_point(point)
 
         return retval
@@ -275,7 +276,7 @@ class Canvas(gtk.Widget):
             def _on_drawing_stopped():
                 self.emit("drawing_stopped")
                 return False
-             
+
             self._drawing_stopped_id = \
                             gobject.timeout_add(self._drawing_stopped_time,
                             _on_drawing_stopped)
@@ -298,7 +299,7 @@ class Canvas(gtk.Widget):
             gc.set_foreground(default_color)
 
     def _init_gc(self):
-                                                  
+
         if not self._handwriting_line_gc:
             color = gdk.Color(red=0x0000, blue=0x0000, green=0x0000)
             self._handwriting_line_gc = gdk.GC(self.window)
@@ -350,34 +351,34 @@ class Canvas(gtk.Widget):
         """
         sx = float(self._writing.get_width()) / self._width
         sy = float(self._writing.get_height()) / self._height
-        
+
         return (int(x * sx), int(y * sy))
-    
+
     def _window_coordinates(self, x, y):
         """
         Converts internal coordinates to window coordinates.
         """
         sx = float(self._width) / self._writing.get_width()
         sy = float(self._height) / self._writing.get_height()
-        
+
         return (int(x * sx), int(y * sy))
 
     def _append_point(self, point):
         # x and y are internal coordinates
-        
+
         p2 = (point.x, point.y)
-        
-        strokes = self._writing.get_strokes(full=True) 
+
+        strokes = self._writing.get_strokes(full=True)
 
         p1 = strokes[-1][-1].get_coordinates()
 
         self._draw_line(p1, p2, self._handwriting_line_gc, force_draw=True)
 
         self._writing.line_to_point(point)
-        
+
     def _draw_stroke(self, stroke, index, gc, draw_annotation=True):
         l = len(stroke)
-        
+
         for i in range(l):
             if i == l - 1:
                 break
@@ -394,10 +395,10 @@ class Canvas(gtk.Widget):
 
     def _draw_line(self, p1, p2, line_gc, force_draw=False):
         # p1 and p2 are two points in internal coordinates
-        
+
         p1 = self._window_coordinates(*p1)
         p2 = self._window_coordinates(*p2)
-        
+
         self._pixmap.draw_line(line_gc, p1[0], p1[1], p2[0], p2[1])
 
         if force_draw:
@@ -435,7 +436,7 @@ class Canvas(gtk.Widget):
 
         x += (0.5 + (0.5 * r * dx / dl) + (sign * 0.5 * r * dy / dl) - \
               (width / 2))
-              
+
         y += (0.5 + (0.5 * r * dy / dl) - (sign * 0.5 * r * dx / dl) - \
               (height / 2))
 
@@ -446,7 +447,7 @@ class Canvas(gtk.Widget):
         if force_draw:
             self.queue_draw_area(x-2, y-2, width+4, height+4)
 
-    def _draw_axis(self):        
+    def _draw_axis(self):
         self._pixmap.draw_line(self._axis_gc,
                                self._width / 2, 0,
                                self._width / 2, self._height)
@@ -475,7 +476,7 @@ class Canvas(gtk.Widget):
             strokes = self._background_writing.get_strokes(full=True)
 
             start = self._writing.get_n_strokes() + 1
-            
+
             for i in range(start, len(strokes)):
                 self._draw_stroke(strokes[i],
                                   i,
@@ -492,7 +493,7 @@ class Canvas(gtk.Widget):
 
             self._strokes = self._background_writing.get_strokes(full=True)
             self._strokes = self._strokes[l:l+1]
-        
+
             self._curr_stroke = 0
             self._curr_point = 1
             self._refresh_writing = False
@@ -501,7 +502,7 @@ class Canvas(gtk.Widget):
 
             gobject.timeout_add(speed, self._on_animate)
 
-                
+
 
     def _redraw(self):
         self.window.draw_drawable(self.style.fg_gc[self.state],
@@ -520,19 +521,19 @@ class Canvas(gtk.Widget):
                 speed = duration / len(self._strokes[index])
             else:
                 speed = self.DEFAULT_REPLAY_SPEED
-        return speed       
+        return speed
 
     def _on_animate(self):
         self._locked = True
-        
+
         if self._curr_stroke > 0 and self._curr_point == 1 and \
-           not self._speed:            
+           not self._speed:
             # inter stroke duration
             # t2 = self._strokes[self._curr_stroke][0].timestamp
             # t1 = self._strokes[self._curr_stroke - 1][-1].timestamp
             # time.sleep(float(t2 - t1) / 1000)
             time.sleep(float(self._get_speed(self._curr_stroke))/1000)
-        
+
         p1 = self._strokes[self._curr_stroke][self._curr_point - 1]
         p1 = (p1.x, p1.y)
         p2 = self._strokes[self._curr_stroke][self._curr_point]
@@ -542,14 +543,14 @@ class Canvas(gtk.Widget):
 
         if len(self._strokes[self._curr_stroke]) == self._curr_point + 1:
             # if we reach the stroke last point
-                         
+
             if self._draw_annotations:
                 self._draw_annotation(self._strokes[self._curr_stroke],
                                                     self._curr_stroke)
-                                                
+
             self._curr_point = 1
             self._curr_stroke += 1
-                
+
             if len(self._strokes) != self._curr_stroke:
                 # if there are remaining strokes to process
 
@@ -559,10 +560,10 @@ class Canvas(gtk.Widget):
             else:
                 # last stroke and last point was reached
                 self._locked = False
-                
+
             if self._refresh_writing:
                 self.refresh(n_strokes=self._curr_stroke, force_draw=True)
-                
+
             return False
         else:
             self._curr_point += 1
@@ -655,7 +656,7 @@ class Canvas(gtk.Widget):
 
         if len(self._strokes) == 0:
             return
-        
+
         self._curr_stroke = 0
         self._curr_point = 1
         self._speed = speed
@@ -694,12 +695,12 @@ class Canvas(gtk.Widget):
             # Convert to internal size
             xratio = float(self._writing.get_width()) / writing_width
             yratio = float(self._writing.get_height()) / writing_height
-           
+
             self._writing = self._writing.resize(xratio, yratio)
         else:
             self._writing = writing
 
-        
+
         self.refresh(force_draw=True)
 
     def clear(self):
@@ -744,12 +745,12 @@ class Canvas(gtk.Widget):
 
     def get_background_writing(self):
         return self._background_writing
-    
+
     def set_background_writing(self, writing, speed=25):
         """
-        Set a writing as background. 
+        Set a writing as background.
 
-        Strokes of the background writing are displayed one at a time. 
+        Strokes of the background writing are displayed one at a time.
         This is intended to let users "follow" the background writing like a
         template.
 
@@ -774,29 +775,29 @@ class Canvas(gtk.Widget):
         @param b: blue
         """
         self._background_color = (r, g, b)
-        
+
         if self._background_gc:
             # This part can only be called after the widget is visible
             color = gdk.Color(red=r, green=g, blue=b)
             self._background_gc = gdk.GC(self.window)
             self._gc_set_foreground(self._background_gc, color)
             self.refresh(force_draw=True)
-        
+
 gobject.type_register(Canvas)
-        
+
 if __name__ == "__main__":
     import sys
     import copy
-    
+
     def on_stroke_added(widget):
         print "stroke added!"
-        
+
     window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    
+
     canvas = Canvas()
-    
+
     canvas.connect("stroke_added", on_stroke_added)
-    
+
     if len(sys.argv) >= 2:
 
         if sys.argv[1] == "upsample":
@@ -846,7 +847,7 @@ if __name__ == "__main__":
                 widget.get_writing().downsample_threshold(n)
                 widget.refresh(force_draw=True)
                 print "after: %d pts" % widget.get_writing().get_n_points()
-                
+
         elif sys.argv[1] == "smooth":
             def on_drawing_stopped(widget):
                 widget.smooth()
@@ -854,7 +855,7 @@ if __name__ == "__main__":
         elif sys.argv[1] == "normalize":
             def on_drawing_stopped(widget):
                 widget.normalize()
-                
+
         elif sys.argv[1] == "replay":
             def on_drawing_stopped(widget):
                 widget.replay()
@@ -869,7 +870,7 @@ if __name__ == "__main__":
                 if not background_writing:
                     writing = copy.copy(widget.get_writing())
                     widget.set_background_writing(writing)
- 
+
         else:
             def on_drawing_stopped(widget):
                 print "drawing stopped!"
@@ -881,14 +882,14 @@ if __name__ == "__main__":
         def on_drawing_stopped(widget):
             print "drawing stopped!"
             print widget.get_writing().to_xml()
-                             
+
     canvas.set_draw_annotations(False)
     canvas.set_drawing_stopped_time(1000)
     canvas.connect("drawing_stopped", on_drawing_stopped)
-    
+
     window.add(canvas)
-    
+
     window.show_all()
     window.connect('delete-event', gtk.main_quit)
-    
+
     gtk.main()

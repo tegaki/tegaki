@@ -22,9 +22,10 @@
 import os
 from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError
 
-import gtk
-from gtk import gdk
-import gobject
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk as gtk
+from gi.repository import GObject as gobject
 
 from canvas import Canvas
 from chartable import CharTable
@@ -37,7 +38,7 @@ class RecognizerWidgetBase(gtk.HBox):
 
     __gsignals__ = {
 
-        "commit-string" :         (gobject.SIGNAL_RUN_LAST, 
+        "commit-string" :         (gobject.SIGNAL_RUN_LAST,
                                    gobject.TYPE_NONE,
                                    [gobject.TYPE_STRING])
     }
@@ -148,12 +149,12 @@ class RecognizerWidgetBase(gtk.HBox):
 
         setattr(self, canvas_name + "_frame", frame)
 
-    def _create_chartable(self):    
+    def _create_chartable(self):
         self._chartable_frame = gtk.Frame()
         self._chartable = CharTable()
         self._chartable_frame.add(self._chartable)
 
-        self._chartable.connect("character-selected", 
+        self._chartable.connect("character-selected",
                                 self._on_character_selected)
 
     def _on_models(self, button, event):
@@ -268,11 +269,11 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
 
     def _create_canvasbox(self):
         self._create_canvas("_canvas")
-        self._canvasbox = self._canvas_frame  
+        self._canvasbox = self._canvas_frame
 
     def _on_canvas_button_press(self, widget, event, curr_canv):
         pass
-  
+
     def _on_canvas_drawing_stopped(self, widget, curr_canv):
         if not self._search_on_stroke:
             self.find()
@@ -291,7 +292,7 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
         self.clear_characters()
 
     def clear_characters(self):
-        self._chartable.clear() 
+        self._chartable.clear()
 
     def get_drawing_stopped_time(self):
         return self._canvas.get_drawing_stopped_time()
@@ -330,7 +331,7 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
 
 class SmartRecognizerWidget(RecognizerWidgetBase):
 
-    OTHER_CANVAS_COLOR = (0xFFFF, 0xFFFF, 0xFFFF) 
+    OTHER_CANVAS_COLOR = (0xFFFF, 0xFFFF, 0xFFFF)
     CURR_CANVAS_COLOR =  map(lambda x: x * 256, (255, 235, 235))
 
     def __init__(self):
@@ -392,8 +393,8 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
 
         writing = writing.copy()
         candidates = self._recognizer.recognize(writing)
-        candidates = [char for char, prob in candidates]     
-        
+        candidates = [char for char, prob in candidates]
+
         if candidates:
             candidate_list = CandidateList(candidates)
 
@@ -415,7 +416,7 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         else:
             othr_canv = "_canvas1"
         return othr_canv
-    
+
     def _set_canvas_focus(self, curr_canv):
         othr_canv = self._other_canvas(curr_canv)
         self._focused_canvas = curr_canv
@@ -439,7 +440,7 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
                 self._find(othr_canv)
 
         self._set_canvas_focus(curr_canv)
-  
+
     def _on_canvas_drawing_stopped(self, widget, curr_canv):
         if self._focused_canvas == curr_canv and not self._search_on_stroke:
             self._find(curr_canv)
@@ -479,7 +480,7 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         self._characters[char_selected].selected = cand_selected
         self._chartable.set_characters(self.get_selected_characters())
         self._chartable.unselect()
-       
+
     def _on_edit_character(self, popup):
         char_selected = self._chartable.get_selected()
         edit_window = gtk.Window()
@@ -494,9 +495,9 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
             edit_window.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
             edit_window.set_type_hint(gdk.WINDOW_TYPE_HINT_DIALOG)
         edit_window.set_modal(True)
-       
+
         rw.connect("commit-string", self._on_commit_edited_char, char_selected)
-        
+
         edit_window.show_all()
 
     def _on_commit_edited_char(self, rw, char, char_selected):
@@ -514,10 +515,10 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
 
     def clear_canvas(self):
         self._canvas1.clear()
-            
+
         if self._canvas2:
             self._canvas2.clear()
-        
+
         self._set_canvas_focus("_canvas1")
         self._last_completed_canvas = None
 
@@ -533,7 +534,7 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
     def clear_characters(self):
         self._characters = []
         self._writings = []
-        self._chartable.clear() 
+        self._chartable.clear()
 
     def add_character(self, candidate_list):
         if len(candidate_list) > 0:
@@ -553,8 +554,8 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
         if length > 0 and index <= length - 1:
             del self._characters[index]
             del self._writings[index]
-            self._chartable.set_characters(self.get_selected_characters())    
-       
+            self._chartable.set_characters(self.get_selected_characters())
+
     def get_selected_characters(self):
         return [char[char.selected] for char in self._characters]
 
@@ -589,11 +590,11 @@ class CandidatePopup(gtk.Window):
                                 gobject.TYPE_NONE,
                                 [gobject.TYPE_PYOBJECT]),
 
-        "edit-character"     : (gobject.SIGNAL_RUN_LAST, 
+        "edit-character"     : (gobject.SIGNAL_RUN_LAST,
                                 gobject.TYPE_NONE,
                                 []),
 
-        "delete-character"   : (gobject.SIGNAL_RUN_LAST, 
+        "delete-character"   : (gobject.SIGNAL_RUN_LAST,
                                 gobject.TYPE_NONE,
                                 [])
     }
@@ -692,7 +693,7 @@ class CandidatePopup(gtk.Window):
                          gdk.BUTTON_PRESS_MASK|
                          gdk.BUTTON_RELEASE_MASK|
                          gdk.POINTER_MOTION_MASK,
-                         None, None, 
+                         None, None,
                          gtk.get_current_event_time())
 
     def popdown(self):
@@ -767,7 +768,7 @@ class PreferenceManager(dict):
 
     def save(self):
         config = SafeConfigParser()
-        
+
         for section in self.keys():
             if not config.has_section(section):
                 config.add_section(section)
@@ -797,11 +798,11 @@ class PreferenceDialog(gtk.Dialog):
         self.set_title("Preferences")
 
     def _create_ui(self):
-        self._search_on_stroke = gtk.RadioButton(group=None, 
+        self._search_on_stroke = gtk.RadioButton(group=None,
                                                  label="Search on stroke")
         self._search_on_stroke.connect("toggled", self._on_search_on_stroke)
 
-        
+
         self._search_after = gtk.RadioButton(group=self._search_on_stroke,
                                              label="Search after:")
         self._search_after.connect("toggled", self._on_search_after)

@@ -19,10 +19,11 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-import gtk
-from gtk import gdk
-import gobject
-import pango
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk as gtk
+from gi.repository import Pango as pango
+from gi.repository import GObject as gobject
 import math
 import time
 
@@ -47,7 +48,7 @@ class CharTable(gtk.Widget):
                                 gobject.TYPE_NONE,
                                 [gobject.TYPE_PYOBJECT])
     }
-    
+
     def __init__(self):
         gtk.Widget.__init__(self)
 
@@ -64,7 +65,7 @@ class CharTable(gtk.Widget):
         self.clear()
 
         self.connect("motion_notify_event", self.motion_notify_event)
-        
+
     # Events...
 
     def do_realize(self):
@@ -124,7 +125,7 @@ class CharTable(gtk.Widget):
         De-associate the window we created in do_realize with ourselves
         """
         self.window.destroy()
-    
+
     def do_size_request(self, requisition):
         """
         The do_size_request method Gtk+ is called on a widget to ask it the
@@ -157,11 +158,11 @@ class CharTable(gtk.Widget):
 
         self.allocation = allocation
         self.width = self.allocation.width
-        self.height = self.allocation.height        
- 
+        self.height = self.allocation.height
+
         if self.flags() & gtk.REALIZED:
             self.window.move_resize(*allocation)
-            
+
             self._pixmap = gdk.Pixmap(self.window,
                                       self.width,
                                       self.height)
@@ -173,7 +174,7 @@ class CharTable(gtk.Widget):
         This is where the widget must draw itself.
         """
         retval = False
-       
+
         if self.flags() & gtk.REALIZED and not self._pixmap:
             self._pixmap = gdk.Pixmap(self.window,
                                       self.allocation.width,
@@ -190,7 +191,7 @@ class CharTable(gtk.Widget):
                                      event.area.width, event.area.height)
 
         return retval
-    
+
     def motion_notify_event(self, widget, event):
         retval = False
 
@@ -298,7 +299,7 @@ class CharTable(gtk.Widget):
 
                 if x >= area_x and x < area_x + outer_width and \
                    y >= area_y and y < area_y + outer_height:
-                
+
                     return i
 
             elif self._layout == self.LAYOUT_VERTICAL:
@@ -349,7 +350,7 @@ class CharTable(gtk.Widget):
             selected = i == self._selected
             char_width, char_height = layout.get_pixel_size()
 
-           
+
             if self._layout == self.LAYOUT_SINGLE_HORIZONTAL:
                 outer_x = outer_width * i - h_offset
                 outer_y = 0
@@ -412,7 +413,7 @@ class CharTable(gtk.Widget):
                                         outer_x, outer_y,
                                         outer_width, outer_height)
 
-            self._pixmap.draw_layout(inner_gc, 
+            self._pixmap.draw_layout(inner_gc,
                                      inner_x, inner_y,
                                      layout)
 
@@ -455,15 +456,15 @@ class CharTable(gtk.Widget):
 
     def set_layout(self, layout):
         self._layout = layout
-        
+
 gobject.type_register(CharTable)
-        
+
 if __name__ == "__main__":
     import sys
 
     window = gtk.Window()
     chartable = CharTable()
-    chartable.set_characters(["あ", "い","う", "え", "お", 
+    chartable.set_characters(["あ", "い","う", "え", "お",
                               "か", "き", "く", "け", "こ",
                               "さ", "し", "す", "せ", "そ"])
 
@@ -480,10 +481,10 @@ if __name__ == "__main__":
         print "char_selected", chartable.get_selected()
         print "ev button", event.button
         print "ev time", event.time
-       
+
     chartable.connect("character-selected", on_selected)
 
     window.add(chartable)
     window.show_all()
     gtk.main()
-    
+

@@ -19,9 +19,10 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-import gtk
-from gtk import gdk
-from tegakigtk.renderers import WritingImageRenderer 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk as gtk
+from tegakigtk.renderers import WritingImageRenderer
 
 class _WritingPixbufRenderer(WritingImageRenderer):
 
@@ -33,7 +34,7 @@ class _WritingPixbufRenderer(WritingImageRenderer):
         cr.paint ()
         pixbuf = gtk.gdk.Pixbuf (gdk.COLORSPACE_RGB, True, 8, w, h)
         pixbuf = pixbuf.get_from_drawable(pixmap,
-                                          gdk.colormap_get_system(), 
+                                          gdk.colormap_get_system(),
                                           0, 0, 0, 0, w, h)
         return pixbuf
 
@@ -68,7 +69,7 @@ class WritingIconView(gtk.IconView):
         self._model.clear()
         for char in characters:
             writing = char.get_writing()
-            renderer = _WritingPixbufRenderer(writing, 
+            renderer = _WritingPixbufRenderer(writing,
                                               self.get_item_width(),
                                               self.get_item_width())
             renderer.set_draw_annotations(False)
@@ -98,7 +99,7 @@ if __name__ == "__main__":
     iconview = WritingIconView()
     scrolledwindow = gtk.ScrolledWindow()
     scrolledwindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-  
+
     characters = []
     for path in glob(os.path.join(folder, "*.xml")):
         char = Character()
