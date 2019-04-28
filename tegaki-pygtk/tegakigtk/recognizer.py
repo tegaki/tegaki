@@ -72,28 +72,28 @@ class RecognizerWidgetBase(gtk.HBox):
         pm.save()
 
     def _create_toolbar_separator(self):
-        self._toolbar.pack_start(gtk.HSeparator(), expand=False)
+        self._toolbar.pack_start(gtk.HSeparator(), False, False, 0)
 
     def _create_clear_button(self):
         self._clear_button = gtk.Button()
         image = gtk.image_new_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
         self._clear_button.set_image(image)
         self._clear_button.connect("clicked", self._on_clear)
-        self._toolbar.pack_start(self._clear_button, expand=False)
+        self._toolbar.pack_start(self._clear_button, False, False, 0)
 
     def _create_find_button(self):
         self._find_button = gtk.Button()
         image = gtk.image_new_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_BUTTON)
         self._find_button.set_image(image)
         self._find_button.connect("clicked", self._on_find)
-        self._toolbar.pack_start(self._find_button, expand=False)
+        self._toolbar.pack_start(self._find_button, False, False, 0)
 
     def _create_undo_button(self):
         self._undo_button = gtk.Button()
         image = gtk.image_new_from_stock(gtk.STOCK_UNDO, gtk.ICON_SIZE_BUTTON)
         self._undo_button.set_image(image)
         self._undo_button.connect("clicked", self._on_undo)
-        self._toolbar.pack_start(self._undo_button, expand=False)
+        self._toolbar.pack_start(self._undo_button, False, False, 0)
 
     def _create_prefs_button(self):
         self._prefs_button = gtk.Button()
@@ -101,12 +101,12 @@ class RecognizerWidgetBase(gtk.HBox):
                                          gtk.ICON_SIZE_BUTTON)
         self._prefs_button.set_image(image)
         self._prefs_button.connect("clicked", self._on_prefs)
-        self._toolbar.pack_start(self._prefs_button, expand=False)
+        self._toolbar.pack_start(self._prefs_button, False, False, 0)
 
     def _create_models_button(self):
         self._models_button = gtk.Button("Models")
         self._models_button.connect("button-press-event", self._on_models)
-        self._toolbar.pack_start(self._models_button, expand=False)
+        self._toolbar.pack_start(self._models_button, False, False, 0)
 
     def _create_model_menu(self):
         menu = gtk.Menu()
@@ -352,35 +352,35 @@ class SmartRecognizerWidget(RecognizerWidgetBase):
 
     def _create_commit_button(self):
         self._commit_button = gtk.Button()
-        image = gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON)
+        image = gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON)
         self._commit_button.set_image(image)
         self._commit_button.connect("clicked", self._on_commit)
-        self._toolbar.pack_start(self._commit_button, expand=False)
+        self._toolbar.pack_start(self._commit_button, False, False, 0)
 
     def _create_del_button(self):
         self._del_button = gtk.Button("Del")
         self._del_button.connect("clicked", self._on_delete)
-        self._toolbar.pack_start(self._del_button, expand=False)
+        self._toolbar.pack_start(self._del_button, False, False, 0)
 
     def _create_ui(self):
         self._create_canvasbox()
         self._create_chartable()
 
         vbox = gtk.VBox(spacing=2)
-        vbox.pack_start(self._chartable_frame, expand=False)
-        vbox.pack_start(self._canvasbox, expand=True)
+        vbox.pack_start(self._chartable_frame, False, False, 0)
+        vbox.pack_start(self._canvasbox, False, False, 0)
 
         self._create_toolbar()
         self.set_spacing(2)
-        self.pack_start(vbox, expand=True)
-        self.pack_start(self._toolbar, expand=False)
+        self.pack_start(vbox, True, False, 0)
+        self.pack_start(self._toolbar, False, False, 0)
 
     def _create_canvasbox(self):
         self._canvasbox = gtk.HBox(spacing=2)
         self._create_canvas("_canvas1")
         self._create_canvas("_canvas2")
-        self._canvasbox.pack_start(self._canvas1_frame)
-        self._canvasbox.pack_start(self._canvas2_frame)
+        self._canvasbox.pack_start(self._canvas1_frame, False, False, 0)
+        self._canvasbox.pack_start(self._canvas2_frame, False, False, 0)
 
     def _find(self, canvas):
         if not self._ready:
