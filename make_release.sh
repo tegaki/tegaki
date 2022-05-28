@@ -24,7 +24,7 @@ for package in $PACKAGES; do
     echo "$package..."
     cd $package
     git log -- ./ > ChangeLog
-    python setup.py sdist
+    python3 setup.py sdist
     cp dist/*.tar.gz $DIST_DIR/
     )
 done
