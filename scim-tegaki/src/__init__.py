@@ -50,5 +50,5 @@ def run_helper (uuid, config, display):
         return
     display_arg = "--display=%s" % display
     sys.argv.append (display_arg)
-    import scimtegaki
+    from . import scimtegaki
     scimtegaki.TegakiHelper(helper_info).run(uuid, config, display)

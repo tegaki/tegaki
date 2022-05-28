@@ -27,7 +27,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import codecs
 import sys
 import re
@@ -47,7 +47,7 @@ MAX_ENTRIES = 500
 
 def strokeorder_entry_preparator(entryList):
     columns = ['glyph', 'strokeorder']
-    entry_dict = dict(zip(columns, entryList))
+    entry_dict = dict(list(zip(columns, entryList)))
 
     character, glyph_index = entry_dict['glyph'].split('/', 1)
     if 'strokeorder' in entry_dict:
@@ -86,8 +86,8 @@ def get_data_set_iterator(name):
         query_dict.update(parameter)
 
         query = QUERY_URL % query_dict
-        query = urllib.quote(query, safe='/:=').replace('%', '-')
-        f = codec_reader(urllib.urlopen(query))
+        query = urllib.parse.quote(query, safe='/:=').replace('%', '-')
+        f = codec_reader(urllib.request.urlopen(query))
 
         line_count = 0
         line = f.readline()
@@ -111,16 +111,16 @@ def get_data_set_iterator(name):
 
 def main():
     if len(sys.argv) != 2:
-        print """usage: python characterdb.py LANG
+        print("""usage: python characterdb.py LANG
 Exports a list of stroke orders from characterdb.cjklib.org and prints a
 CSV list to stdout.
 
-Available languages:"""
-        print "\n".join(('  ' + name) for name in DATA_SETS.keys())
+Available languages:""")
+        print("\n".join(('  ' + name) for name in list(DATA_SETS.keys())))
         sys.exit(1)
 
     for a in get_data_set_iterator(sys.argv[1]):
-        print '\t'.join(cell for cell in a).encode('utf8')
+        print('\t'.join(cell for cell in a).encode('utf8'))
 
 
 if __name__ == "__main__":

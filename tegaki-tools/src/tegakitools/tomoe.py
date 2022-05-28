@@ -37,7 +37,7 @@ class TomoeXmlDictionaryReader(_XmlBase):
         if self._first_tag:
             self._first_tag = False
             if self._tag != "dictionary":
-                raise ValueError, "The very first tag should be <dictionary>"
+                raise ValueError("The very first tag should be <dictionary>")
 
         if self._tag == "character":
             self._writing = Writing()
@@ -49,7 +49,7 @@ class TomoeXmlDictionaryReader(_XmlBase):
             point = Point()
 
             for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
-                if attrs.has_key(key):
+                if key in attrs:
                     value = attrs[key].encode("UTF-8")
                     if key in ("pressure", "xtilt", "ytilt"):
                         value = float(value)

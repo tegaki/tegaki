@@ -32,10 +32,10 @@ class install(installbase):
         installbase.run(self)
         self._write_file("tegaki-recognize.in", 
                          os.path.join("share", "menu"),
-                         0644)
+                         0o644)
         self._write_file("tegaki-recognize.desktop.in", 
                          os.path.join("share", "applications"),
-                         0644)
+                         0o644)
 
     def _write_file(self, filename, folder, mode):
         txt = load_file(filename)
@@ -46,7 +46,7 @@ class install(installbase):
         out = os.path.join(outdir, filename.replace(".in", ""))
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        print "Writing", out
+        print("Writing", out)
         save_file(out, txt)
         os.chmod(out, mode)
 

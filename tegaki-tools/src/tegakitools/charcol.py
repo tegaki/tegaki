@@ -33,7 +33,7 @@ except:
   HAS_KANJIVG_SUPPORT = False
 
 TYPE_CHARCOL, TYPE_CHARCOL_DB, TYPE_DIRECTORY, TYPE_TOMOE, TYPE_KANJIVG, TYPE_KUCHIBUE = \
-range(6)
+list(range(6))
 
 def _get_charcol(charcol_type, charcol_path):
     if charcol_type == TYPE_DIRECTORY:
@@ -72,15 +72,15 @@ def get_aggregated_charcol(tuples, dbpath=None):
 
     if dbpath is not None and dbpath.endswith(".chardb"):
         if os.path.exists(dbpath):
-            print "%s exists already." % dbpath
-            print "Continuing will modify it..."
-            answer = raw_input("Continue anyway? (y/N)")
+            print("%s exists already." % dbpath)
+            print("Continuing will modify it...")
+            answer = input("Continue anyway? (y/N)")
             if answer == "y":
-                print "Overwrite to concatenate collections together " + \
-                      "in a new database"
-                print "Don't overwrite to append new characters or "  + \
-                      "filter (-i,-e,-m) existing database"
-                answer = raw_input("Overwrite it? (y/N)")
+                print("Overwrite to concatenate collections together " + \
+                      "in a new database")
+                print("Don't overwrite to append new characters or "  + \
+                      "filter (-i,-e,-m) existing database")
+                answer = input("Overwrite it? (y/N)")
                 if answer == "y":
                     os.unlink(dbpath)
             else:

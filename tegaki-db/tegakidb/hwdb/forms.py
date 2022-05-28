@@ -7,7 +7,7 @@ from tegakidb.hwdb.models import *
 from tegakidb.utils.models import *
 
 FILTERS = (
-    (u"\u4e00-\u9fff", 'CJK'),
+    ("\u4e00-\u9fff", 'CJK'),
 #    ('Chinese'),
 #    ('Japanese'),
 #    ('Korean'),

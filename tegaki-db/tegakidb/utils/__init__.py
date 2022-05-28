@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from functools import reduce
 
 
 def render_to(template_name):
@@ -33,15 +34,15 @@ def datagrid_helper(model, request):
 
     # modify query set based on the GET params, dont do the start/count splice
     # until after all clauses added
-    if request.GET.has_key('sort'):
+    if 'sort' in request.GET:
         target = target.order_by(request.GET['sort'])
 
-    if request.GET.has_key('search') and request.GET.has_key('search_fields'):
+    if 'search' in request.GET and 'search_fields' in request.GET:
         ored = [django.db.models.Q(**{str(k).strip(): str(request.GET['search'])} ) for k in request.GET['search_fields'].split(",")]
         target = target.filter(reduce(operator.or_, ored))
 
     # custom options passed from "query" param in datagrid
-    for key in [ d for d in request.GET.keys() if not d in AVAILABLE_OPTS]:
+    for key in [ d for d in list(request.GET.keys()) if not d in AVAILABLE_OPTS]:
         target = target.filter(**{str(key):request.GET[key]})
     num = target.count()
     # get only the limit number of models with a given offset
@@ -54,10 +55,10 @@ def datagrid_helper(model, request):
 import re
 def htmldecode(text):
         """Decode HTML entities in the given text."""
-        if type(text) is unicode:
-                uchr = unichr
+        if type(text) is str:
+                uchr = chr
         else:
-                uchr = lambda value: value > 255 and unichr(value) or chr(value)
+                uchr = lambda value: value > 255 and chr(value) or chr(value)
         def entitydecode(match, uchr=uchr):
                 entity = match.group(1)
                 if entity.startswith('#x'):

@@ -71,7 +71,7 @@ doubleslashcomment = compile(r'//.*\n')
 unichrRE = compile(r"\\u[0-9a-fA-F]{4,4}")
 
 def unichrReplace(match):
-    return unichr(int(match.group()[2:],16))
+    return chr(int(match.group()[2:],16))
 
 escapeStrs = (('\n',r'\n'),('\b',r'\b'),
     ('\f',r'\f'),('\t',r'\t'),('\r',r'\r'), ('"',r'\"')
@@ -102,7 +102,7 @@ class JSONReader(object):
 
     def tokenize(self):
         try:
-            tokenize(self._data.next,self.readTokens)
+            tokenize(self._data.__next__,self.readTokens)
         except TokenError:
             raise SyntaxError
 
@@ -154,7 +154,7 @@ class JSONReader(object):
         try:
             #key
             key = self.objects.pop()
-            if not isinstance(key,basestring):
+            if not isinstance(key,str):
                 raise SyntaxError
         except IndexError:
 
@@ -185,7 +185,7 @@ class JSONReader(object):
                     raise SyntaxError
                 try:
                     key = self.objects.pop()
-                    if not isinstance(key,basestring):
+                    if not isinstance(key,str):
                         raise SyntaxError
                 except IndexError:
                     raise SyntaxError
@@ -194,8 +194,10 @@ class JSONReader(object):
             theDict[k[0]] = k[1]
         self.objects.append(theDict)
 
-    def readTokens(self,type, token, (srow, scol), (erow, ecol), line):
+    def readTokens(self,type, token, xxx_todo_changeme, xxx_todo_changeme1, line):
         # UPPERCASE consts from tokens.py or tokenize.py
+        (srow, scol) = xxx_todo_changeme
+        (erow, ecol) = xxx_todo_changeme1
         if type == OP:
             if token not in "[{}],:-":
                 raise SyntaxError
@@ -275,7 +277,7 @@ def safeRead(aString, encoding=None):
     if unicodechars:
         aString = unichrRE.sub(unichrReplace, aString)
     #if it's already unicode, we won't try to decode it
-    if isinstance(aString, unicode):
+    if isinstance(aString, str):
         s = aString
     else:
         if encoding:
@@ -283,24 +285,24 @@ def safeRead(aString, encoding=None):
             # incoming byte string.  UnicodeDecode error will be raised
             # in that case.  Often, it will be best not to provide the encoding
             # and allow the default
-            s = unicode(aString, encoding)
+            s = str(aString, encoding)
             #print "decoded %s from %s" % (s,encoding)
         else:
             # let's try to decode to unicode in system default encoding
             try:
-                s = unicode(aString)
+                s = str(aString)
                 #import sys
                 #print "decoded %s from %s" % (s,sys.getdefaultencoding())
             except UnicodeDecodeError:
                 # last choice: handle as emergencyEncoding
                 enc = emergencyEncoding
-                s = unicode(aString, enc)
+                s = str(aString, enc)
                 #print "%s decoded from %s" % (s, enc)
     # parse and get the object.
     try:
         data = JSONReader(s).output()
     except SyntaxError:
-        raise ReadException, 'Unacceptable JSON expression: %s' % aString
+        raise ReadException('Unacceptable JSON expression: %s' % aString)
     return data
 
 read = safeRead
@@ -310,7 +312,7 @@ read = safeRead
 #################################
 
 import re, codecs
-from cStringIO import StringIO
+from io import StringIO
 
 ### Codec error handler
 
@@ -325,7 +327,7 @@ def jsonreplace_handler(exc):
     if isinstance(exc, UnicodeEncodeError):
         part = exc.object[exc.start]
         # repr(part) will convert u'\unnnn' to u'u\\nnnn'
-        return u'\\u%04x' % ord(part), exc.start+1
+        return '\\u%04x' % ord(part), exc.start+1
     else:
         raise exc
 
@@ -376,7 +378,7 @@ class JsonWriter(object):
         '''
         if stream is not None:
             if output_encoding is None:
-                raise WriteException, 'If a stream is given, output encoding must also be provided'
+                raise WriteException('If a stream is given, output encoding must also be provided')
         else:
             stream = JsonStream()
         self.stream = stream
@@ -397,7 +399,7 @@ class JsonWriter(object):
         elif isinstance(obj, dict):
             self.stream.write('{')
             first = True
-            for key, value in obj.iteritems():
+            for key, value in obj.items():
                 if first:
                     first = False
                 else:
@@ -412,20 +414,20 @@ class JsonWriter(object):
             self.stream.write('false')
         elif obj is None:
             self.stream.write('null')
-        elif not isinstance(obj, basestring):
+        elif not isinstance(obj, str):
             # if we are not baseobj, convert to it
             try:
                 obj = str(obj)
-            except Exception, exc:
-                raise WriteException, 'Cannot write object (%s: %s)' % (exc.__class__, exc)
+            except Exception as exc:
+                raise WriteException('Cannot write object (%s: %s)' % (exc.__class__, exc))
             self.stream.write(obj)
         else:
             # convert to unicode first
-            if not isinstance(obj, unicode):
+            if not isinstance(obj, str):
                 try:
-                    obj = unicode(obj, self.input_encoding)
+                    obj = str(obj, self.input_encoding)
                 except (UnicodeDecodeError, UnicodeTranslateError):
-                    obj = unicode(obj, 'utf-8', 'replace')
+                    obj = str(obj, 'utf-8', 'replace')
             # do the mangling
             obj = strmangle(obj)
             # make the encoding

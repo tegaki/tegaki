@@ -10,7 +10,7 @@ import sys
 # Read all kanjis
 handler = KanjisHandler()
 xml.sax.parse(sys.argv[1], handler)
-kanjis = handler.kanjis.values()
+kanjis = list(handler.kanjis.values())
 
 kanjis.sort(lambda x,y: cmp(x.id, y.id))
 
@@ -42,10 +42,10 @@ for kanji in kanjis:
  
 
 
-print >> sys.stderr, "n strokes", len(sdict_v)
-print >> sys.stderr, "n strokes (without variants)", len(sdict)
-print >> sys.stderr, "n characters", len(kdict)
+print("n strokes", len(sdict_v), file=sys.stderr)
+print("n strokes (without variants)", len(sdict), file=sys.stderr)
+print("n characters", len(kdict), file=sys.stderr)
 
 for utf8 in sorted(kdict.keys()):
-    print "%s\t%s" % (utf8, " ".join(kdict[utf8]))
+    print("%s\t%s" % (utf8, " ".join(kdict[utf8])))
 

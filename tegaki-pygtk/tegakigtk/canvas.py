@@ -789,7 +789,7 @@ if __name__ == "__main__":
     import copy
     
     def on_stroke_added(widget):
-        print "stroke added!"
+        print("stroke added!")
         
     window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     
@@ -806,10 +806,10 @@ if __name__ == "__main__":
                 n = 5
 
             def on_drawing_stopped(widget):
-                print "before: %d pts" % widget.get_writing().get_n_points()
+                print("before: %d pts" % widget.get_writing().get_n_points())
                 widget.get_writing().upsample(n)
                 widget.refresh(force_draw=True)
-                print "after: %d pts" % widget.get_writing().get_n_points()
+                print("after: %d pts" % widget.get_writing().get_n_points())
 
         elif sys.argv[1] == "upsamplet":
             try:
@@ -818,10 +818,10 @@ if __name__ == "__main__":
                 n = 10
 
             def on_drawing_stopped(widget):
-                print "before: %d pts" % widget.get_writing().get_n_points()
+                print("before: %d pts" % widget.get_writing().get_n_points())
                 widget.get_writing().upsample_threshold(n)
                 widget.refresh(force_draw=True)
-                print "after: %d pts" % widget.get_writing().get_n_points()
+                print("after: %d pts" % widget.get_writing().get_n_points())
 
         elif sys.argv[1] == "downsample":
             try:
@@ -830,10 +830,10 @@ if __name__ == "__main__":
                 n = 5
 
             def on_drawing_stopped(widget):
-                print "before: %d pts" % widget.get_writing().get_n_points()
+                print("before: %d pts" % widget.get_writing().get_n_points())
                 widget.get_writing().downsample(n)
                 widget.refresh(force_draw=True)
-                print "after: %d pts" % widget.get_writing().get_n_points()
+                print("after: %d pts" % widget.get_writing().get_n_points())
 
         elif sys.argv[1] == "downsamplet":
             try:
@@ -842,10 +842,10 @@ if __name__ == "__main__":
                 n = 10
 
             def on_drawing_stopped(widget):
-                print "before: %d pts" % widget.get_writing().get_n_points()
+                print("before: %d pts" % widget.get_writing().get_n_points())
                 widget.get_writing().downsample_threshold(n)
                 widget.refresh(force_draw=True)
-                print "after: %d pts" % widget.get_writing().get_n_points()
+                print("after: %d pts" % widget.get_writing().get_n_points())
                 
         elif sys.argv[1] == "smooth":
             def on_drawing_stopped(widget):
@@ -872,15 +872,15 @@ if __name__ == "__main__":
  
         else:
             def on_drawing_stopped(widget):
-                print "drawing stopped!"
+                print("drawing stopped!")
 
         if sys.argv[1] == "background-char":
             canvas.set_background_character("愛")
 
     else:
         def on_drawing_stopped(widget):
-            print "drawing stopped!"
-            print widget.get_writing().to_xml()
+            print("drawing stopped!")
+            print(widget.get_writing().to_xml())
                              
     canvas.set_draw_annotations(False)
     canvas.set_drawing_stopped_time(1000)

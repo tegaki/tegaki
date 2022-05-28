@@ -31,4 +31,4 @@ class MathTest(unittest.TestCase):
                                 ):
 
             res = round(euclidean_distance(v1, v2))
-            self.assertEquals(res, expected)
+            self.assertEqual(res, expected)

@@ -22,7 +22,7 @@
 import os
 from math import sqrt, log
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 from tegaki.arrayutils import *
@@ -310,7 +310,7 @@ if platform.system() == "Java": # Jython 2.5
                 hmm_ = learner.learn(hmm_, obs_set)
                 self._update_hmm(hmm, hmm_)
             except java.lang.IllegalArgumentException:
-                print "Couldn't train HMM"
+                print("Couldn't train HMM")
 
     class JahmmViterbiCalculator(_JahmmBase):
 

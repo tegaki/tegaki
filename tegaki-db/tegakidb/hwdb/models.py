@@ -47,7 +47,7 @@ class CharacterSet(models.Model):
 
         raises ValueError if the input is not valid.
         """
-        if not isinstance(s, str) and not isinstance(s, unicode):
+        if not isinstance(s, str) and not isinstance(s, str):
             raise ValueError
 
         ret = []
@@ -67,7 +67,7 @@ class CharacterSet(models.Model):
 
         raises ValueError if the input is not valid.
         """
-        if not isinstance(s, str) and not isinstance(s, unicode):
+        if not isinstance(s, str) and not isinstance(s, str):
             raise ValueError
 
         retset = sets()
@@ -82,7 +82,7 @@ class CharacterSet(models.Model):
 
 
     @staticmethod
-    def get_set_with_filter(s, filter=u"\u0400-\u9fff"):
+    def get_set_with_filter(s, filter="\u0400-\u9fff"):
         """
         Returns an array of characters (unicode ordinals) found in the input string
         filtered by the given filter.
@@ -92,7 +92,7 @@ class CharacterSet(models.Model):
         [19968, 20320, 20010, 26159, 25105, 20154, 22909, 20063]
         the default filter will grab anything in the CJK codepoints
         """
-        matches = re.findall(u"[%s]+" % filter, s)
+        matches = re.findall("[%s]+" % filter, s)
         range = sets()
         #print "in set with filter", u"[%s]+" % filter
         #print matches
@@ -109,7 +109,7 @@ class CharacterSet(models.Model):
         Saves the current set into the string representation
         """
         #print "saving a string:", self.set
-        self.characters = unicode(repr(self.set)[4:-1])
+        self.characters = str(repr(self.set)[4:-1])
 
     def display_characters(self):
         """
@@ -117,7 +117,7 @@ class CharacterSet(models.Model):
         """
         s = ""
         for c in self.set:
-            s = s + "%s,"%unichr(c)
+            s = s + "%s,"%chr(c)
         s = s[:-1]
         return s
 
@@ -226,7 +226,7 @@ def handle_cs_save(sender, instance, signal, *args, **kwargs):
         a = sender.objects.get(pk=instance._get_pk_val())
         a.save_string()
     except:
-        print "umm"
+        print("umm")
     #instance.save_string()
 pre_save.connect(handle_cs_save, sender=CharacterSet)
 
@@ -234,15 +234,15 @@ admin.site.register(CharacterSet)
 
 class Character(models.Model):
     lang = models.ForeignKey(Language)
-    unicode = models.IntegerField()
+    str = models.IntegerField()
     n_correct_handwriting_samples = models.IntegerField(default=0)
     n_handwriting_samples = models.IntegerField(default=0)
     
     def __unicode__(self):      #this is the display name
-        return unichr(self.unicode)#.encode("UTF-8") 
+        return chr(self.str)#.encode("UTF-8") 
 
     def utf8(self):
-        return unichr(self.unicode)
+        return chr(self.str)
 
 admin.site.register(Character)
 

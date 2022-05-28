@@ -22,7 +22,7 @@
 import unittest
 import os
 import sys
-import StringIO
+import io
 import minjson
 import tempfile
 
@@ -115,9 +115,9 @@ class CharacterTest(unittest.TestCase):
 750), (416, 753), (413, 756), (413, 760), (410, 760), (410, 763), (406, 763)]]
 
     def _testReadXML(self, char):
-        self.assertEquals(char.get_utf8(), "防")
+        self.assertEqual(char.get_utf8(), "防")
 
-        self.assertEquals(self.strokes, char.get_writing().get_strokes())      
+        self.assertEqual(self.strokes, char.get_writing().get_strokes())      
  
 
     def testConstructorAndSave(self):
@@ -128,7 +128,7 @@ class CharacterTest(unittest.TestCase):
             if f:
                 self._testReadXML(char) # check that it is correctly loaded
 
-            files = map(tempfile.mkstemp, (".xml", ".xml.gz", ".xml.bz2"))
+            files = list(map(tempfile.mkstemp, (".xml", ".xml.gz", ".xml.bz2")))
             output_paths = [path for fd,path in files]
             
             for path in output_paths:                
@@ -136,7 +136,7 @@ class CharacterTest(unittest.TestCase):
                     # check that save with a path argument works
                     char.save(path)
                     newchar = Character(path)
-                    self.assertEquals(char, newchar)
+                    self.assertEqual(char, newchar)
                 finally:
                     os.unlink(path)
 
@@ -144,7 +144,7 @@ class CharacterTest(unittest.TestCase):
                     # check that save with a path argument works
                     newchar.save()
                     newchar2 = Character(path)
-                    self.assertEquals(char, newchar2)
+                    self.assertEqual(char, newchar2)
                 finally:
                     os.unlink(path)
 
@@ -218,12 +218,12 @@ class CharacterTest(unittest.TestCase):
 
     def testPointToXML(self):
         point = self._getPoint()
-        self.assertEquals(point.to_xml(), '<point x="1" y="2" timestamp="3" />')
+        self.assertEqual(point.to_xml(), '<point x="1" y="2" timestamp="3" />')
 
     def testPointToJSON(self):
         point = self._getPoint()
-        self.assertEquals(minjson.read(point.to_json()),
-                          {u'y': 2, u'timestamp': 3, u'x': 1})
+        self.assertEqual(minjson.read(point.to_json()),
+                          {'y': 2, 'timestamp': 3, 'x': 1})
 
     def _getStroke(self):
         point = Point()
@@ -250,15 +250,15 @@ class CharacterTest(unittest.TestCase):
   <point x="4" y="5" pressure="0.1" />
 </stroke>"""
 
-        self.assertEquals(expected, stroke.to_xml())
+        self.assertEqual(expected, stroke.to_xml())
 
     def testStrokeToJSON(self):
         stroke = self._getStroke()
 
-        expected = {u'points': [{u'y': 2, u'timestamp': 3, u'x': 1}, {u'y': 5,
-u'pressure': 0, u'x': 4}]}
+        expected = {'points': [{'y': 2, 'timestamp': 3, 'x': 1}, {'y': 5,
+'pressure': 0, 'x': 4}]}
 
-        self.assertEquals(minjson.read(stroke.to_json()), expected)
+        self.assertEqual(minjson.read(stroke.to_json()), expected)
 
     def _getWriting(self):
         point = Point()
@@ -292,15 +292,15 @@ u'pressure': 0, u'x': 4}]}
   </stroke>
 </strokes>"""
 
-        self.assertEquals(expected, writing.to_xml())
+        self.assertEqual(expected, writing.to_xml())
 
     def testWritingToJSON(self):
         writing = self._getWriting()
 
-        expected = {u'width': 1000, u'height': 1000, u'strokes': [{u'points':
-[{u'y': 2, u'timestamp': 3, u'x': 1}, {u'y': 5, u'pressure': 0, u'x': 4}]}]}
+        expected = {'width': 1000, 'height': 1000, 'strokes': [{'points':
+[{'y': 2, 'timestamp': 3, 'x': 1}, {'y': 5, 'pressure': 0, 'x': 4}]}]}
 
-        self.assertEquals(minjson.read(writing.to_json()), expected)
+        self.assertEqual(minjson.read(writing.to_json()), expected)
 
     def _getCharacter(self):
         writing = self._getWriting()
@@ -314,23 +314,23 @@ u'pressure': 0, u'x': 4}]}
     def testWriteXMLFile(self):
         char = self._getCharacter()
 
-        io = StringIO.StringIO()
+        io = io.StringIO()
         char.write(io)
 
         new_char = Character()
         new_char.read_string(io.getvalue())
 
-        self.assertEquals(char, new_char)
+        self.assertEqual(char, new_char)
 
     def testCharacterToJSON(self):
         char = self._getCharacter()
 
-        expected = {u'utf8': u'A', u'writing': {u'width' : 1000, 
-                    u'height': 1000, 'strokes': [{u'points': [{u'y':
-                    2, u'timestamp': 3, u'x': 1}, 
-                    {u'y': 5, u'pressure': 0, u'x': 4}]}]}}
+        expected = {'utf8': 'A', 'writing': {'width' : 1000, 
+                    'height': 1000, 'strokes': [{'points': [{'y':
+                    2, 'timestamp': 3, 'x': 1}, 
+                    {'y': 5, 'pressure': 0, 'x': 4}]}]}}
 
-        self.assertEquals(minjson.read(char.to_json()), expected)
+        self.assertEqual(minjson.read(char.to_json()), expected)
 
     def testNewWriting(self):
         writing = Writing()
@@ -352,7 +352,7 @@ u'pressure': 0, u'x': 4}]}
                      [(4,4), (5,5)],
                      [(6,6), (7,7), (8,8)] ]
 
-        self.assertEquals(strokes, expected)
+        self.assertEqual(strokes, expected)
 
     def testDuration(self):
         point = Point()
@@ -383,13 +383,13 @@ u'pressure': 0, u'x': 4}]}
         stroke2.append_point(point3)
         stroke2.append_point(point4)
               
-        self.assertEquals(stroke2.get_duration(), 3)
+        self.assertEqual(stroke2.get_duration(), 3)
 
         writing = Writing()
         writing.append_stroke(stroke)
         writing.append_stroke(stroke2)
         
-        self.assertEquals(writing.get_duration(), 10)
+        self.assertEqual(writing.get_duration(), 10)
 
     def testPointEquality(self):
         p1 = Point(x=2, y=3)
@@ -480,7 +480,7 @@ u'pressure': 0, u'x': 4}]}
         w3.append_stroke(s1)
         w3.append_stroke(s2)
 
-        self.assertEquals(w1, w2)
+        self.assertEqual(w1, w2)
         self.assertNotEqual(w1, w3)
 
     def testWritingEqualityNone(self):
@@ -523,7 +523,7 @@ u'pressure': 0, u'x': 4}]}
 
     def testGetNPoints(self):
         writing = self._getWriting()
-        self.assertEquals(writing.get_n_points(), 2)
+        self.assertEqual(writing.get_n_points(), 2)
 
     def testRemoveStroke(self):
         s1 = Stroke()
@@ -540,7 +540,7 @@ u'pressure': 0, u'x': 4}]}
 
         w.remove_stroke(1)
         
-        self.assertEquals(w.get_strokes(), [[(2,3),(3,4)]])
+        self.assertEqual(w.get_strokes(), [[(2,3),(3,4)]])
 
     def testInsertStroke(self):
         s1 = Stroke()
@@ -561,7 +561,7 @@ u'pressure': 0, u'x': 4}]}
 
         w.insert_stroke(1, s3)
 
-        self.assertEquals(w.get_strokes(), [[(2,3),(3,4)], [(22,33),(33,44)],
+        self.assertEqual(w.get_strokes(), [[(2,3),(3,4)], [(22,33),(33,44)],
                                             [(2,3),(3,4)]])    
 
     def testReplaceStroke(self):
@@ -582,7 +582,7 @@ u'pressure': 0, u'x': 4}]}
         s3.append_point(Point(x=33, y=44))
 
         w.replace_stroke(1, s3)
-        self.assertEquals(w.get_strokes(), [[(2,3),(3,4)],[(22,33),(33,44)]])
+        self.assertEqual(w.get_strokes(), [[(2,3),(3,4)],[(22,33),(33,44)]])
 
     def testClearStroke(self):
         s1 = Stroke()
@@ -590,7 +590,7 @@ u'pressure': 0, u'x': 4}]}
         s1.append_point(Point(x=3, y=4))
         s1.clear()
         
-        self.assertEquals(len(s1), 0)
+        self.assertEqual(len(s1), 0)
 
     def testValidate(self):
         path = os.path.join(self.currdir, "data", "character.xml")
@@ -636,7 +636,7 @@ u'pressure': 0, u'x': 4}]}
         f = open(os.path.join(self.currdir, "data", "character.sexp"))
         sexp = f.read().strip()
         f.close()
-        self.assertEquals(char.to_sexp(), sexp)
+        self.assertEqual(char.to_sexp(), sexp)
 
     def testIsSmall(self):
         for filename, res in (("small.xml", True),
@@ -648,6 +648,6 @@ u'pressure': 0, u'x': 4}]}
             f = os.path.join(self.currdir, "data", "small", filename)
             char = Character()
             char.read(f)
-            self.assertEquals(char.get_writing().is_small(), res)
+            self.assertEqual(char.get_writing().is_small(), res)
 
        

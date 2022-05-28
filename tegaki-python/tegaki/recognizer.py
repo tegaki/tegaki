@@ -52,7 +52,7 @@ class Results(list):
                     for c in self.get_candidates()]
         cand = [SMALL_KATAKANA[c] if c in SMALL_KATAKANA else c \
                     for c in cand]
-        return Results(zip(cand, self.get_scores()))
+        return Results(list(zip(cand, self.get_scores())))
 
 class RecognizerError(Exception):
     """
@@ -125,8 +125,8 @@ class Recognizer(Engine):
         @return: a list of tuples (recognizer_name, model_name, meta_dict)
         """
         all_models = []
-        for r_name, klass in Recognizer.get_available_recognizers().items():
-            for model_name, meta in klass.get_available_models().items():
+        for r_name, klass in list(Recognizer.get_available_recognizers().items()):
+            for model_name, meta in list(klass.get_available_models().items()):
                 all_models.append([r_name, model_name, meta])
         return all_models
 
@@ -160,16 +160,16 @@ class Recognizer(Engine):
             for meta_file in meta_files:
                 meta = Recognizer.read_meta_file(meta_file)
 
-                if not meta.has_key("name") or \
-                    not meta.has_key("shortname"):
+                if "name" not in meta or \
+                    "shortname" not in meta:
                     continue
 
                 model_file = meta_file.replace(".meta", ".model")
             
-                if meta.has_key("path") and not os.path.exists(meta["path"]):
+                if "path" in meta and not os.path.exists(meta["path"]):
                     # skip model if specified path is incorrect
                     continue
-                elif not meta.has_key("path") and os.path.exists(model_file):
+                elif "path" not in meta and os.path.exists(model_file):
                     # if path option is missing, assume the .model file
                     # is in the same directory
                     meta["path"] = model_file
@@ -218,7 +218,7 @@ class Recognizer(Engine):
         model_name must exist for that recognizer.
         """
         if not model_name in self.__class__.get_available_models():
-            raise RecognizerError, "Model does not exist"
+            raise RecognizerError("Model does not exist")
 
         self._model = model_name
 
@@ -269,20 +269,20 @@ if __name__ == "__main__":
     writing = char.get_writing() 
 
     recognizers = Recognizer.get_available_recognizers()
-    print "Available recognizers", recognizers
+    print("Available recognizers", recognizers)
 
     if not recognizer in recognizers:
-        raise Exception, "Not an available recognizer"
+        raise Exception("Not an available recognizer")
 
     recognizer_klass = recognizers[recognizer]
     recognizer = recognizer_klass()
 
     models = recognizer_klass.get_available_models()
-    print "Available models", models
+    print("Available models", models)
 
     if not model in models:
-        raise Exception, "Not an available model"
+        raise Exception("Not an available model")
 
     recognizer.set_model(model)
 
-    print recognizer.recognize(writing)
+    print(recognizer.recognize(writing))

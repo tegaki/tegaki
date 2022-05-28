@@ -20,14 +20,14 @@
 # - Mathieu Blondel
 
 import os
-from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError
+from configparser import SafeConfigParser, NoSectionError, NoOptionError
 
 import gtk
 from gtk import gdk
 import gobject
 
-from canvas import Canvas
-from chartable import CharTable
+from .canvas import Canvas
+from .chartable import CharTable
 
 from tegaki.recognizer import Recognizer
 
@@ -331,7 +331,7 @@ class SimpleRecognizerWidget(RecognizerWidgetBase):
 class SmartRecognizerWidget(RecognizerWidgetBase):
 
     OTHER_CANVAS_COLOR = (0xFFFF, 0xFFFF, 0xFFFF) 
-    CURR_CANVAS_COLOR =  map(lambda x: x * 256, (255, 235, 235))
+    CURR_CANVAS_COLOR =  [x * 256 for x in (255, 235, 235)]
 
     def __init__(self):
         RecognizerWidgetBase.__init__(self)
@@ -762,17 +762,17 @@ class PreferenceManager(dict):
 
             try:
                 self["GENERAL"][opt] = meth("GENERAL", opt)
-            except (NoSectionError, NoOptionError, ValueError), e:
+            except (NoSectionError, NoOptionError, ValueError) as e:
                 self["GENERAL"][opt] = dflt
 
     def save(self):
         config = SafeConfigParser()
         
-        for section in self.keys():
+        for section in list(self.keys()):
             if not config.has_section(section):
                 config.add_section(section)
 
-            for opt, value in self[section].items():
+            for opt, value in list(self[section].items()):
                 config.set(section, opt, str(value))
 
         f = open(self._conf_file, "w")
@@ -871,7 +871,7 @@ if __name__ == "__main__":
         recognizer_widget = SmartRecognizerWidget()
 
     def on_commit_string(rw, string):
-        print string
+        print(string)
 
     recognizer_widget.connect("commit-string", on_commit_string)
 

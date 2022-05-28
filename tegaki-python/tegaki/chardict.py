@@ -19,7 +19,7 @@
 # Contributors to this file:
 # - Mathieu Blondel
 
-import cStringIO
+import io
 import gzip as gzipm
 try:
     import bz2 as bz2m
@@ -62,14 +62,14 @@ class CharacterStrokeDictionary(dict, _IOBase):
         _IOBase.__init__(self, path)
 
     def get_characters(self):
-        return self.keys()
+        return list(self.keys())
 
     def get_strokes(self, char):
-        if isinstance(char, str): char = unicode(char, "utf-8")
+        if isinstance(char, str): char = str(char, "utf-8")
         return self[char]
 
     def set_strokes(self, char, strokes):
-        if isinstance(char, str): char = unicode(char, "utf-8")
+        if isinstance(char, str): char = str(char, "utf-8")
 
         for stroke_list in strokes:
             if not isinstance(stroke_list, list):
@@ -78,7 +78,7 @@ class CharacterStrokeDictionary(dict, _IOBase):
         self[char] = strokes
 
     def _parse_str(self, string):
-        string = unicode(string, "utf-8")
+        string = str(string, "utf-8")
 
         for line in string.strip().split("\n"):
             try:
@@ -97,7 +97,7 @@ class CharacterStrokeDictionary(dict, _IOBase):
 
     def to_str(self):
         s = ""
-        for char, strokes in self.items():
+        for char, strokes in list(self.items()):
             for stroke_list in strokes:
                 s += "%s\t%s\n" % (char.encode("utf8"),
                                  " ".join(stroke_list).encode("utf8"))
@@ -139,4 +139,4 @@ if __name__ == "__main__":
 #         chardict = pickle.load(file("dag.pp"))
 
     chardict = CharacterStrokeDictionary(sys.argv[1])
-    print chardict.to_dag().tree()
+    print(chardict.to_dag().tree())

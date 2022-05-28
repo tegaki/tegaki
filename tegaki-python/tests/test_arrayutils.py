@@ -32,7 +32,7 @@ class ArrayTest(unittest.TestCase):
                                 ([[]], [])
                              ):
             
-            self.assertEquals(array_flatten(arr), expected)
+            self.assertEqual(array_flatten(arr), expected)
 
     def testArrayReshape(self):
         for arr, expected, n in (
@@ -41,49 +41,49 @@ class ArrayTest(unittest.TestCase):
                                 ([1, 2, 3], [[1, 2]], 2) # expected 4 values
                              ):
             
-            self.assertEquals(array_reshape(arr, n), expected)
+            self.assertEqual(array_reshape(arr, n), expected)
 
 
     def testArraySplit(self):
         arr = [[1,2], [3,4], [5,6], [7,8], [9, 10], [11, 12]]
         expected = [ [[1,2],[3,4]], [[5,6],[7, 8]], [[9,10],[11,12]] ]
 
-        self.assertEquals(array_split(arr, 3), expected)
+        self.assertEqual(array_split(arr, 3), expected)
 
     def testArrayMean(self):
         arr = [1, 2, 3, 4]
         expected = 2.5
 
-        self.assertEquals(array_mean(arr), expected)
+        self.assertEqual(array_mean(arr), expected)
 
     def testArrayVariance(self):
         arr = [1, 2, 3, 4]
         expected = 1.25
 
-        self.assertEquals(array_variance(arr), expected)
+        self.assertEqual(array_variance(arr), expected)
 
     def testArrayMeanVector(self):
         arr = [ [1,2], [3,4] ]
         expected = [2, 3]
 
-        self.assertEquals(array_mean_vector(arr), expected)
+        self.assertEqual(array_mean_vector(arr), expected)
 
     def testArrayVarianceVector(self):
         arr = [ [1,2], [3,4] ]
         expected = [1.0, 1.0]
 
-        self.assertEquals(array_variance_vector(arr), expected)
+        self.assertEqual(array_variance_vector(arr), expected)
         
     def testArrayAdd(self):
         arr1 = [1,2]
         arr2 = [3,4]
         expected = [4, 6]
         
-        self.assertEquals(array_add(arr1, arr2), expected)
+        self.assertEqual(array_add(arr1, arr2), expected)
 
     def testArrayMul(self):
         arr1 = [1,2]
         arr2 = [3,4]
         expected = [3, 8]
         
-        self.assertEquals(array_mul(arr1, arr2), expected)
+        self.assertEqual(array_mul(arr1, arr2), expected)

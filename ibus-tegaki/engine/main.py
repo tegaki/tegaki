@@ -23,10 +23,10 @@ import os
 import sys
 import getopt
 import ibus
-import factory
+from . import factory
 import gobject
 
-from __init__ import *
+from .__init__ import *
 
 class IMApp:
     def __init__(self, exec_by_ibus):
@@ -67,9 +67,9 @@ def launch_engine(exec_by_ibus):
     IMApp(exec_by_ibus).run()
 
 def print_help(out, v = 0):
-    print >> out, "-i, --ibus             executed by ibus."
-    print >> out, "-h, --help             show this message."
-    print >> out, "-d, --daemonize        daemonize ibus"
+    print("-i, --ibus             executed by ibus.", file=out)
+    print("-h, --help             show this message.", file=out)
+    print("-d, --daemonize        daemonize ibus", file=out)
     sys.exit(v)
 
 def main():
@@ -81,7 +81,7 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortopt, longopt)
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         print_help(sys.stderr, 1)
 
     for o, a in opts:
@@ -92,7 +92,7 @@ def main():
         elif o in ("-i", "--ibus"):
             exec_by_ibus = True
         else:
-            print >> sys.stderr, "Unknown argument: %s" % o
+            print("Unknown argument: %s" % o, file=sys.stderr)
             print_help(sys.stderr, 1)
 
     if daemonize:

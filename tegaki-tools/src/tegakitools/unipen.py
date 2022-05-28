@@ -70,11 +70,11 @@ class UnipenEventParser(object):
 
     def handle_keyword(self, keyword, args):
         # default keyword handler
-        print keyword, args
+        print(keyword, args)
 
     def handle_eof(self):
         # default end-of-file handler
-        print "end of file"
+        print("end of file")
 
     def _is_keyword_line(self, line):
         return (self.KEYWORD_LINE_REGEXP.match(line) is not None)
@@ -155,9 +155,9 @@ class UnipenParser(UnipenEventParser):
             self._characters[i].set_utf8(utf8)
             sets[utf8] = sets.get(utf8, []) + [self._characters[i]]
 
-        charcol.add_sets(sets.keys())
+        charcol.add_sets(list(sets.keys()))
 
-        for set_name, characters in sets.items():
+        for set_name, characters in list(sets.items()):
             charcol.append_characters(set_name, characters)
 
         return charcol

@@ -81,7 +81,7 @@ class Model(models.basic.model.Model):
         feature_files = self.get_train_feature_files()
 
         if len(feature_files) == 0:
-            raise ModelException, "No feature files found."
+            raise ModelException("No feature files found.")
         
         if not os.path.exists(self.INIT_HMM_ROOT):
             os.makedirs(self.INIT_HMM_ROOT)

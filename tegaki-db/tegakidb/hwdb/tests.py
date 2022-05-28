@@ -14,14 +14,14 @@ class CharacterSetTestCase(unittest.TestCase):
                                                 characters="9,A..F,11,12")
 
     def testGetArrayFromString(self):
-        self.assertEquals(CharacterSet.get_array_from_string("0..FF"),
+        self.assertEqual(CharacterSet.get_array_from_string("0..FF"),
                           [[0,0xFF]])
-        self.assertEquals(CharacterSet.get_array_from_string("9,A..F,11,12"),
+        self.assertEqual(CharacterSet.get_array_from_string("9,A..F,11,12"),
                           [0x9, [0xA,0xF], 0x11, 0x12])
-        self.assertEquals(CharacterSet.get_array_from_string(unicode("0..FF")),
+        self.assertEqual(CharacterSet.get_array_from_string(str("0..FF")),
                           [[0,0xFF]])
-        self.assertEquals(CharacterSet.get_array_from_string(
-                              unicode("9,A..F,11,12")),
+        self.assertEqual(CharacterSet.get_array_from_string(
+                              str("9,A..F,11,12")),
                           [0x9, [0xA,0xF], 0x11, 0x12])
 
     def testContains(self):
@@ -41,8 +41,8 @@ class CharacterSetTestCase(unittest.TestCase):
             self.assertFalse(self.fake.contains(i))
 
     def testLength(self):
-        self.assertEquals(len(self.ascii), 256)
-        self.assertEquals(len(self.fake), 9)
+        self.assertEqual(len(self.ascii), 256)
+        self.assertEqual(len(self.fake), 9)
 
     def testGetRandom(self):
         for i in range(1000):

@@ -158,7 +158,7 @@ class Model(object):
         return dic
 
     def get_chardict_n_characters(self, chardict):
-        return sum([len(cl) for cc,cl in chardict.items()])
+        return sum([len(cl) for cc,cl in list(chardict.items())])
                     
     def get_eval_char_dict(self):
         return self.get_char_dict(self.EVAL_ROOT, self.EVAL_CORPORA)
@@ -178,7 +178,7 @@ class Model(object):
         return SequenceSet.from_file(file_path)
 
     def get_utf8_from_char_code(self, char_code):
-        return unichr(int(char_code)).encode("utf8")
+        return chr(int(char_code)).encode("utf8")
 
     def print_verbose(self, *args, **kw):
         if "verbose" in kw: verbose = kw["verbose"]
@@ -223,7 +223,7 @@ class Model(object):
         for dirname, char_dict in (("eval", self.eval_char_dict),
                                    ("train", self.train_char_dict)):
             
-            for char_code, char_list in char_dict.items():
+            for char_code, char_list in list(char_dict.items()):
                 output_dir = os.path.join(self.FEATURES_ROOT, dirname)
 
                 if not os.path.exists(output_dir):
@@ -340,7 +340,7 @@ class Model(object):
         feature_files = self.get_train_feature_files()
 
         if len(feature_files) == 0:
-            raise ModelException, "No feature files found."
+            raise ModelException("No feature files found.")
         
         if not os.path.exists(self.INIT_HMM_ROOT):
             os.makedirs(self.INIT_HMM_ROOT)
@@ -372,7 +372,7 @@ class Model(object):
         initial_hmm_files = self.get_initial_hmm_files()
 
         if len(initial_hmm_files) == 0:
-            raise ModelException, "No initial HMM files found."
+            raise ModelException("No initial HMM files found.")
         
         if not os.path.exists(self.TRAIN_HMM_ROOT):
             os.makedirs(self.TRAIN_HMM_ROOT)
@@ -445,7 +445,7 @@ class Model(object):
         trained_hmm_files = self.get_trained_hmm_files()
 
         if len(trained_hmm_files) == 0:
-            raise ModelException, "No trained HMM files found."
+            raise ModelException("No trained HMM files found.")
 
         hmms = self.get_hmms_from_files(trained_hmm_files)
         
@@ -489,7 +489,7 @@ class Model(object):
 
             self.print_verbose(file)
 
-        n_classes = len(char_codes.keys())
+        n_classes = len(list(char_codes.keys()))
 
         self.stderr_print("%d characters (%d samples)" % \
                            (n_classes, n_total))
@@ -514,7 +514,7 @@ class Model(object):
         trained_hmm_files = self.get_trained_hmm_files()
 
         if len(trained_hmm_files) == 0:
-            raise ModelException, "No trained HMM files found."
+            raise ModelException("No trained HMM files found.")
         
         hmms = self.get_hmms_from_files(trained_hmm_files)
         res = [x[0] for x in self.eval_sequence(seq, hmms)][:10]
@@ -528,7 +528,7 @@ class Model(object):
         trained_hmm_files = self.get_trained_hmm_files()
 
         if len(trained_hmm_files) == 0:
-            raise ModelException, "No trained HMM files found."
+            raise ModelException("No trained HMM files found.")
         
         pad = WritingPad(self.find_writing)
         pad.run()
@@ -545,7 +545,7 @@ class Model(object):
                 if line.strip() == "</character>":
                     xml = "\n".join(lines)
                     writing = xml_to_writing(xml)
-                    print " ".join(self.find_writing(writing))
+                    print(" ".join(self.find_writing(writing)))
                     lines = []
 
                 if len(line) == 0:
@@ -583,7 +583,7 @@ class Model(object):
         """Display command list"""
         for cmd in self.COMMANDS:
             meth = getattr(self, cmd)
-            print "- %s (%s)" % (cmd, meth.__doc__)
+            print("- %s (%s)" % (cmd, meth.__doc__))
 
     ########################################
     # Archive...

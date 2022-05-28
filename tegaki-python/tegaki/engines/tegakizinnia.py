@@ -37,7 +37,7 @@ try:
 
         def open(self, path):
             ret = self._recognizer.open(path) 
-            if not ret: raise RecognizerError, "Could not open!"
+            if not ret: raise RecognizerError("Could not open!")
 
         def _recognize(self, writing, n=10):
             s = zinnia.Character()
@@ -76,7 +76,7 @@ try:
             for set_name in charcol.get_set_list():
                 for character in charcol.get_characters(set_name):      
                     if (not zinnia_char.parse(character.to_sexp())):
-                        raise TrainerError, zinnia_char.what()
+                        raise TrainerError(zinnia_char.what())
                     else:
                         trainer.add(zinnia_char)
 
