@@ -189,12 +189,12 @@ class _WagomuBase(object):
             try:
                 self._downsample_threshold = int(opt["downsample_threshold"])
             except ValueError:
-                raise self._error, "downsample_threshold must be an integer"
+                raise self._error("downsample_threshold must be an integer")
 
         if "feature_extraction_function" in opt:
             if not opt["feature_extraction_function"] in \
                 FEATURE_EXTRACTION_FUNCTIONS:
-                raise self._error, "The feature function does not exist"
+                raise self._error("The feature function does not exist")
             else:
                 self._feature_extraction_function = \
                     eval(opt["feature_extraction_function"])
@@ -208,7 +208,7 @@ class _WagomuBase(object):
                 if isinstance(self, Recognizer):
                     self._recognizer.set_window_size(ws)
             except ValueError:
-                raise self._error, "window_size must be a positive integer"    
+                raise self._error("window_size must be a positive integer")    
        
 
 # Recognizer
@@ -229,7 +229,7 @@ try:
         def open(self, path):
             ret = self._recognizer.open(path)
             if not ret: 
-                raise RecognizerError, self._recognizer.get_error_message()
+                raise RecognizerError(self._recognizer.get_error_message())
 
         def _recognize(self, writing, n=10):
             n_strokes = writing.get_n_strokes()
@@ -245,7 +245,7 @@ try:
 
             candidates = []
             for i in range(res.get_size()):
-                utf8 = unichr(res.get_unicode(i)).encode("utf8")
+                utf8 = chr(res.get_unicode(i)).encode("utf8")
                 candidates.append((utf8, res.get_distance(i)))
 
             return Results(candidates)
@@ -353,10 +353,10 @@ class WagomuTrainer(_WagomuBase, Trainer):
             if not n_strokes in chargroups: chargroups[n_strokes] = []
             chargroups[n_strokes].append((utf8, feat))
 
-            print "%s (%d/%d)" % (utf8, n_chars+1, len(set_list))
+            print("%s (%d/%d)" % (utf8, n_chars+1, len(set_list)))
             n_chars += 1
 
-        stroke_counts = chargroups.keys()
+        stroke_counts = list(chargroups.keys())
         stroke_counts.sort()
 
         # Sort templates in stroke groups by length
@@ -390,7 +390,7 @@ class WagomuTrainer(_WagomuBase, Trainer):
 
             for utf8, feat in chargroups[sc]:
                 # unicode integer
-                write_uint(f, ord(unicode(utf8, "utf-8")))
+                write_uint(f, ord(str(utf8, "utf-8")))
                 
                 # n_vectors
                 write_uint(f, len(feat) / VECTOR_DIMENSION_MAX)

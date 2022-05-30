@@ -22,7 +22,7 @@
 import unittest
 import os
 import sys
-import StringIO
+import io
 import minjson
 import tempfile
 
@@ -40,14 +40,14 @@ class CharacterStrokeDictionaryTest(unittest.TestCase):
         cdictgz = CharacterStrokeDictionary(self.gz)
 
         for d in (cdict, cdictgz):
-            self.assertEquals(len(d), 8)
-            self.assertTrue(u"⺕" in d.get_characters())
+            self.assertEqual(len(d), 8)
+            self.assertTrue("⺕" in d.get_characters())
 
     def testWrite(self):
         cdict = CharacterStrokeDictionary(self.txt)
-        io = StringIO.StringIO()
+        io = io.StringIO()
         cdict.write(io)
         io.seek(0) # need to rewind the file
         cdict2 = CharacterStrokeDictionary()
         cdict2.read(io)
-        self.assertEquals(cdict, cdict2)
+        self.assertEqual(cdict, cdict2)

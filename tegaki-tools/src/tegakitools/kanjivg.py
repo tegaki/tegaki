@@ -167,15 +167,15 @@ class KVGXmlDictionaryReader(_XmlBase):
         if self._first_tag:
             self._first_tag = False
             if self._tag != "kanjivg":
-                raise ValueError, "The very first tag should be <kanjivg>"
+                raise ValueError("The very first tag should be <kanjivg>")
 
         if self._tag == "kanji":
             self._writing = Writing()
-            self._utf8 = unichr(int(attrs["id"].split('_')[1], 16)).encode("UTF-8")
+            self._utf8 = chr(int(attrs["id"].split('_')[1], 16)).encode("UTF-8")
 
         if self._tag == "path":
             self._stroke = Stroke()
-            if attrs.has_key("d"):
+            if "d" in attrs:
                 self._stroke_svg = attrs["d"].encode("UTF-8")
                 svg_parser = SVG_Parser(self._stroke_svg) 
                 svg_parser.parse()

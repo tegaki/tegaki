@@ -39,7 +39,7 @@ def input(request):
     if char is not None:
         pass
     else:
-        char = unichr(charset.get_random())
+        char = chr(charset.get_random())
 
     return {'char':char}
 
@@ -60,15 +60,15 @@ def input_submit(request):
     char.set_utf8(utf8)
     char.read_string(xml)
     writing = char.get_writing()
-    uni = ord(unicode(utf8))
+    uni = ord(str(utf8))
 
     cs = request.session['current_charset']
     lang = cs.lang
 
     try:
-        tdbChar = Character.objects.get(unicode=uni)  #this is the Character from the database
+        tdbChar = Character.objects.get(str=uni)  #this is the Character from the database
     except:
-        tdbChar = Character(lang=lang, unicode=uni, n_handwriting_samples=1)
+        tdbChar = Character(lang=lang, str=uni, n_handwriting_samples=1)
         tdbChar.save()
     w = HandWritingSample(character=tdbChar, user=user, data=writing.to_xml(), character_set=cs)  #minimum fields needed to store
     w.save()
@@ -128,7 +128,7 @@ def view_sample(request):
     char.read_string(xml) #later need to check for compression
     writing = char.get_writing()
     json = writing.to_json()
-    print json
+    print(json)
 
     return {'sample':sample, 'char':char.get_utf8(), 'json':json}
 
@@ -169,7 +169,7 @@ def charset_datagrid(request):
     dojo_obs = []
     charsets, num = datagrid_helper(CharacterSet, request)
     for c in charsets:
-        print c
+        print(c)
         djob = {}
         #'id', 'user__username', 'country', 'lang', 'description', 'n_handwriting_samples'
         djob['id'] = c.id
@@ -177,7 +177,7 @@ def charset_datagrid(request):
         djob['lang__description'] = c.lang.description
         djob['description'] = c.description
         #print c.get_random()
-        djob['random_char'] = unichr(c.get_random())
+        djob['random_char'] = chr(c.get_random())
         #djob['characters'] = c.characters       #might want to do something else for display
         djob['number_of_characters'] = len(c)
         if c.user:
@@ -229,7 +229,7 @@ def edit_charset(request):
 def random_char(request):
     charset = request.session.get('current_charset', None)
     if charset is not None:
-        return HttpResponse(unichr(charset.get_random()))
+        return HttpResponse(chr(charset.get_random()))
     else:
         return HttpResponse("no charset selected")
 
@@ -255,12 +255,12 @@ def recognize_submit(request):
     writing = char.get_writing()
     #writing = writing.copy()
     results = rec.recognize(writing) 
-    return HttpResponse(u"%s" % jsonify_results(results))
+    return HttpResponse("%s" % jsonify_results(results))
 
 def jsonify_results(res):
     results = []
     for r in res:
-        d = {"character":unicode(r[0], encoding='utf-8'), "score":r[1]}
+        d = {"character":str(r[0], encoding='utf-8'), "score":r[1]}
         results += [d]
     s = simplejson.dumps(results, encoding='utf-8', ensure_ascii=False)
     return s

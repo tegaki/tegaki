@@ -28,6 +28,6 @@ class ResultsTest(unittest.TestCase):
     def testToSmallKana(self):
         res = Results([("マ",1),("チ",2),("ユ",3),("ー",4)]).to_small_kana()
         res2 = Results([("ま",1),("ち",2),("ゆ",3),("ー",4)]).to_small_kana()
-        self.assertEquals(res[2][0], "ュ")
-        self.assertEquals(res2[2][0], "ゅ")
+        self.assertEqual(res[2][0], "ュ")
+        self.assertEqual(res2[2][0], "ゅ")
         

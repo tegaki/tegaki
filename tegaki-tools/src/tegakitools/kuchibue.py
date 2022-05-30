@@ -29,8 +29,8 @@ import os
 from tegaki.character import Point, Stroke, Writing, Character
 from tegaki.charcol import CharacterCollection
 
-from unipen import UnipenParser
-from shiftjis import SHIFT_JIS_TABLE
+from .unipen import UnipenParser
+from .shiftjis import SHIFT_JIS_TABLE
 
 class KuchibueParser(UnipenParser):
 
@@ -156,4 +156,4 @@ def kuchibue_to_character_collection(path):
 if __name__ == "__main__":
     import sys
     charcol = kuchibue_to_character_collection(sys.argv[1])
-    print charcol.to_xml()
+    print(charcol.to_xml())

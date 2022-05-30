@@ -150,15 +150,15 @@ else:
         _send_unicode = _send_unicode_x11
 
 def send_unicode(unistr):
-    assert(isinstance(unistr, unicode))
+    assert(isinstance(unistr, str))
     try:
         _send_unicode(unistr)
         return True
-    except (OSError, NotImplementedError, NameError), e:
+    except (OSError, NotImplementedError, NameError) as e:
         return False
-    except e, msg:
-        print "send_unicode", e, msg
+    except e as msg:
+        print("send_unicode", e, msg)
         return False
 
 if __name__ == "__main__":
-    send_unicode(u"漢字")
+    send_unicode("漢字")

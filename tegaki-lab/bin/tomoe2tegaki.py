@@ -47,9 +47,9 @@ candidates = dictobject.search(query)
 
 for c in candidates:
     char = tomoechar2tegakichar(c.get_char())
-    charunicode = unicode(char.get_utf8(), "utf8")
+    charunicode = str(char.get_utf8(), "utf8")
     if len(charunicode) == 1:
-        charcode = int(ord(unicode(charunicode)))
+        charcode = int(ord(str(charunicode)))
         if not is_kanji(charcode):
             continue
         char.write(os.path.join(output_dir, "%d.xml.gz" % charcode), 

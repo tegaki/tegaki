@@ -477,9 +477,9 @@ if __name__ == "__main__":
 
 
     def on_selected(widget, event):
-        print "char_selected", chartable.get_selected()
-        print "ev button", event.button
-        print "ev time", event.time
+        print("char_selected", chartable.get_selected())
+        print("ev button", event.button)
+        print("ev time", event.time)
        
     chartable.connect("character-selected", on_selected)
 

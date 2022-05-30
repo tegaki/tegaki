@@ -19,7 +19,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import ibus
-import engine
+from . import engine
 
 
 class EngineFactory(ibus.EngineFactoryBase):
@@ -30,7 +30,7 @@ class EngineFactory(ibus.EngineFactoryBase):
         self.__id = 0
 
     def create_engine(self, engine_name):
-        print engine_name
+        print(engine_name)
         if engine_name == "tegaki":
             self.__id += 1
             return engine.Engine(self.__bus, "%s/%d" % \

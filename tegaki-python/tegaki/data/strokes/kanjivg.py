@@ -197,12 +197,12 @@ class KanjisHandler(BasicHandler):
 	def handle_start_kanji(self, attrs):
 		id = str(attrs["id"])
 		self.currentKanji = Kanji(id)
-		self.currentKanji.midashi = unicode(attrs["midashi"])
+		self.currentKanji.midashi = str(attrs["midashi"])
 		self.kanjis[id] = self.currentKanji
 
 	def handle_end_kanji(self):
 		if len(self.groups) != 0:
-			print "WARNING: stroke groups remaining after reading kanji!"
+			print("WARNING: stroke groups remaining after reading kanji!")
 		self.currentKanji = None
 		self.groups = []
 
@@ -212,16 +212,16 @@ class KanjisHandler(BasicHandler):
 		group = StrokeGr(parent)
 
 		# Now parse group attributes
-		if attrs.has_key("element"): group.element = unicode(attrs["element"])
-		if attrs.has_key("variant"): group.variant = str(attrs["variant"])
-		if attrs.has_key("partial"): group.partial = str(attrs["partial"])
-		if attrs.has_key("original"): group.original = unicode(attrs["original"])
-		if attrs.has_key("part"): group.part = int(attrs["part"])
-		if attrs.has_key("tradForm") and str(attrs["tradForm"]) == "true": group.tradForm = True
-		if attrs.has_key("radicalForm") and str(attrs["radicalForm"]) == "true": group.radicalForm = True
-		if attrs.has_key("position"): group.position = unicode(attrs["position"])
-		if attrs.has_key("radical"): group.radical = unicode(attrs["radical"])
-		if attrs.has_key("phon"): group.phon = unicode(attrs["phon"])
+		if "element" in attrs: group.element = str(attrs["element"])
+		if "variant" in attrs: group.variant = str(attrs["variant"])
+		if "partial" in attrs: group.partial = str(attrs["partial"])
+		if "original" in attrs: group.original = str(attrs["original"])
+		if "part" in attrs: group.part = int(attrs["part"])
+		if "tradForm" in attrs and str(attrs["tradForm"]) == "true": group.tradForm = True
+		if "radicalForm" in attrs and str(attrs["radicalForm"]) == "true": group.radicalForm = True
+		if "position" in attrs: group.position = str(attrs["position"])
+		if "radical" in attrs: group.radical = str(attrs["radical"])
+		if "phon" in attrs: group.phon = str(attrs["phon"])
 
 		self.groups.append(group)
 
@@ -229,11 +229,11 @@ class KanjisHandler(BasicHandler):
 		group = self.groups.pop()
 		if len(self.groups) == 0:
 			if self.currentKanji.root:
-				print "WARNING: overwriting root of kanji!"
+				print("WARNING: overwriting root of kanji!")
 			self.currentKanji.root = group
 
 	def handle_start_stroke(self, attrs):
 		stroke = Stroke()
-		stroke.stype = unicode(attrs["type"])
-		if attrs.has_key("path"): stroke.svg = unicode(attrs["path"])
+		stroke.stype = str(attrs["type"])
+		if "path" in attrs: stroke.svg = str(attrs["path"])
 		self.groups[-1].childs.append(stroke)

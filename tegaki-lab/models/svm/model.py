@@ -77,14 +77,14 @@ class Model(models.basic.model.Model):
         trainer = zinnia.Trainer()
         zinnia_char = zinnia.Character()
             
-        for char_code, xml_list in self.train_xml_files_dict.items():
+        for char_code, xml_list in list(self.train_xml_files_dict.items()):
 
             for xml_file in xml_list:
                 character = self.get_character(xml_file)
                 sexp = self.char_to_sexp(character)
                 
                 if (not zinnia_char.parse(sexp)):
-                    print zinnia_char.what()
+                    print(zinnia_char.what())
                     exit(1)
                 else:
                     trainer.add(zinnia_char)
@@ -107,7 +107,7 @@ class Model(models.basic.model.Model):
         zinnia_char = zinnia.Character()
 
         if (not zinnia_char.parse(sexp)):
-            print zinnia_char.what()
+            print(zinnia_char.what())
             exit(1)
 
         results = recognizer.classify(zinnia_char, 10)
@@ -118,7 +118,7 @@ class Model(models.basic.model.Model):
         path = os.path.join(self.ROOT, "model")
 
         if not os.path.exists(path):
-            raise ModelException, "No model found."
+            raise ModelException("No model found.")
         
         n_total = 0
         n_match1 = 0
@@ -130,7 +130,7 @@ class Model(models.basic.model.Model):
         recognizer = zinnia.Recognizer()
         recognizer.open(path)
         
-        for char_code, xml_list in self.eval_xml_files_dict.items():
+        for char_code, xml_list in list(self.eval_xml_files_dict.items()):
             for xml_file in xml_list:
                 utf8 = self.get_utf8_from_char_code(char_code)
                 character = self.get_character(xml_file)
@@ -178,7 +178,7 @@ class Model(models.basic.model.Model):
         path = os.path.join(self.ROOT, "model")
 
         if not os.path.exists(path):
-            raise ModelException, "No model found."
+            raise ModelException("No model found.")
 
         recognizer = zinnia.Recognizer()
         recognizer.open(path)
@@ -192,7 +192,7 @@ class Model(models.basic.model.Model):
         path = os.path.join(self.ROOT, "model")
 
         if not os.path.exists(path):
-            raise ModelException, "No model found."
+            raise ModelException("No model found.")
         
         pad = WritingPad(self.find_writing)
         pad.run()

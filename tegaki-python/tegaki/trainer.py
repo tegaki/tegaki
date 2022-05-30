@@ -22,7 +22,7 @@
 import glob
 import os
 import imp
-from cStringIO import StringIO
+from io import StringIO
 
 from tegaki.engine import Engine
 from tegaki.dictutils import SortedDict
@@ -111,12 +111,12 @@ class Trainer(Engine):
         raise NotImplementedError
 
     def _check_meta(self, meta):
-        if not meta.has_key("name") or not meta.has_key("shortname"):
-            raise TrainerError, "meta must contain a name and a shortname"
+        if "name" not in meta or "shortname" not in meta:
+            raise TrainerError("meta must contain a name and a shortname")
 
     def _write_meta_file(self, meta, meta_file):
         io = StringIO()
-        for k,v in meta.items():
+        for k,v in list(meta.items()):
             io.write("%s = %s\n" % (k,v))
 
         if os.path.exists(meta_file):

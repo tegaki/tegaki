@@ -180,7 +180,7 @@ WHERE charid=?""", (char.get_utf8(), char.get_writing().get_n_strokes(),
             self.clear_pool()
 
     def clear_pool(self):
-        for charid, char in self.items():
+        for charid, char in list(self.items()):
             self._update_character(char)
         self.clear()
 
@@ -520,8 +520,8 @@ CREATE INDEX character_setid_index ON characters(setid);
                 if silent:
                     continue
                 else:
-                    raise ValueError, "The number of strokes doesn't " \
-                                      "match with reference character"
+                    raise ValueError("The number of strokes doesn't " \
+                                      "match with reference character")
 
             for stroke, label in zip(strokes, stroke_labels):
                 utf8 = label.encode("utf-8")
@@ -660,7 +660,7 @@ ON characters(setid);""")
 
         @rtype: list of str
         """
-        return self._SETIDS.keys()
+        return list(self._SETIDS.keys())
 
     def get_n_sets(self):
         """
@@ -878,7 +878,7 @@ WHERE setid=? ORDER BY charid DESC LIMIT 1""", (setid,))[0]
         character must have been previously retrieved from the collection.
         """
         if not hasattr(character, "charid"):
-            raise ValueError, "The character object needs a charid attribute"
+            raise ValueError("The character object needs a charid attribute")
         self._e("""UPDATE characters
 SET utf8=?, n_strokes=?, data=?, sha1=?
 WHERE charid=?""", (character.get_utf8(),
@@ -921,8 +921,8 @@ WHERE setid=? ORDER BY charid LIMIT 1 OFFSET ?""", (setid, i))[0]
 
         @type text: str
         """
-        dic = self._get_dict_from_text(unicode(text, "utf8"))
-        utf8values = ",".join(["'%s'" % k for k in dic.keys()])
+        dic = self._get_dict_from_text(str(text, "utf8"))
+        utf8values = ",".join(["'%s'" % k for k in list(dic.keys())])
         self._e("DELETE FROM characters WHERE utf8 NOT IN(%s)" % utf8values)
         self.remove_empty_sets()
 
@@ -948,8 +948,8 @@ WHERE setid=? ORDER BY charid LIMIT 1 OFFSET ?""", (setid, i))[0]
 
         @type text: str
         """
-        dic = self._get_dict_from_text(unicode(text, "utf8"))
-        utf8values = ",".join(["'%s'" % k for k in dic.keys()])
+        dic = self._get_dict_from_text(str(text, "utf8"))
+        utf8values = ",".join(["'%s'" % k for k in list(dic.keys())])
         self._e("DELETE FROM characters WHERE utf8 IN(%s)" % utf8values)
         self.remove_empty_sets()
 
@@ -998,7 +998,7 @@ FROM characters GROUP BY setid""")
         charcounts = self._get_set_char_counts()
         empty_sets = []
 
-        for set_name, setid in self._SETIDS.items():
+        for set_name, setid in list(self._SETIDS.items()):
             try:
                 if charcounts[setid] == 0:
                     empty_sets.append(set_name)
@@ -1048,12 +1048,11 @@ FROM characters GROUP BY setid""")
         if self._first_tag:
             self._first_tag = False
             if self._tag != "character-collection":
-                raise ValueError, \
-                      "The very first tag should be <character-collection>"
+                raise ValueError("The very first tag should be <character-collection>")
 
         if self._tag == "set":
-            if not attrs.has_key("name"):
-                raise ValueError, "<set> should have a name attribute"
+            if "name" not in attrs:
+                raise ValueError("<set> should have a name attribute")
 
             self._curr_set_name = attrs["name"].encode("UTF-8")
             self.add_set(self._curr_set_name)
@@ -1072,7 +1071,7 @@ FROM characters GROUP BY setid""")
             point = Point()
 
             for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
-                if attrs.has_key(key):
+                if key in attrs:
                     value = attrs[key].encode("UTF-8")
                     if key in ("pressure", "xtilt", "ytilt"):
                         value = float(value)

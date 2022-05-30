@@ -20,7 +20,7 @@
 # - Mathieu Blondel
 
 import xml.parsers.expat
-import cStringIO
+import io
 import gzip as gzipm
 try:
     import bz2 as bz2m
@@ -175,7 +175,7 @@ class Point(dict):
         @param p: the point to copy from
         """
         self.clear()
-        for k in p.keys():
+        for k in list(p.keys()):
             if p[k] is not None:
                 self[k] = p[k]
 
@@ -1025,7 +1025,7 @@ class _IOBase(object):
         Other parameters are identical to L{read}.
         """
         if gzip:
-            io = cStringIO.StringIO(string)
+            io = io.StringIO(string)
             io = gzipm.GzipFile(fileobj=io, compresslevel=compresslevel)
             string = io.read()
         elif bz2:
@@ -1083,7 +1083,7 @@ class _IOBase(object):
             except NameError:
                 raise NotImplementedError
         elif gzip:
-            io = cStringIO.StringIO()
+            io = io.StringIO()
             f = gzipm.GzipFile(fileobj=io, mode="w",
                                compresslevel=compresslevel)
             f.write(self.to_str())
@@ -1104,7 +1104,7 @@ class _IOBase(object):
         gzip-compressed or bzip2-compressed XML.
         """
         if [path, self._path] == [None, None]:
-            raise ValueError, "A path must be specified"
+            raise ValueError("A path must be specified")
         elif path is None:
             path = self._path
 
@@ -1135,7 +1135,7 @@ class _XmlBase(_IOBase):
             # first check whether etree is available or not
             etree
             try:
-                dtd = etree.DTD(cStringIO.StringIO(cls.DTD))
+                dtd = etree.DTD(io.StringIO(cls.DTD))
                 root = etree.XML(string.strip())
                 return dtd.validate(root)
             except etree.XMLSyntaxError:
@@ -1286,7 +1286,7 @@ class Character(_XmlBase):
 
         @rtype: unicode
         """
-        return unicode(self.get_utf8(), "utf8")
+        return str(self.get_utf8(), "utf8")
 
     def set_utf8(self, utf8):
         """
@@ -1425,7 +1425,7 @@ class Character(_XmlBase):
         if self._first_tag:
             self._first_tag = False
             if self._tag != "character":
-                raise ValueError, "The very first tag should be <character>"
+                raise ValueError("The very first tag should be <character>")
 
         if self._tag == "stroke":
             self._stroke = Stroke()
@@ -1434,7 +1434,7 @@ class Character(_XmlBase):
             point = Point()
 
             for key in ("x", "y", "pressure", "xtilt", "ytilt", "timestamp"):
-                if attrs.has_key(key):
+                if key in attrs:
                     value = attrs[key].encode("UTF-8")
                     if key in ("pressure", "xtilt", "ytilt"):
                         value = float(value)

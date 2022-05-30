@@ -354,8 +354,7 @@ class WritingStepsCairoRenderer(_CairoRendererBase):
         elif self.height and not self.width:
             self.width = int(self.n_cols * self.height / self.n_rows)
         elif not self.height and not self.width:
-            raise ValueError, \
-                  "At least one of height or width should be defined."
+            raise ValueError("At least one of height or width should be defined.")
     
     def draw_writing_steps(self):       
         strokes = self.writing.get_strokes(full=True)

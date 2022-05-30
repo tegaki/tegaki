@@ -12,3 +12,4 @@
 **/**/ChangeLog
 dist
 build
+**/*.py.bak

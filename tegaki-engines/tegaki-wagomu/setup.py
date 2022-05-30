@@ -20,7 +20,7 @@ def pkg_config(package, option):
     sub = subprocess.Popen(["pkg-config",option,package],
                            stdout=subprocess.PIPE)
     spaces = re.compile('\s+',re.DOTALL)
-    args = spaces.split(sub.stdout.read().strip())
+    args = spaces.split((sub.stdout.read().strip()).decode('utf-8'))
     sub.stdout.close()
     sub.wait()
     return [a[2:] for a in args]

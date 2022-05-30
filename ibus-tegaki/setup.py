@@ -31,10 +31,10 @@ class install(installbase):
         installbase.run(self)
         self._write_file("tegaki.xml.in", 
                          os.path.join("share", "ibus", "component"),
-                         0644)
+                         0o644)
         self._write_file("ibus-engine-tegaki.in", 
                          os.path.join("lib", "ibus-tegaki"),
-                         0755)
+                         0o755)
 
     def _write_file(self, filename, folder, mode):
         txt = load_file(filename)
@@ -45,7 +45,7 @@ class install(installbase):
         out = os.path.join(outdir, filename.replace(".in", ""))
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        print "Writing", out
+        print("Writing", out)
         save_file(out, txt)
         os.chmod(out, mode)
 
